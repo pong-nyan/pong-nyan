@@ -1,0 +1,18 @@
+{
+    "conventionalCommits.scopes": [
+        "frontend",
+        "backend",
+        "docker"
+    ],
+    "editor.formatOnSave": true,
+    "eslint.codeActionsOnSave.rules": {
+        "source.fixAll": true
+    },
+    "eslint.format.enable": true,
+    "[typescript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
+}
