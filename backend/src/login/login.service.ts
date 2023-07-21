@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import axios, { type AxiosStatic } from 'axios';
+import axios, { AxiosResponse } from 'axios';
+
 
 
 @Injectable()
@@ -7,14 +8,15 @@ export class LoginService {
     getLogin(): string {
         return 'Login';
     }
-    async getToken(code: string): Promise<AxiosStatic> {
+    async getToken(code: string) {
         //  post request oauth2 token
-        const formData = new FormData();
-        formData.append('grant_type', 'authorization_code')
-        formData.append('client_id', process.env.CLIENT_ID)
-        formData.append('client_secret', process.env.CLIENT_SECRET)
-        formData.append('code', code)
-        formData.append('redirect_uri', process.env.REDIRECT_URI)
-        return await axios.post('https://api.intra.42.fr/oauth/token', formData);
+        const ret = await axios.post('https://api.intra.42.fr/oauth/token', 
+            { 
+                client_id: process.env.CLIENT_ID, 
+                client_secret: process.env.CLIENT_SECRET, 
+                code: code, grant_type: 'authorization_code', 
+                redirect_uri: 'http://localhost:3000/login/callback'
+            });
+        return ret.data;
     }
 }

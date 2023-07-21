@@ -1,6 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { LoginService } from './login.service';
-import { type AxiosStatic } from 'axios';
 
 @Controller('login')
 export class LoginController {
@@ -14,7 +13,7 @@ export class LoginController {
 
     // TODO: add type or interface for return value
     @Get('token')
-    async getToken(@Query('code') code: string): Promise<AxiosStatic> {
+    async getToken(@Query('code') code: string) {
         return await this.loginService.getToken(code);
     }
 }
