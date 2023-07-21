@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,7 @@ async function bootstrap() {
       'optionsSuccessStatus': 204
     }
   )
+  app.use(cookieParser());
   await app.listen(4242);
   console.log('🚀 Server ready at: http://localhost:4242');
 }
