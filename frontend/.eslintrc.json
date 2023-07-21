@@ -21,7 +21,8 @@
   "overrides": [
     {
       "files": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "src/**/*.tsx"
       ],
       "rules": {
         "react/no-unescaped-entities": "off",
