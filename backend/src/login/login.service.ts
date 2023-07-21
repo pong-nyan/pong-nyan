@@ -5,4 +5,7 @@ export class LoginService {
     getLogin(): string {
         return 'Login';
     }
+    getToken(): object {
+        return {};
+    }
 }
