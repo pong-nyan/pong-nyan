@@ -3,7 +3,7 @@ import { LoginService } from './login.service';
 
 @Controller('login')
 export class LoginController {
-    constructor(private readonly loginService: LoginService) {}
+    constructor(private readonly loginService: LoginService) { }
 
     @Get()
     getLogin(): string {
@@ -16,6 +16,7 @@ export class LoginController {
     getToken(@Query('code') code: string): object {
         console.log('LoginController.getToken()');
         console.log('code', code);
+        console.log('secret_key', process.env.SECRET_KEY);
         return this.loginService.getToken();
     }
 }
