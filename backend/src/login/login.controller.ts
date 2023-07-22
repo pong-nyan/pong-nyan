@@ -16,7 +16,7 @@ export class LoginController {
     @Get('token')
     async getToken(@Query('code') code: string, @Res({passthrough: true}) response: Response) {
         const result = await this.loginService.getToken(code);
-        response.cookie('oauth-token', result, {domain: 'localhost', path: '/', secure: false});
+        response.cookie('oauth-token', result, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
         return 'test';
     }
 }
