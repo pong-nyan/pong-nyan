@@ -18,7 +18,8 @@ async function bootstrap() {
       'origin': '*',
       'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
       'preflightContinue': false,
-      'optionsSuccessStatus': 204
+      'optionsSuccessStatus': 204,
+      'credentials': true,
     }
   );
   app.use(cookieParser());
