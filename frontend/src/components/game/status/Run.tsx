@@ -1,19 +1,20 @@
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import { Engine, Render, World, Bodies, Runner } from 'matter-js';
+import styles from '../../../styles/Run.module.css';
 
 export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStateAction<number>> }) {
-  const scene = useRef(null);
+  const scene = useRef<HTMLDivElement>(null);
   const engine = useRef<Engine>();
   const render = useRef<Render>();
   const runner = useRef<Runner>();
 
   useEffect(() => {
     if (!scene.current) return;
-    engine.current = Engine.create();
 
-    const cw = document.body.clientWidth;
-    const ch = document.body.clientHeight;
-  
+    const cw = scene.current.clientWidth;
+    const ch = scene.current.clientHeight;
+
+    engine.current = Engine.create();
     render.current = Render.create({
       element: scene.current,
       engine: engine.current,
@@ -21,7 +22,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
         width: cw,
         height: ch,
         wireframes: false,
-        background: 'transparent'
+        background: 'green'
       }
     });
 
@@ -77,8 +78,8 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
   };
 
   return (
-    <div onMouseDown={handleDown} onMouseUp={handleUp} onMouseMove={handleAddCircle}>
-      <div ref={scene} style={{ width: '100%', height: '100%' }} ></div>
+    <div className={styles.sceneWrapper} >
+      <div ref={scene} className={styles.scene} onMouseDown={handleDown} onMouseUp={handleUp} onMouseMove={handleAddCircle}></div>
     </div>
   );
 }

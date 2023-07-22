@@ -1,0 +1,13 @@
+.sceneWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.scene {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    max-width: 480px;
+}
