@@ -14,7 +14,8 @@ export class LoginService {
             { 
                 client_id: process.env.CLIENT_ID, 
                 client_secret: process.env.CLIENT_SECRET, 
-                code: code, grant_type: 'authorization_code', 
+                code: code,
+                grant_type: 'authorization_code', 
                 redirect_uri: 'http://localhost:3000/login/callback'
             });
         return ret.data;
