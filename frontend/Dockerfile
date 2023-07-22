@@ -1,10 +1,8 @@
 FROM node:18.16.1
 
+WORKDIR /usr/src/app
+
 COPY *.json .
-
-COPY next*[.ts|.js] .
-
-COPY ./src ./src
 
 RUN npm install
 
