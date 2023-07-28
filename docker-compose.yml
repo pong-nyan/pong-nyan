@@ -1,4 +1,10 @@
 services:
+  ssl-generator:
+    container_name: ssl-generator
+    build:
+      context: ./secrets
+    volumes:
+      - ./secrets:/etc/ssl/certs
   nextjs:
     container_name: PN-frontend
     build:
