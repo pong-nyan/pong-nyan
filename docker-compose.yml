@@ -1,20 +1,24 @@
 services:
   nextjs:
+    container_name: PN-frontend
     build:
       context: ./frontend # Next.js 프로젝트의 Dockerfile 경로
-      dockerfile: Dockerfile # Next.js 프로젝트의 Dockerfile 이름
+    env_file:
+      - frontend/.env
     ports:
       - "3000:3000" # Next.js 애플리케이션이 Listen하는 포트
     volumes:
-      - ./frontend:/usr/src/app # 호스트 파일 시스템과 컨테이너를 마운트하여 코드 변경 사항을 반영
+      - ./frontend/src:/usr/src/app/src # 호스트 파일 시스템과 컨테이너를 마운트하여 코드 변경 사항을 반영
       - ./secrets:/usr/src/secrets
 
   nestjs:
+    container_name: PN-backend
     build:
       context: ./backend # Nest.js 프로젝트의 Dockerfile 경로
-      dockerfile: Dockerfile # Nest.js 프로젝트의 Dockerfile 이름
+    env_file:
+      - backend/.env
     ports:
       - "4242:4242" # Nest.js 애플리케이션이 Listen하는 포트
     volumes:
-      - ./backend:/usr/src/app # 호스트 파일 시스템과 컨테이너를 마운트하여 코드 변경 사항을 반영
+      - ./backend/src:/usr/src/app/src # 호스트 파일 시스템과 컨테이너를 마운트하여 코드 변경 사항을 반영
       - ./secrets:/usr/src/secrets
