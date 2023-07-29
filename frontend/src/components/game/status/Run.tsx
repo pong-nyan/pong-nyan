@@ -76,12 +76,13 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       Bodies.rectangle(cw / 2, 0.97 * ch, cw, 20, { isStatic: true, label: 'Sensor', isSensor: true}),
     ]);
     //  Sensor 로직. sensor 에 충돌했을 때 console.log 발생
-    const sensor = engine.current.world.bodies.find(body => body.label === 'Sensor');
     Events.on(engine.current, 'collisionStart', (e) => {
       const pairs = e.pairs;
       pairs.forEach(pair => {
-        if (pair.isSensor)
+        if (pair.isSensor) {
+          console.log('object');
           // sensor 에 닿아서 점수 잃기
+        }
       });
     });
 
