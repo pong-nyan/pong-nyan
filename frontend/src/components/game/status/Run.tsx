@@ -27,18 +27,22 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     });
 
     runner.current = Runner.create();
+
     const radius = cw / 6;
     const halfAssetWidth = 315;
     const halfAssetHeight = 322;
 
-    // boundaries
+    // world init
     World.add(engine.current.world, [
       Bodies.rectangle(cw / 2, -10, cw, 20, { isStatic: true }),
       Bodies.rectangle(-10, ch / 2, 20, ch, { isStatic: true }),
       Bodies.rectangle(cw / 2, ch + 10, cw, 20, { isStatic: true }),
       Bodies.rectangle(cw + 10, ch / 2, 20, ch, { isStatic: true }),
-      // Bodies.circle(cw / 3, ch / 3, cw / 10, { isStatic: false, render: { fillStyle: 'red'}})
-      Bodies.circle(cw / 2, ch / 2, radius, { isStatic: false, render: { fillStyle: 'red', sprite : {texture: '/assets/hairball.png', xScale: radius / halfAssetWidth, yScale: radius / halfAssetHeight}}})
+      Bodies.circle(cw / 2, ch / 2, radius, { isStatic: false, label: 'Ball', render: { sprite : {texture: '/assets/hairball.png', xScale: radius / halfAssetWidth, yScale: radius / halfAssetHeight}}})
+    ]);
+
+    World.add(engine.current.world, [
+      Bodies.rectangle(cw / 2, ch * 3 / 4, cw / 3, 20, { isStatic: true }),
     ]);
 
     // run the engine
