@@ -54,7 +54,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     ]);
 
     World.add(engine.current.world, [
-      Bodies.rectangle(cw / 2, ch * 3 / 4, cw / 3, 20, { isStatic: true, label: 'Bar'}),
+      Bodies.rectangle(cw / 2, 0.94 * ch, cw / 3, 20, { isStatic: true, label: 'Bar'}),
     ]);
 
     // run the engine
