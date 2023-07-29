@@ -105,4 +105,8 @@ next-env.d.ts
 .history
 .ionide
 
+### certificate keys
+*.key
+*.pem
+*.crt
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux,visualstudiocode,nextjs

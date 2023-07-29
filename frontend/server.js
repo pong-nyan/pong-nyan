@@ -11,8 +11,8 @@ const handle = app.getRequestHandler();
 const PORT = 3000;
 
 const httpsOptions = {
-    key: fs.readFileSync('../secrets/cert.key'),
-    cert: fs.readFileSync('../secrets/cert.crt'),
+    key: fs.readFileSync('../secrets/localhost.key'),
+    cert: fs.readFileSync('../secrets/localhost.crt'),
 };
 
 app.prepare().then(() => {
