@@ -11,12 +11,13 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
   useEffect(() => {
     if (!scene.current) return;
     const handleKeyDown = (e: KeyboardEvent) => {
+      const step = 24;
       switch (e.key) {
       case 'ArrowLeft':
-        moveBar(-10);
+        moveBar(-step);
         break;
       case 'ArrowRight':
-        moveBar(10);
+        moveBar(step);
         break;
       }
     };
