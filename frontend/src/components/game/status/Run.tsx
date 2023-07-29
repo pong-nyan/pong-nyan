@@ -40,7 +40,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
 
     runner.current = Runner.create();
 
-    const radius = cw / 6;
+    const radius = cw / 10;
     const halfAssetWidth = 315;
     const halfAssetHeight = 322;
 
@@ -52,6 +52,20 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       Bodies.rectangle(cw + 10, ch / 2, 20, ch, { isStatic: true }),
       Bodies.circle(cw / 2, ch / 2, radius, { isStatic: false, label: 'Ball', render: { sprite : {texture: '/assets/hairball.png', xScale: radius / halfAssetWidth, yScale: radius / halfAssetHeight}}})
     ]);
+
+    // word setting, zero gravity
+    engine.current.gravity.x = 0;
+    engine.current.gravity.y = 0;
+
+    // start moving ball
+    Matter.Body.setVelocity(engine.current.world.bodies.find(body => body.label === 'Ball') as Matter.Body, { x: 10 , y: 12 });
+
+    // 완전 탄성 충돌, zero friction
+    engine.current.world.bodies.forEach(body => {
+      body.restitution = 1;
+      body.friction = 0;
+      body.frictionAir = 0;
+    });
 
     World.add(engine.current.world, [
       Bodies.rectangle(cw / 2, 0.94 * ch, cw / 3, 20, { isStatic: true, label: 'Bar'}),
