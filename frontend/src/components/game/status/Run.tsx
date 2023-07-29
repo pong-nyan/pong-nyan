@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent } from 'react';
-import { Engine, Render, World, Bodies, Runner } from 'matter-js';
+import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
+import Matter, { Engine, Render, World, Bodies, Runner } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 
 export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStateAction<number>> }) {
@@ -10,6 +10,17 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
 
   useEffect(() => {
     if (!scene.current) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      switch (e.key) {
+      case 'ArrowLeft':
+        moveBar(-10);
+        break;
+      case 'ArrowRight':
+        moveBar(10);
+        break;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
 
     const cw = scene.current.clientWidth;
     const ch = scene.current.clientHeight;
@@ -56,30 +67,19 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       Engine.clear(engine.current);
       render.current.canvas.remove();
       render.current.textures = {};
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
-  const moveBar = (x: number) => {
+  const moveBar = (dx: number) => {
     const bar = engine.current?.world.bodies.find(body => body.label === 'Bar');
     if (!bar) return;
-    bar.position.x += x;
-  };
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    // console.log(e.key);
-    switch (e.key) {
-    case 'ArrowLeft':
-      moveBar(-10);
-      break;
-    case 'ArrowRight':
-      moveBar(10);
-      break;
-    }
+    Matter.Body.translate(bar, { x: dx, y: 0 });
   };
 
   return (
-    <div className={styles.sceneWrapper} onKeyDown={handleKeyDown}>
-      <div ref={scene} className={styles.scene} ></div>
+    <div className={styles.sceneWrapper}>
+      <div ref={scene} className={styles.scene}></div>
     </div>
   );
 }
