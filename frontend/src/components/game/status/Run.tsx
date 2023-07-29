@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent } from 'react';
 import { Engine, Render, World, Bodies, Runner } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 
@@ -42,7 +42,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     ]);
 
     World.add(engine.current.world, [
-      Bodies.rectangle(cw / 2, ch * 3 / 4, cw / 3, 20, { isStatic: true }),
+      Bodies.rectangle(cw / 2, ch * 3 / 4, cw / 3, 20, { isStatic: true, label: 'Bar'}),
     ]);
 
     // run the engine
@@ -59,9 +59,27 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     };
   }, []);
 
+  const moveBar = (x: number) => {
+    const bar = engine.current?.world.bodies.find(body => body.label === 'Bar');
+    if (!bar) return;
+    bar.position.x += x;
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    // console.log(e.key);
+    switch (e.key) {
+    case 'ArrowLeft':
+      moveBar(-10);
+      break;
+    case 'ArrowRight':
+      moveBar(10);
+      break;
+    }
+  };
+
   return (
-    <div className={styles.sceneWrapper} >
-      <div ref={scene} className={styles.scene}></div>
+    <div className={styles.sceneWrapper} onKeyDown={handleKeyDown}>
+      <div ref={scene} className={styles.scene} ></div>
     </div>
   );
 }
