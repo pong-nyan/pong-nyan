@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
-import Matter, { Engine, Render, World, Bodies, Runner } from 'matter-js';
+import Matter, { Engine, Render, World, Bodies, Runner, Events } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 
 export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStateAction<number>> }) {
@@ -67,9 +67,23 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       body.frictionAir = 0;
     });
 
+    //  Bar 추가
     World.add(engine.current.world, [
       Bodies.rectangle(cw / 2, 0.94 * ch, cw / 3, 20, { isStatic: true, label: 'Bar'}),
     ]);
+    //  Sensor 추가
+    World.add(engine.current.world, [
+      Bodies.rectangle(cw / 2, 0.97 * ch, cw, 20, { isStatic: true, label: 'Sensor', isSensor: true}),
+    ]);
+    //  Sensor 로직. sensor 에 충돌했을 때 console.log 발생
+    const sensor = engine.current.world.bodies.find(body => body.label === 'Sensor');
+    Events.on(engine.current, 'collisionStart', (e) => {
+      const pairs = e.pairs;
+      pairs.forEach(pair => {
+        if (pair.isSensor)
+          // sensor 에 닿아서 점수 잃기
+      });
+    });
 
     // run the engine
     Runner.run(runner.current, engine.current);
