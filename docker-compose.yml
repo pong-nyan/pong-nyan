@@ -14,7 +14,7 @@ services:
     ports:
       - "3000:3000" # Next.js 애플리케이션이 Listen하는 포트
     volumes:
-      - ./frontend/src:/usr/src/app/src # 호스트 파일 시스템과 컨테이너를 마운트하여 코드 변경 사항을 반영
+      - ./frontend:/usr/src/app # 호스트 파일 시스템과 컨테이너를 마운트하여 코드 변경 사항을 반영
       - ./secrets:/usr/src/secrets
 
   nestjs:

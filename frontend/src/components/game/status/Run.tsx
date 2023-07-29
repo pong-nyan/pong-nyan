@@ -27,13 +27,18 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     });
 
     runner.current = Runner.create();
-      
+    const radius = cw / 6;
+    const halfAssetWidth = 315;
+    const halfAssetHeight = 322;
+
     // boundaries
     World.add(engine.current.world, [
       Bodies.rectangle(cw / 2, -10, cw, 20, { isStatic: true }),
       Bodies.rectangle(-10, ch / 2, 20, ch, { isStatic: true }),
       Bodies.rectangle(cw / 2, ch + 10, cw, 20, { isStatic: true }),
-      Bodies.rectangle(cw + 10, ch / 2, 20, ch, { isStatic: true })
+      Bodies.rectangle(cw + 10, ch / 2, 20, ch, { isStatic: true }),
+      // Bodies.circle(cw / 3, ch / 3, cw / 10, { isStatic: false, render: { fillStyle: 'red'}})
+      Bodies.circle(cw / 2, ch / 2, radius, { isStatic: false, render: { fillStyle: 'red', sprite : {texture: '/assets/hairball.png', xScale: radius / halfAssetWidth, yScale: radius / halfAssetHeight}}})
     ]);
 
     // run the engine
@@ -50,36 +55,9 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     };
   }, []);
 
-  const isPressed = useRef(false);
-
-  const handleDown = () => {
-    isPressed.current = true;
-  };
-
-  const handleUp = () => {
-    isPressed.current = false;
-  };
-
-  const handleAddCircle = e => {
-    if (!engine.current || !isPressed.current) return;
-    const ball = Bodies.circle(
-      e.clientX,
-      e.clientY,
-      10 + Math.random() * 30,
-      {
-        mass: 10,
-        restitution: 0.9,
-        friction: 0.005,
-        render: {
-          fillStyle: '#0000ff'
-        }
-      });
-    World.add(engine.current.world, [ball]);
-  };
-
   return (
     <div className={styles.sceneWrapper} >
-      <div ref={scene} className={styles.scene} onMouseDown={handleDown} onMouseUp={handleUp} onMouseMove={handleAddCircle}></div>
+      <div ref={scene} className={styles.scene}></div>
     </div>
   );
 }
