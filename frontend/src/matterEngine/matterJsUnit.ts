@@ -34,36 +34,3 @@ export function sensorBar(x: number, y: number, width: number, height: number) :
         }
     })
 }
-
-// export default function stopper(x, y, side, position) {
-//     // determine which paddle composite to interact with
-//     let attracteeLabel = (side === 'left') ? 'paddleLeftComp' : 'paddleRightComp';
-//
-//     return Matter.Bodies.circle(x, y, 40, {
-//         isStatic: true,
-//         render: {
-//             visible: false,
-//         },
-//         collisionFilter: {
-//             group: stopperGroup
-//         },
-//         plugin: {
-//             attractors: [
-//                 // stopper is always a, other body is b
-//                 function(a, b) {
-//                     if (b.label === attracteeLabel) {
-//                         let isPaddleUp = (side === 'left') ? isLeftPaddleUp : isRightPaddleUp;
-//                         let isPullingUp = (position === 'up' && isPaddleUp);
-//                         let isPullingDown = (position === 'down' && !isPaddleUp);
-//                         if (isPullingUp || isPullingDown) {
-//                             return {
-//                                 x: (a.position.x - b.position.x) * PADDLE_PULL,
-//                                 y: (a.position.y - b.position.y) * PADDLE_PULL,
-//                             };
-//                         }
-//                     }
-//                 }
-//             ]
-//         }
-//     });
-// }
