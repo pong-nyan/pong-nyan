@@ -27,7 +27,7 @@ async function bootstrap() {
 
   await app.listen(4242);
 
-  console.log('🚀 Server ready at: https://localhost:4242');
+  console.log(`🚀 Server ready at: ${ await app.getUrl()}`);
 }
 
 bootstrap();
