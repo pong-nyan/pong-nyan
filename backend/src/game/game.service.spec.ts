@@ -13,10 +13,10 @@ describe('GameService', () => {
 
     service = await moduleRef.resolve(GameService);
   });
-  
+
   beforeEach(async () => {
     service.balls.push({
-      id: "test", x: 0, y: 0, radius: 0,
+      id: 'test', x: 0, y: 0, radius: 0,
       color: 'red'
     });
   });
@@ -30,12 +30,12 @@ describe('GameService', () => {
 
   it('addBall should add a ball to the balls array', () => {
     const beforeCnt = service.balls.length;
-    service.addBall("test");
+    service.addBall('test');
     expect(service.balls.length).toBe(beforeCnt + 1);
   });
 
   it('removeBall should remove a ball from the balls array', () => {
-    service.removeBall("test");
+    service.removeBall('test');
     expect(service.balls.length).toBe(0);
   });
 

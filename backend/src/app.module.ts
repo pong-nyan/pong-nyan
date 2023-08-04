@@ -6,7 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { GameModule } from './game/game.module';
 
 @Module({
-  imports: [LoginModule, GameModule ,ConfigModule.forRoot()],
+  imports: [LoginModule, GameModule, ConfigModule.forRoot()],
   controllers: [AppController],
   providers: [AppService],
 })
