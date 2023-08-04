@@ -2,6 +2,8 @@ import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react
 import Matter, { Engine, Render, World, Bodies, Body, Runner, Events } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
+import { movePlayer, movePaddle } from '../../../matterEngine/player';
+import { initPlayer } from '@/matterEngine/player';
 
 export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStateAction<number>> }) {
   const scene = useRef<HTMLDivElement>(null);
@@ -9,20 +11,19 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
   const render = useRef<Render>();
   const runner = useRef<Runner>();
   const nonCollisionGroupRef = useRef<number>(0);
-  const groupsRef = useRef<number[]>([]);
 
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (engine: Engine, e: KeyboardEvent) => {
       console.log('keydown');
       const step = 24;
       switch (e.key) {
       case 'ArrowLeft':
-        movePlayer(-step);
+        movePlayer(engine, -step);
         break;
       case 'ArrowRight':
-        movePlayer(step);
+        movePlayer(engine, step);
         break;
       case ' ':
-        movePaddle(0.1);
+        movePaddle(engine, 0.1);
         break;
       }
     };
@@ -50,10 +51,8 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
 
     // 충돌 안하는 그룹
     nonCollisionGroupRef.current = Body.nextGroup(true);
-    if (!groupsRef.current) return;
-    groupsRef.current.push(nonCollisionGroupRef.current);
     
-    initWorld(engine.current.world, cw, ch, radius, groupsRef.current);
+    initWorld(engine.current.world, cw, ch, radius, nonCollisionGroupRef.current);
     initEngine(engine.current);
 
     // start moving ball
@@ -71,39 +70,10 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
         }
       });
     });
-    // paddle 추가
-    const hingeLeft = Bodies.rectangle(0.3 * cw , 0.94 * ch, 10, 10, { isStatic: true, label: 'HingeLeft' ,render: { visible: true }});
-    const hingeRight = Bodies.rectangle(0.6 * cw, 0.94 * ch, 10, 10, { isStatic: true, label: 'HingeRight',render: { visible: true }});
-    const paddleLeft = Bodies.rectangle(0.3 * cw + 25, 0.94 * ch, 50, 20, { isStatic: false, label: 'PaddleLeft', render: { visible: true }});
-    const paddleRight = Bodies.rectangle(0.6 * cw - 25, 0.94 * ch, 50, 20, { isStatic: false, label: 'PaddleRight', render: { visible: true }});
-    // paddle stopper
-    const stopperRadius = 20;
-    const stopperGapY = 40;
-    const stopperGapX = 10;
-    const paddleLeftTopStopper = Bodies.circle(0.3 * cw + stopperGapX, 0.94 * ch + stopperGapY, stopperRadius,  { isStatic: true, collisionFilter: { group: nonCollisionGroupRef.current }, label: 'PaddleLeftTopStopper', render: { visible: true }});
-    const paddleRightTopStopper = Bodies.circle(0.6 * cw - stopperGapX, 0.94 * ch + stopperGapY, stopperRadius, { isStatic: true, collisionFilter: { group: nonCollisionGroupRef.current }, label: 'PaddleRightTopStopper', render: { visible: true }});
-    const paddleLeftBottomStopper = Bodies.circle(0.3 * cw + stopperGapX, 0.94 * ch - stopperGapY, stopperRadius, { isStatic: true, collisionFilter: { group: nonCollisionGroupRef.current }, label: 'PaddleLeftBottomStopper', render: { visible: true }});
-    const paddleRightBottomStopper = Bodies.circle(0.6 * cw - stopperGapX, 0.94 * ch - stopperGapY, stopperRadius, { isStatic: true, collisionFilter: { group: nonCollisionGroupRef.current }, label: 'PaddleRightBottomStopper', render: { visible: true }});
-    World.add(engine.current.world, [hingeLeft, hingeRight, paddleLeft, paddleRight, paddleLeftTopStopper, paddleRightTopStopper, paddleLeftBottomStopper, paddleRightBottomStopper]);
 
-    // paddle joint
-    const paddleLeftJoint = Matter.Constraint.create({
-      bodyA: hingeLeft,
-      bodyB: paddleLeft,
-      pointA: { x: 0, y: 0 },
-      pointB: { x: -25, y: 0 },
-      stiffness: 1,
-      length: 0
-    });
-    const paddleRightJoint = Matter.Constraint.create({
-      bodyA: hingeRight,
-      bodyB: paddleRight,
-      pointA: { x: 0, y: 0 },
-      pointB: { x: 25, y: 0 },
-      stiffness: 1,
-      length: 0
-    });
-    World.add(engine.current.world, [paddleLeftJoint, paddleRightJoint]);
+    const player = initPlayer(cw, ch, nonCollisionGroupRef.current);
+    World.add(engine.current.world, Object.values(player));
+  
     // run the engine
     Runner.run(runner.current, engine.current);
     Render.run(render.current);
@@ -118,40 +88,17 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     };
   }, []);
 
-  const movePlayer = (dx: number) => {
-    const paddleLeft = engine.current?.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
-    const paddleRight = engine.current?.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
-    const paddleLeftTopStopper = engine.current?.world.bodies.find(body => body.label === 'PaddleLeftTopStopper') as Matter.Body;
-    const paddleRightTopStopper = engine.current?.world.bodies.find(body => body.label === 'PaddleRightTopStopper') as Matter.Body;
-    const paddleLeftBottomStopper = engine.current?.world.bodies.find(body => body.label === 'PaddleLeftBottomStopper') as Matter.Body;
-    const paddleRightBottomStopper = engine.current?.world.bodies.find(body => body.label === 'PaddleRightBottomStopper') as Matter.Body;
-    const hingeLeft = engine.current?.world.bodies.find(body => body.label === 'HingeLeft') as Matter.Body;
-    const hingeRight = engine.current?.world.bodies.find(body => body.label === 'HingeRight') as Matter.Body;
-    if (!paddleLeft || !paddleRight || !paddleLeftTopStopper || !paddleRightTopStopper || !paddleLeftBottomStopper || !paddleRightBottomStopper || !hingeLeft || !hingeRight) return;
-    Body.translate(paddleLeft, { x: dx, y: 0 });
-    Body.translate(paddleRight, { x: dx, y: 0 });
-    Body.translate(paddleLeftTopStopper, { x: dx, y: 0 });
-    Body.translate(paddleRightTopStopper, { x: dx, y: 0 });
-    Body.translate(paddleLeftBottomStopper, { x: dx, y: 0 });
-    Body.translate(paddleRightBottomStopper, { x: dx, y: 0 });
-    Body.translate(hingeLeft, { x: dx, y: 0 });
-    Body.translate(hingeRight, { x: dx, y: 0 });
-  };
 
-  const movePaddle = (rad: number) => {
-    const paddleLeft = engine.current?.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
-    const paddleRight = engine.current?.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
-    if (!paddleLeft || !paddleRight) return;
-    Body.applyForce(paddleLeft, paddleLeft.position, { x: 0, y: -0.01 });
-    Body.applyForce(paddleRight, paddleRight.position, { x: 0, y: -0.01 });
-    setTimeout(() => {
-      Body.setAngle(paddleLeft, -0.3);
-      Body.setAngle(paddleRight, 0.3);
-    }, 100);
-  };
 
   return (
-    <div className={styles.sceneWrapper} onKeyDown={handleKeyDown} tabIndex={0} >
+    <div
+      className={styles.sceneWrapper}
+      onKeyDown={(e) =>  {
+        if (!engine.current) return;
+        handleKeyDown(engine.current, e)
+        }
+      }
+      tabIndex={0} >
       <div ref={scene} className={styles.scene}></div>
     </div>
   );

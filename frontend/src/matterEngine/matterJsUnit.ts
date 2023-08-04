@@ -33,6 +33,7 @@ export function sensorBar(x: number, y: number, width: number, height: number) :
         }
     })
 }
+
 // export default function stopper(x, y, side, position) {
 //     // determine which paddle composite to interact with
 //     let attracteeLabel = (side === 'left') ? 'paddleLeftComp' : 'paddleRightComp';

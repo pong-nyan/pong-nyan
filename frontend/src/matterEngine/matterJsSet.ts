@@ -18,13 +18,13 @@ export function initEngine(engine: Matter.Engine) {
 }
 
 
-export function initWorld(world: Matter.World, cw: number, ch: number, radius: number, groups: number[]) {
+export function initWorld(world: Matter.World, cw: number, ch: number, radius: number, group: number) {
     Matter.World.add(world, [
       boundary(cw / 2, -10, cw, 20),
       boundary(-10, ch / 2, 20, ch),
       boundary(cw / 2, ch + 10, cw, 20),
       boundary(cw + 10, ch / 2, 20, ch),
-      ball(cw / 2, ch / 2, radius, groups[0]) // no collision group
+      ball(cw / 2, ch / 2, radius, group) // no collision group
     ]);
 }
 
