@@ -5,6 +5,8 @@ export function initEngine(engine: Matter.Engine) {
   // word setting, zero gravity
   engine.gravity.x = 0;
   engine.gravity.y = 0;
+
+  engine.timing.timeScale = 0.1;
   
   // 완전 탄성 충돌, zero friction
   engine.world.bodies.forEach(body => {

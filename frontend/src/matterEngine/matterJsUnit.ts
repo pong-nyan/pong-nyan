@@ -29,7 +29,7 @@ export function sensorBar(x: number, y: number, width: number, height: number) :
         isStatic: true, 
         isSensor: true, 
         render: { 
-            visible: false 
+            visible: true, 
         }
     })
 }

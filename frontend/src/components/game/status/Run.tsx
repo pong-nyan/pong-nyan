@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react';
 import Matter, { Engine, Render, World, Bodies, Body, Runner, Events } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
@@ -11,8 +11,6 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
   const nonCollisionGroupRef = useRef<number>(0);
   const groupsRef = useRef<number[]>([]);
 
-  useEffect(() => {
-    if (!scene.current) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       console.log('keydown');
       const step = 24;
@@ -28,8 +26,8 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
         break;
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-
+  useEffect(() => {
+    if (!scene.current) return;
 
     const cw = scene.current.clientWidth;
     const ch = scene.current.clientHeight;
@@ -65,13 +63,11 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
  
     //  Sensor 추가
     sensorAdd(engine.current.world, cw, ch); 
-    //  Sensor 로직. sensor 에 충돌했을 때 console.log 발생
     Events.on(engine.current, 'collisionStart', (e) => {
       const pairs = e.pairs;
       pairs.forEach(pair => {
-        if (pair.isSensor) {
-          console.log('object');
-          // sensor 에 닿아서 점수 잃기
+        if (pair.isSensor && (pair.bodyA.label === 'Ball' || pair.bodyB.label === 'Ball')) {
+          setGameStatus(2);
         }
       });
     });
@@ -111,7 +107,6 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     // run the engine
     Runner.run(runner.current, engine.current);
     Render.run(render.current);
-    console.log('useEffect call');
     return () => {
       // destroy Matter
       if (!engine.current || !render.current) return;
@@ -120,7 +115,6 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       Engine.clear(engine.current);
       render.current.canvas.remove();
       render.current.textures = {};
-      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
@@ -154,11 +148,10 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       Body.setAngle(paddleLeft, -0.3);
       Body.setAngle(paddleRight, 0.3);
     }, 100);
-    console.log(paddleLeft, paddleRight);
   };
 
   return (
-    <div className={styles.sceneWrapper}>
+    <div className={styles.sceneWrapper} onKeyDown={handleKeyDown} tabIndex={0} >
       <div ref={scene} className={styles.scene}></div>
     </div>
   );
