@@ -3,6 +3,7 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 
@@ -22,5 +23,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleDisconnect(client: Socket) {
     console.log('Disconnection');
+  }
+
+  @SubscribeMessage('ball')
+  handleBall(client: Socket, data: any) {
+    console.log('ball got it', data);
+    client.broadcast.emit('ball', data);
   }
 }

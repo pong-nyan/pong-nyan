@@ -19,7 +19,8 @@ export function ball(x: number, y: number, radius: number, collisionGroup: numbe
                 xScale: radius / halfAssetWidth,
                 yScale: radius / halfAssetHeight
             }
-        }
+        },
+        inertia: Infinity,
     })
 }
 

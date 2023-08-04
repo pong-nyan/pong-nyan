@@ -4,6 +4,8 @@ import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
 import { movePlayer, movePaddle } from '../../../matterEngine/player';
 import { initPlayer } from '@/matterEngine/player';
+import { ball } from '@/matterEngine/matterJsUnit';
+import { socket } from '@/context/socket';
 
 export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStateAction<number>> }) {
   const scene = useRef<HTMLDivElement>(null);
@@ -13,7 +15,6 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
   const nonCollisionGroupRef = useRef<number>(0);
 
     const handleKeyDown = (engine: Engine, e: KeyboardEvent) => {
-      console.log('keydown');
       const step = 24;
       switch (e.key) {
       case 'ArrowLeft':
@@ -71,6 +72,14 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       });
     });
 
+    Events.on(engine.current, 'beforeUpdate', (e) => {
+      const bodies = e.source.world.bodies;
+      bodies.forEach(body => {
+        if (body.label === 'Ball') {
+          socket.emit('ball', [ body.position, body.velocity ]);
+          }
+        })
+    });
     const player = initPlayer(cw, ch, nonCollisionGroupRef.current);
     World.add(engine.current.world, Object.values(player));
   

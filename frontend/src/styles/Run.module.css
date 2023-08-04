@@ -2,6 +2,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    rotate: 180deg;
+    transform: scaleX(-1);
 }
 
 .scene {
