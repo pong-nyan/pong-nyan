@@ -12,7 +12,7 @@ import End from '../../components/game/status/End';
 import { useState } from 'react';
 export default function Game(): JSX.Element {
   // TODO: start game button
-  const [gameStatus, setGameStatus] = useState(1);
+  const [gameStatus, setGameStatus] = useState(0);
 
   switch (gameStatus) {
   case GameStatus.Start:
