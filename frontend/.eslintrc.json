@@ -48,7 +48,14 @@
             "max": 1,
             "maxEOF": 1
           }
-        ]
+        ],
+        "comma-spacing": [
+          "warn",
+          {
+            "before": false,
+            "after": true
+          }
+        ],
       }
     }
   ]
