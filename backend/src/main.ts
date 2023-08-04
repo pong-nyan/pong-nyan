@@ -5,13 +5,13 @@ import * as fs from 'fs';
 import * as express from 'express';
 
 async function bootstrap() {
-  const httpsOptions = {
-    key: fs.readFileSync('../secrets/localhost.key'),
-    cert: fs.readFileSync('../secrets/localhost.crt'),
-  };
+  // const httpsOptions = {
+  //   key: fs.readFileSync('../secrets/localhost.key'),
+  //   cert: fs.readFileSync('../secrets/localhost.crt'),
+  // };
 
   const server = express();
-  const app = await NestFactory.create(AppModule, { httpsOptions });
+  const app = await NestFactory.create(AppModule);
   //  TODO : port should be in config
   app.enableCors(
     {
