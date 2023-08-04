@@ -29,14 +29,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('ball')
   handleBall(client: Socket, data: any) {
-    console.log('ball got it', data);
     client.broadcast.emit('ball', data);
   }
 
   @SubscribeMessage('startGame')
   handleStartGame(client: Socket, data: any) {
-    console.log('startGame got it', data);
     this.service.match(client);
-    console.log(client.rooms);
   }
 }
