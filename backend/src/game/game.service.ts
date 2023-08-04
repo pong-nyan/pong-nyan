@@ -14,8 +14,9 @@ export class GameService {
             const roomName = player1.id + player2.id;
             player1.join(roomName);
             player2.join(roomName);
-            console.log('player1  ', player1.rooms, '\nplayer2  ', player2.rooms);
+            return roomName;
         }
+        return undefined;
     }
 }
 

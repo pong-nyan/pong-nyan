@@ -34,6 +34,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('startGame')
   handleStartGame(client: Socket, data: any) {
-    this.service.match(client);
+    const roomName = this.service.match(client);
+    if (!roomName)
+      this.server.to(client.id).emit('loading');
+    console.log(roomName);
+    this.server.to(roomName).emit('start');
   }
 }
