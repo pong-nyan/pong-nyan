@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import Matter, { Engine, Render, World, Bodies, Body, Runner, Events } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
+import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
 
 export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStateAction<number>> }) {
   const scene = useRef<HTMLDivElement>(null);
@@ -8,10 +9,12 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
   const render = useRef<Render>();
   const runner = useRef<Runner>();
   const nonCollisionGroupRef = useRef<number>(0);
+  const groupsRef = useRef<number[]>([]);
 
   useEffect(() => {
     if (!scene.current) return;
     const handleKeyDown = (e: KeyboardEvent) => {
+      console.log('keydown');
       const step = 24;
       switch (e.key) {
       case 'ArrowLeft':
@@ -26,6 +29,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       }
     };
     window.addEventListener('keydown', handleKeyDown);
+
 
     const cw = scene.current.clientWidth;
     const ch = scene.current.clientHeight;
@@ -45,52 +49,22 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     runner.current = Runner.create();
 
     const radius = cw / 10;
-    const halfAssetWidth = 315;
-    const halfAssetHeight = 322;
 
     // 충돌 안하는 그룹
     nonCollisionGroupRef.current = Body.nextGroup(true);
-
-    // world init
-    World.add(engine.current.world, [
-      Bodies.rectangle(cw / 2, -10, cw, 20, { isStatic: true }),
-      Bodies.rectangle(-10, ch / 2, 20, ch, { isStatic: true }),
-      Bodies.rectangle(cw / 2, ch + 10, cw, 20, { isStatic: true }),
-      Bodies.rectangle(cw + 10, ch / 2, 20, ch, { isStatic: true }),
-      Bodies.circle(cw / 2, ch / 2, radius, { 
-        isStatic: true,
-        label: 'Ball',
-        collisionFilter: { group: nonCollisionGroupRef.current },
-        render:
-          {
-            sprite :
-            {
-              texture: '/assets/hairball.png',
-              xScale: radius / halfAssetWidth,
-              yScale: radius / halfAssetHeight
-            }
-          }})
-    ]);
-
-    // word setting, zero gravity
-    engine.current.gravity.x = 0;
-    engine.current.gravity.y = 0;
+    if (!groupsRef.current) return;
+    groupsRef.current.push(nonCollisionGroupRef.current);
+    
+    initWorld(engine.current.world, cw, ch, radius, groupsRef.current);
+    initEngine(engine.current);
 
     // start moving ball
     Matter.Body.setVelocity(engine.current.world.bodies.find(body => body.label === 'Ball') as Matter.Body, { x: 10 , y: 12 });
 
-    // 완전 탄성 충돌, zero friction
-    engine.current.world.bodies.forEach(body => {
-      if (body.label.match('Stopper')) return;
-      body.restitution = 1;
-      body.friction = 0;
-      body.frictionAir = 0;
-    });
+    
  
     //  Sensor 추가
-    World.add(engine.current.world, [
-      Bodies.rectangle(cw / 2, 0.97 * ch, cw, 20, { isStatic: true, label: 'Sensor', isSensor: true, render: { visible: false }}),
-    ]);
+    sensorAdd(engine.current.world, cw, ch); 
     //  Sensor 로직. sensor 에 충돌했을 때 console.log 발생
     Events.on(engine.current, 'collisionStart', (e) => {
       const pairs = e.pairs;
@@ -137,6 +111,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     // run the engine
     Runner.run(runner.current, engine.current);
     Render.run(render.current);
+    console.log('useEffect call');
     return () => {
       // destroy Matter
       if (!engine.current || !render.current) return;
