@@ -63,6 +63,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
  
     //  Sensor 추가
     sensorAdd(engine.current.world, cw, ch); 
+
     Events.on(engine.current, 'collisionStart', (e) => {
       const pairs = e.pairs;
       pairs.forEach(pair => {
@@ -70,9 +71,6 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
           setGameStatus(2);
         }
       });
-    });
-
-    Events.on(engine.current, 'beforeUpdate', (e) => {
       const bodies = e.source.world.bodies;
       bodies.forEach(body => {
         if (body.label === 'Ball') {
@@ -80,6 +78,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
           }
         })
     });
+
     const player = initPlayer(cw, ch, nonCollisionGroupRef.current);
     World.add(engine.current.world, Object.values(player));
   

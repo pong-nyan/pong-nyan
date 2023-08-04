@@ -4,10 +4,12 @@ import { SocketContext } from '../../../context/socket';
 
 export default function Start({ setGameStatus }: { setGameStatus: Dispatch<SetStateAction<number>> }) {
   const socket = useContext(SocketContext);
-  console.log('socket', socket);
   return (
     <div className="button-wrapper">
-      <button className="start" onClick={() => setGameStatus(1)} >Start</button>
+      <button className="start" onClick={() => {
+        socket.emit('startGame', { message: 'start' });
+        setGameStatus(1);
+        }} >Start</button>
     </div>
   );
 }
