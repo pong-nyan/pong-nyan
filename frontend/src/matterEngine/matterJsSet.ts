@@ -1,7 +1,8 @@
 import Matter from 'matter-js';
 import { boundary, ball, sensorBar } from './matterJsUnit';
 
-export function initEngine(engine: Matter.Engine) {
+export const initEngine = (engine: Matter.Engine) => {
+  Matter.use('matter-attractors');
   // word setting, zero gravity
   engine.gravity.x = 0;
   engine.gravity.y = 0;
@@ -18,7 +19,7 @@ export function initEngine(engine: Matter.Engine) {
 }
 
 
-export function initWorld(world: Matter.World, cw: number, ch: number, radius: number, group: number) {
+export const initWorld = (world: Matter.World, cw: number, ch: number, radius: number, group: number) => {
     Matter.World.add(world, [
       boundary(cw / 2, -10, cw, 20),
       boundary(-10, ch / 2, 20, ch),
@@ -28,7 +29,7 @@ export function initWorld(world: Matter.World, cw: number, ch: number, radius: n
     ]);
 }
 
-export function sensorAdd(world: Matter.World, cw: number, ch: number) {
+export const sensorAdd = (world: Matter.World, cw: number, ch: number) => {
     Matter.World.add(world, [
         sensorBar(cw / 2, 0.97 * ch, cw, 20)
     ]);

@@ -1,5 +1,5 @@
-import { Bodies, Constraint, Body, Engine } from 'matter-js';
-import { stopper } from './matterJsUnit';
+import { Constraint, Body, Engine } from 'matter-js';
+import { stopper, hinge, paddle } from './matterJsUnit';
 
 type player = {
     hingeLeft: Matter.Body;
@@ -16,10 +16,12 @@ type player = {
 
 export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionGroupRef: number) : player {
     const xScale = 0.333;
-    const hingeLeft = Bodies.rectangle(xScale * cw , yScale * ch, 10, 10, { isStatic: true, label: 'HingeLeft' ,render: { visible: true }});
-    const hingeRight = Bodies.rectangle(2 * xScale * cw, yScale * ch, 10, 10, { isStatic: true, label: 'HingeRight',render: { visible: true }});
-    const paddleLeft = Bodies.rectangle(xScale * cw + 25, yScale * ch, 50, 20, { isStatic: false, label: 'PaddleLeft', render: { visible: true }});
-    const paddleRight = Bodies.rectangle(2 * xScale * cw - 25, yScale * ch, 50, 20, { isStatic: false, label: 'PaddleRight', render: { visible: true }});
+
+    const hingeLeft = hinge(xScale * cw, yScale * ch, 50, 20, 'HingeLeft');
+    const hingeRight = hinge(2 * xScale * cw, yScale * ch, 50, 20, 'HingeRight');
+    const paddleLeft = paddle(xScale * cw, yScale * ch, 50, 20, 'PaddleLeft');
+    const paddleRight = paddle(2 * xScale * cw, yScale * ch, 50, 20, 'PaddleRight');
+
     // paddle stopper
     const stopperRadius = 20;
     const stopperGapY = 40;
@@ -57,6 +59,7 @@ export const movePlayer = (engine: Engine, dx: number) => {
     const paddleRightBottomStopper = engine.world.bodies.find(body => body.label === 'PaddleRightBottomStopper') as Matter.Body;
     const hingeLeft = engine.world.bodies.find(body => body.label === 'HingeLeft') as Matter.Body;
     const hingeRight = engine.world.bodies.find(body => body.label === 'HingeRight') as Matter.Body;
+    
     if (!paddleLeft || !paddleRight || !paddleLeftTopStopper || !paddleRightTopStopper || !paddleLeftBottomStopper || !paddleRightBottomStopper || !hingeLeft || !hingeRight) return;
     Body.translate(paddleLeft, { x: dx, y: 0 });
     Body.translate(paddleRight, { x: dx, y: 0 });

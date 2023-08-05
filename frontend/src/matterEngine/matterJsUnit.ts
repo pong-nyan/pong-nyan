@@ -1,17 +1,37 @@
-import { Bodies, Body } from 'matter-js';
+import Matter, { Bodies, Body } from 'matter-js';
 
-export function boundary(x: number, y: number , width: number, height: number) : Body {
+export const hinge = (x: number, y: number, width: number, height: number, label: string) : Body => {
+    return Bodies.rectangle(x, y, width, height, {
+        label,
+        isStatic: true,
+        render: {
+            visible: true
+        }
+    });
+};
+
+export const paddle = (x: number, y: number, width: number, height: number, label: string) : Body => {
+    return Bodies.rectangle(x, y, width, height, {
+        label,
+        isStatic: false,
+        render: {
+            visible: true
+        }
+    });
+};
+
+export const boundary = (x: number, y: number , width: number, height: number) : Body => {
     return Bodies.rectangle(x, y, width, height, {
         isStatic: true,
     });
 };
 
-export function stopper(x: number, y: number, radius: number, group: number, label: string) : Body {
+export const stopper = (x: number, y: number, radius: number, group: number, label: string) : Body => { 
     return Bodies.circle(x, y, radius, { 
         label,
         isStatic: true, 
         collisionFilter: {
-             group: group 
+            group: group 
         }, 
         render: {
             visible: true
@@ -19,7 +39,7 @@ export function stopper(x: number, y: number, radius: number, group: number, lab
     });
 }
 
-export function ball(x: number, y: number, radius: number, collisionGroup: number) : Body {
+export const ball = (x: number, y: number, radius: number, collisionGroup: number) : Body => {
     const halfAssetWidth = 315;
     const halfAssetHeight = 322;
     return Bodies.circle(x, y, radius, { 
@@ -37,7 +57,7 @@ export function ball(x: number, y: number, radius: number, collisionGroup: numbe
     })
 }
 
-export function sensorBar(x: number, y: number, width: number, height: number) : Body {
+export const sensorBar = (x: number, y: number, width: number, height: number) : Body => {
     return Bodies.rectangle(x, y, width, height, {
         label: 'Sensor', 
         isStatic: true, 
