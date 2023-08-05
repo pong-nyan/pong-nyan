@@ -1,4 +1,5 @@
 import { Bodies, Constraint, Body, Engine } from 'matter-js';
+import { stopper } from './matterJsUnit';
 
 type player = {
     hingeLeft: Matter.Body;
@@ -13,19 +14,21 @@ type player = {
     joinRight: Matter.Constraint;
 }
 
-export function initPlayer(cw: number, ch: number, nonCollisionGroupRef: number) : player {
-    const hingeLeft = Bodies.rectangle(0.3 * cw , 0.94 * ch, 10, 10, { isStatic: true, label: 'HingeLeft' ,render: { visible: true }});
-    const hingeRight = Bodies.rectangle(0.6 * cw, 0.94 * ch, 10, 10, { isStatic: true, label: 'HingeRight',render: { visible: true }});
-    const paddleLeft = Bodies.rectangle(0.3 * cw + 25, 0.94 * ch, 50, 20, { isStatic: false, label: 'PaddleLeft', render: { visible: true }});
-    const paddleRight = Bodies.rectangle(0.6 * cw - 25, 0.94 * ch, 50, 20, { isStatic: false, label: 'PaddleRight', render: { visible: true }});
+export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionGroupRef: number) : player {
+    const xScale = 0.333;
+    const hingeLeft = Bodies.rectangle(xScale * cw , yScale * ch, 10, 10, { isStatic: true, label: 'HingeLeft' ,render: { visible: true }});
+    const hingeRight = Bodies.rectangle(2 * xScale * cw, yScale * ch, 10, 10, { isStatic: true, label: 'HingeRight',render: { visible: true }});
+    const paddleLeft = Bodies.rectangle(xScale * cw + 25, yScale * ch, 50, 20, { isStatic: false, label: 'PaddleLeft', render: { visible: true }});
+    const paddleRight = Bodies.rectangle(2 * xScale * cw - 25, yScale * ch, 50, 20, { isStatic: false, label: 'PaddleRight', render: { visible: true }});
     // paddle stopper
     const stopperRadius = 20;
     const stopperGapY = 40;
     const stopperGapX = 10;
-    const stopperLeftTop = Bodies.circle(0.3 * cw + stopperGapX, 0.94 * ch + stopperGapY, stopperRadius,  { isStatic: true, collisionFilter: { group: nonCollisionGroupRef }, label: 'PaddleLeftTopStopper', render: { visible: true }});
-    const stopperLeftBottom = Bodies.circle(0.6 * cw - stopperGapX, 0.94 * ch + stopperGapY, stopperRadius, { isStatic: true, collisionFilter: { group: nonCollisionGroupRef }, label: 'PaddleRightTopStopper', render: { visible: true }});
-    const stopperRightTop = Bodies.circle(0.3 * cw + stopperGapX, 0.94 * ch - stopperGapY, stopperRadius, { isStatic: true, collisionFilter: { group: nonCollisionGroupRef }, label: 'PaddleLeftBottomStopper', render: { visible: true }});
-    const stopperRightBottom = Bodies.circle(0.6 * cw - stopperGapX, 0.94 * ch - stopperGapY, stopperRadius, { isStatic: true, collisionFilter: { group: nonCollisionGroupRef }, label: 'PaddleRightBottomStopper', render: { visible: true }});
+
+    const stopperLeftBottom = stopper(xScale * cw + stopperGapX, yScale * ch + stopperGapY, stopperRadius, nonCollisionGroupRef, 'PaddleLeftBottomStopper');
+    const stopperLeftTop = stopper(xScale * cw + stopperGapX, yScale * ch - stopperGapY, stopperRadius, nonCollisionGroupRef, 'PaddleLeftTopStopper');
+    const stopperRightBottom = stopper(2 * xScale * cw - stopperGapX, yScale * ch + stopperGapY, stopperRadius, nonCollisionGroupRef, 'PaddleRightBottomStopper');
+    const stopperRightTop = stopper(2 * xScale * cw - stopperGapX, yScale * ch - stopperGapY, stopperRadius, nonCollisionGroupRef, 'PaddleRightTopStopper');
     const jointLeft = Constraint.create({
         bodyA: hingeLeft,
         bodyB: paddleLeft,
