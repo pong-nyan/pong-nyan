@@ -6,17 +6,16 @@ export const initEngine = (engine: Matter.Engine) => {
   engine.gravity.x = 0;
   engine.gravity.y = 0;
 
-  engine.timing.timeScale = 0.17;
+  engine.timing.timeScale = 1;
   
   // 완전 탄성 충돌, zero friction
   engine.world.bodies.forEach(body => {
-    if (body.label.match('Stopper')) return;
-    body.restitution = 1;
     body.friction = 0;
     body.frictionAir = 0;
+    if (body.label.match(/^Stopper/ || /^Paddle/)) return;
+    body.restitution = 1;
   });
 }
-
 
 export const initWorld = (world: Matter.World, cw: number, ch: number, radius: number, group: number) => {
     Matter.World.add(world, [
