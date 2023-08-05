@@ -17,8 +17,9 @@ type player = {
 export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionGroupRef: number) : player {
     const xScale = 0.333;
 
-    const hingeLeft = hinge(xScale * cw, yScale * ch, 50, 20, 'HingeLeft');
-    const hingeRight = hinge(2 * xScale * cw, yScale * ch, 50, 20, 'HingeRight');
+    // hinge
+    const hingeLeft = hinge(xScale * cw - 20, yScale * ch, 5, 'HingeLeft');
+    const hingeRight = hinge(2 * xScale * cw + 20, yScale * ch, 5, 'HingeRight');
     const paddleLeft = paddle(xScale * cw, yScale * ch, 50, 20, 'PaddleLeft');
     const paddleRight = paddle(2 * xScale * cw, yScale * ch, 50, 20, 'PaddleRight');
 
@@ -71,14 +72,25 @@ export const movePlayer = (engine: Engine, dx: number) => {
     Body.translate(hingeRight, { x: dx, y: 0 });
   };
 
-export const movePaddle = (engine: Engine, rad: number) => {
+export const movePaddleKeyDown = (engine: Engine, rad: number) => {
     const paddleLeft = engine.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
     const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
     if (!paddleLeft || !paddleRight) return;
-    Body.applyForce(paddleLeft, paddleLeft.position, { x: 0, y: -0.01 });
-    Body.applyForce(paddleRight, paddleRight.position, { x: 0, y: -0.01 });
-    setTimeout(() => {
-        Body.setAngle(paddleLeft, -0.3);
-        Body.setAngle(paddleRight, 0.3);
-    }, 100);
+    // setVelocity, applyForce
+    console.log("down");
+    Body.setAngularVelocity(paddleLeft, -2);
+    Body.setAngularVelocity(paddleRight, 2);
+};
+
+export const movePaddleKeyUp = (engine: Engine, rad: number) => {
+  const paddleLeft = engine.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
+  const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
+  if (!paddleLeft || !paddleRight) return;
+  // setVelocity, applyForce
+  console.log("up");
+  Body.setAngularVelocity(paddleLeft, 5);
+  Body.setAngularVelocity(paddleRight, -5);
+  
+  console.log("left sp   ",paddleLeft);
+  console.log("\nright sp ",paddleRight.velocity);
 };

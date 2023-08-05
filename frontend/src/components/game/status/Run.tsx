@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react
 import Matter, { Engine, Render, World, Bodies, Body, Runner, Events } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
-import { movePlayer, movePaddle } from '../../../matterEngine/player';
+import { movePlayer, movePaddleKeyDown, movePaddleKeyUp } from '../../../matterEngine/player';
 import { initPlayer } from '@/matterEngine/player';
 import { ball } from '@/matterEngine/matterJsUnit';
 import { socket } from '@/context/socket';
@@ -14,20 +14,27 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
   const runner = useRef<Runner>();
   const nonCollisionGroupRef = useRef<number>(0);
 
-    const handleKeyDown = (engine: Engine, e: KeyboardEvent) => {
-      const step = 24;
-      switch (e.key) {
-      case 'ArrowLeft':
-        movePlayer(engine, -step);
-        break;
-      case 'ArrowRight':
-        movePlayer(engine, step);
-        break;
-      case ' ':
-        movePaddle(engine, 0.1);
-        break;
-      }
-    };
+  const handleKeyDown = (engine: Engine, e: KeyboardEvent) => {
+    const step = 24;
+    switch (e.key) {
+    case 'ArrowLeft':
+      movePlayer(engine, -step);
+      break;
+    case 'ArrowRight':
+      movePlayer(engine, step);
+      break;
+    case ' ':
+      movePaddleKeyDown(engine, 0.1);
+      break;
+    }
+  };
+  const handleKeyUp = (engine: Engine, e: KeyboardEvent) => {
+    switch (e.key) {
+    case ' ':
+      movePaddleKeyUp(engine, 0);
+      break;
+    }
+  }
   useEffect(() => {
     if (!scene.current) return;
 
@@ -80,9 +87,9 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     });
 
     const me = initPlayer(cw, ch, 0.94, nonCollisionGroupRef.current);
-    const opponent = initPlayer(cw, ch, 0.06, nonCollisionGroupRef.current);
+    // const opponent = initPlayer(cw, ch, 0.06, nonCollisionGroupRef.current);
     World.add(engine.current.world, Object.values(me));
-    World.add(engine.current.world, Object.values(opponent));
+    // World.add(engine.current.world, Object.values(opponent));
   
     // run the engine
     Runner.run(runner.current, engine.current);
@@ -106,6 +113,11 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       onKeyDown={(e) =>  {
         if (!engine.current) return;
         handleKeyDown(engine.current, e)
+        }
+      }
+      onKeyUp={(e) =>  {
+        if (!engine.current) return;
+        handleKeyUp(engine.current, e)
         }
       }
       tabIndex={0} >

@@ -2,7 +2,6 @@ import Matter from 'matter-js';
 import { boundary, ball, sensorBar } from './matterJsUnit';
 
 export const initEngine = (engine: Matter.Engine) => {
-  Matter.use('matter-attractors');
   // word setting, zero gravity
   engine.gravity.x = 0;
   engine.gravity.y = 0;

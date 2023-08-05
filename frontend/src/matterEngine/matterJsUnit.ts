@@ -1,7 +1,7 @@
 import Matter, { Bodies, Body } from 'matter-js';
 
-export const hinge = (x: number, y: number, width: number, height: number, label: string) : Body => {
-    return Bodies.rectangle(x, y, width, height, {
+export const hinge = (x: number, y: number, radius: number, label: string) : Body => {
+    return Bodies.circle(x, y, radius, {
         label,
         isStatic: true,
         render: {
