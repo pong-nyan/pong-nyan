@@ -110,16 +110,19 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
           if (speed > 20) {
             const ratio = 20 / speed;
             Matter.Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
+          } else if (speed < 10) {
+            const ratio = 10 / speed;
+            Matter.Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
           }
         }
-        // else if (body.label.match(/^Paddle/)) {
-        //   const speed = Math.sqrt(body.velocity.x ** 2 + body.velocity.y ** 2);
-        //   if (speed > 10) {
-        //     const ratio = 10 / speed;
-        //     Matter.Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
-        //     Matter.Body.setAngularVelocity(body, body.angularVelocity * ratio);
-        //   }
-        // }
+        else if (body.label.match(/^Paddle/)) {
+          // set limit paddle angular
+          if (body.angularVelocity > 0.42) {
+            Matter.Body.setAngularVelocity(body, 0.42);
+          } else if (body.angularVelocity < -0.42) {
+            Matter.Body.setAngularVelocity(body, -0.42);
+          }
+        }
       })
     })
     const me = initPlayer(cw, ch, 0.9, nonCollisionGroupRef.current, hingeGroupRef.current);

@@ -1,4 +1,4 @@
-import Matter, { Bodies, Body } from 'matter-js';
+import { Bodies, Body } from 'matter-js';
 
 export const hinge = (x: number, y: number, radius: number, label: string, group: number) : Body => {
     return Bodies.circle(x, y, radius, {
