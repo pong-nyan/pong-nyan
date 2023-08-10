@@ -1,6 +1,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { SocketContext } from '../../../context/socket';
+import styles from '../../../styles/Start.module.css';
 
 export default function Start({ setGameStatus }: { setGameStatus: Dispatch<SetStateAction<number>> }) {
   const socket = useContext(SocketContext);
@@ -15,7 +16,7 @@ export default function Start({ setGameStatus }: { setGameStatus: Dispatch<SetSt
   return (
     loading ?
     'Loading' :
-    <div className="button-wrapper" onClick={() => {
+    <div className={styles.buttonWrapper} onClick={() => {
       socket.emit('startGame', { message: 'start' });
       // room 잡혀야만 게임시작
       console.log(socket);
@@ -23,7 +24,7 @@ export default function Start({ setGameStatus }: { setGameStatus: Dispatch<SetSt
       //   setGameStatus(1);
       // }
       }} tabIndex={0}>
-      <button className="start">Start</button>
+      <button className={styles.startButton}>Start</button>
     </div> 
   );
 }

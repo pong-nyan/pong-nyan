@@ -1,0 +1,8 @@
+/* TODO: 이렇게 파일 분리하는게 맞는가? */
+.buttonWrapper {
+    text-align: center;
+}
+
+.startButton {
+    padding: 10px 20px;
+}
