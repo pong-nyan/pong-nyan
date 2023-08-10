@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import styles from '../../styles/Login.module.css'
 
 export default function OauthButton() {
   const router = useRouter();
@@ -11,6 +12,6 @@ export default function OauthButton() {
   };
 
   return (
-    <button onClick={loginWithRedirect}>Login</button>
+    <button onClick={loginWithRedirect} className={styles.loginButton}>Login</button>
   );
 }
