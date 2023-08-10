@@ -21,8 +21,12 @@ export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionG
     const paddleWidth = 0.15 * cw;
     const hingeLeft = hinge(xScale * cw - 20, yScale * ch, 5, 'HingeLeft', hingeGroupRef);
     const hingeRight = hinge(2 * xScale * cw + 20, yScale * ch, 5, 'HingeRight', hingeGroupRef);
-    const paddleLeft = paddle(xScale * cw, yScale * ch, paddleWidth, 20, 'PaddleLeft', hingeGroupRef);
+    const paddleLeft = paddle(xScale * cw * 0.0001, yScale * ch, paddleWidth, 20, 'PaddleLeft', hingeGroupRef);
     const paddleRight = paddle(2 * xScale * cw, yScale * ch, paddleWidth, 20, 'PaddleRight', hingeGroupRef);
+
+    Body.setCentre(paddleLeft, { x: -paddleWidth / 2, y: 0}, true);
+    Body.setCentre(paddleRight, { x: paddleWidth / 2, y: 0}, true);
+    Body.set
 
     // paddle stopper
     const stopperRadius = 50;
@@ -37,7 +41,7 @@ export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionG
         bodyA: hingeLeft,
         bodyB: paddleLeft,
         pointA: { x: 0, y: 0 },
-        pointB: { x: -paddleWidth / 2, y: 0 },
+        pointB: { x: 0, y: 0 },
         stiffness: 1,
         length: 0
       });
@@ -45,7 +49,7 @@ export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionG
         bodyA: hingeRight,
         bodyB: paddleRight,
         pointA: { x: 0, y: 0 },
-        pointB: { x: paddleWidth / 2, y: 0 },
+        pointB: { x: 0, y: 0 },
         stiffness: 1,
         length: 0
       });

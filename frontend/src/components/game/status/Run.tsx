@@ -27,8 +27,8 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       movePlayer(engine, step);
       break;
     case ' ':
-      if (!debouncingFlag) return ;
-      debouncingFlag = false;
+      if (debouncingFlag) return ;
+      debouncingFlag = true;
       movePaddleKeyDown(engine, 0.1);
       break;
     case ',':
@@ -43,7 +43,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     const bar = findTarget(engine.world, 'bar');
     switch (e.key) {
     case ' ':
-      debouncingFlag = true;
+      debouncingFlag = false;
       movePaddleKeyUp(engine, 0);
       break;
     case ',':
