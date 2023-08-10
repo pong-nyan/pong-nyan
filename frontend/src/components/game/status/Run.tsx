@@ -2,7 +2,8 @@ import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react
 import Matter, { Engine, Render, World, Bodies, Body, Runner, Events } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
-import { movePlayer, movePaddleKeyDown, movePaddleKeyUp } from '../../../matterEngine/player';
+import { findTarget } from '../../../matterEngine/matterJsUnit';
+import { movePlayer, movePaddleKeyDown, movePaddleKeyUp, movePaddleKeyRotate } from '../../../matterEngine/player';
 import { initPlayer } from '@/matterEngine/player';
 import { socket } from '@/context/socket';
 
@@ -13,9 +14,11 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
   const runner = useRef<Runner>();
   const nonCollisionGroupRef = useRef<number>(0);
   const hingeGroupRef = useRef<number>(0);
+  let debouncingFlag = false;
 
   const handleKeyDown = (engine: Engine, e: KeyboardEvent) => {
     const step = 24;
+    const bar = findTarget(engine.world, 'bar');
     switch (e.key) {
     case 'ArrowLeft':
       movePlayer(engine, -step);
@@ -24,14 +27,28 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       movePlayer(engine, step);
       break;
     case ' ':
+      if (!debouncingFlag) return ;
+      debouncingFlag = false;
       movePaddleKeyDown(engine, 0.1);
+      break;
+    case ',':
+      movePaddleKeyRotate(bar, step / 100);
+      break;
+    case '.':
+      movePaddleKeyRotate(bar, -step / 100);
       break;
     }
   };
   const handleKeyUp = (engine: Engine, e: KeyboardEvent) => {
+    const bar = findTarget(engine.world, 'bar');
     switch (e.key) {
     case ' ':
+      debouncingFlag = true;
       movePaddleKeyUp(engine, 0);
+      break;
+    case ',':
+    case '.':
+      movePaddleKeyRotate(bar, 0);
       break;
     }
   }

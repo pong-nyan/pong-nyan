@@ -26,3 +26,5 @@ export default function Game(): JSX.Element {
     return (<h1>ERROR!</h1>);
   }
 }
+
+

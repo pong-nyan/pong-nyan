@@ -1,4 +1,4 @@
-import { Bodies, Body } from 'matter-js';
+import { World, Bodies, Body } from 'matter-js';
 
 export const hinge = (x: number, y: number, radius: number, label: string, group: number) : Body => {
     return Bodies.circle(x, y, radius, {
@@ -76,4 +76,8 @@ export const sensorBar = (x: number, y: number, width: number, height: number) :
             visible: true, 
         }
     })
+}
+
+export const findTarget = (world: World, label: string ) => {
+    return world.bodies.find(body => body.label === label) as Matter.Body;
 }

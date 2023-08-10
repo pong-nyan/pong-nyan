@@ -74,6 +74,7 @@ export const movePlayer = (engine: Engine, dx: number) => {
   };
 
 export const movePaddleKeyDown = (engine: Engine, rad: number) => {
+    
     const paddleLeft = engine.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
     const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
     if (!paddleLeft || !paddleRight) return;
@@ -94,4 +95,8 @@ export const movePaddleKeyUp = (engine: Engine, rad: number) => {
   
   console.log("left sp   ", paddleLeft);
   console.log("\nright sp ", paddleRight.velocity);
+};
+
+export const movePaddleKeyRotate = (body: Body, direction: number) => {
+    Body.setAngularVelocity(body, direction);
 };
