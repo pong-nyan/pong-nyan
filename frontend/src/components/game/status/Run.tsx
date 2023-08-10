@@ -18,7 +18,9 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
 
   const handleKeyDown = (engine: Engine, e: KeyboardEvent) => {
     const step = 24;
-    const bar = findTarget(engine.world, 'bar');
+    // TODO: 함수 제안
+    // const bar = findTarget(engine.world, 'bar');
+    // movePaddleKeyRotate(bar, step / 100);
     switch (e.key) {
     case 'ArrowLeft':
       movePlayer(engine, -step);
@@ -31,27 +33,18 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       debouncingFlag = true;
       movePaddleKeyDown(engine, 0.1);
       break;
-    case ',':
-      movePaddleKeyRotate(bar, step / 100);
-      break;
-    case '.':
-      movePaddleKeyRotate(bar, -step / 100);
-      break;
     }
   };
+
   const handleKeyUp = (engine: Engine, e: KeyboardEvent) => {
-    const bar = findTarget(engine.world, 'bar');
     switch (e.key) {
     case ' ':
       debouncingFlag = false;
       movePaddleKeyUp(engine, 0);
       break;
-    case ',':
-    case '.':
-      movePaddleKeyRotate(bar, 0);
-      break;
     }
   }
+
   useEffect(() => {
     if (!scene.current) return;
 

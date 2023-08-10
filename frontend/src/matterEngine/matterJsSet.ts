@@ -19,20 +19,12 @@ export const initEngine = (engine: Matter.Engine) => {
 
 export const initWorld = (world: Matter.World, cw: number, ch: number, radius: number, group: number) => {
     //TODO: remove
-    const width = 100;
-    const height = 30;
-    const bar = paddle(cw / 2, ch / 2, width, height, 'bar', group);
-
-    Body.setCentre(bar, { x: -width / 2, y: 0}, true);
-
-
     Matter.World.add(world, [
       boundary(cw / 2, -10, cw, 20),
       boundary(-10, ch / 2, 20, ch),
       boundary(cw / 2, ch + 10, cw, 20),
       boundary(cw + 10, ch / 2, 20, ch),
       ball(cw / 2, ch / 2, radius, group),
-      bar
     ]);
 }
 
