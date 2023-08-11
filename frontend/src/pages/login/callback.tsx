@@ -1,15 +1,21 @@
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react'
 
-export default function LoginCallback() {
+const LoginCallback = () => {
   const router = useRouter();
-  if (router.isReady === false) return (<div>Loading...</div>);
+  // const [isClient, setIsClient] = useState(false)
+  // useEffect(() => {
+  //   setIsClient(true)
+  // }, [])
   const code = router.query.code;
-  const result = axios.get(`${process.env.NEXT_PUBLIC_API_URL}/login/token?code=${code}`, { withCredentials: true });
-  console.log(result);
+  axios.get(`${process.env.NEXT_PUBLIC_API_URL}/login/token?code=${code}`, { withCredentials: true });
+
   return (
     <div>
-            Login Callback
+      Login Callback
     </div>
   );
 }
+
+export default LoginCallback;

@@ -25,6 +25,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use(server);
 
+  app.setGlobalPrefix('api');
   await app.listen(4242);
 
   console.log(`🚀 Server ready at: ${ await app.getUrl()}`);
