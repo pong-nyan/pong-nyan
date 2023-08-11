@@ -1,6 +1,13 @@
 /* TODO: 이렇게 파일 분리하는게 맞는가? */
 .buttonWrapper {
-    text-align: center;
+    display: flex;
+    /* 수직 배열 */
+    flex-direction: column;
+    /* 수평 정렬 */
+    justify-content: center;
+    /* 수직 정렬 */
+    align-items: center;
+    height: 100vh;
 }
 
 .startButton {
