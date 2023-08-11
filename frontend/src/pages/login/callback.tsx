@@ -9,7 +9,18 @@ const LoginCallback = () => {
   //   setIsClient(true)
   // }, [])
   const code = router.query.code;
-  axios.get(`${process.env.NEXT_PUBLIC_API_URL}/login/token?code=${code}`, { withCredentials: true });
+
+  useEffect(() => {
+    if (code) {
+      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/login/token?code=${code}`, { withCredentials: true })
+      .then(() => {
+        router.replace('/');
+      })
+      .catch((error) => {
+        console.error('Login Redirect error:', error);
+      });
+    }
+  }, [code]);
 
   return (
     <div>
