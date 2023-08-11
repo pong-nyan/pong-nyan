@@ -5,10 +5,9 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm ci
-
-COPY . .
+RUN npm install
+#RUN npm cache clean --force
 
 EXPOSE 3000
 
-CMD [ "npm", "run", "dev" ]
+ENTRYPOINT [ "npm", "run", "dev" ]
