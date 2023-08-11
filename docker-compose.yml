@@ -18,6 +18,18 @@ services:
       - ./frontend/public:/usr/src/app/public
       - ./secrets:/usr/src/secrets
 
+  nginx:
+    container_name: nginx
+    image: nginx:stable-alpine3.17
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./secrets:/etc/ssl/
+    tty: true
+    depends_on:
+      - nextjs
+
   nestjs:
     container_name: PN-backend
     build:
