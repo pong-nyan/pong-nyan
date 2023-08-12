@@ -14,22 +14,26 @@ export class AuthController {
         return 'test';
     }
 
-    @Post('signup')
-    async signUp(@Req() request: Request, @Res() response: Response) {
-        //  get access token from cookie
-        const oauthToken = request.cookies['oauth-token'];
-        if (!oauthToken) return response.status(401).send('No token');
-        const accessToken = JSON.parse(JSON.stringify(oauthToken)).access_token;
-
-        //  get user info from 42 api
-        const ftInfo = await this.authService.signUp(accessToken);
-        const { id: intraId, login: intraNickname } = ftInfo.data;
-
+    @Post('user-before-signup')
+    async userBeforeSignUp(@Req() request: Request, @Res() response: Response) {
+        const { intraId, intraNickname } = await this.authService.getUserInfo(request);
         //  check if user already exists
         //  if exist -> signin
         //  if not exist -> signup
         const user = await this.authService.findUser(intraId);
         if (!user) return response.status(200).send('goto signup');
         return response.status(200).send('goto signin');
+    }
+
+    @Post('signup')
+    async signUp(@Req() request: Request, @Res() response: Response) {
+        console.log('WTF');
+        const userInfo = await this.authService.getUserInfo(request);
+        console.log('userInfo', userInfo);
+        if (!userInfo) return response.status(401).send('unauthorized');
+        const { intraId, intraNickname } = userInfo;
+        const { nickname, avatar, email } = request.body;
+        await this.authService.createUser(intraId, intraNickname, nickname, avatar, 0, email);
+        return response.status(200).send('signup success');
     }
 }

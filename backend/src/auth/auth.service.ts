@@ -19,7 +19,7 @@ export class AuthService {
             });
         return ret.data;
     }
-    async signUp(accessToken: string) {
+    async getFtUserInfo(accessToken: string) {
         //  get request user info
         const ret = await axios.get('https://api.intra.42.fr/v2/me', {
             headers: {
@@ -28,16 +28,31 @@ export class AuthService {
         });
         return ret;
     }
+
+    // get access token from cookie
+    async getUserInfo(request) {
+        //  get access token from cookie
+        const oauthToken = request.cookies['oauth-token'];
+        if (!oauthToken) return null;
+        const accessToken = JSON.parse(JSON.stringify(oauthToken)).access_token;
+
+        //  get user info from 42 api
+        const ftUserInfo = await this.getFtUserInfo(accessToken);
+        const { id: intraId, login: intraNickname } = ftUserInfo.data;
+        return { intraId, intraNickname };
+    }
+
     async findUser(intraId: number) {
         return await this.userRepository.findOne({ where: { intraId: intraId } });
     }
-    async createUser(intraId: number, intraNickname: string, nickname: string, avatar: string, rankScore: number) {
+    async createUser(intraId: number, intraNickname: string, nickname: string, avatar: string, rankScore: number, email: string) {
         const user = new User();
         user.intraId = intraId;
         user.intraNickname = intraNickname;
         user.nickname = nickname;
         user.avatar = avatar;
         user.rankScore = rankScore;
+        user.email = email;
         return await this.userRepository.save(user);
     }
 }

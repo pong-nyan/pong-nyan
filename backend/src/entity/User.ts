@@ -20,6 +20,9 @@ export class User {
     @Column()
     rankScore: number;
 
+    @Column()
+    email: string;
+
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     createdAt: Date;
 
