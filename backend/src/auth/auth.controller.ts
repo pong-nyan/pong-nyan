@@ -14,9 +14,12 @@ export class AuthController {
     }
 
     @Post('sign-up')
-    async signUp(@Headers('oauth-token') oauthToken: string | undefined,
-                 @Res({passthrough: true}) response: Response) {
-      if (!oauthToken)
-        return response.status();
+    async signUp(@Headers('oauth-token') oauthToken: string | undefined, @Res() response: Response) {
+        if (!oauthToken) return response.status(401).send('No token');
+        const result = await this.authService.signUp(oauthToken);
+        console.log(result);
+        console.log(oauthToken);
+        return result;
     }
+
 }

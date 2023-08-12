@@ -15,4 +15,14 @@ export class AuthService {
             });
         return ret.data;
     }
+    async signUp(oauthToken: string) {
+        //  get request user info
+        const ret = await axios.get('https://api.intra.42.fr/v2/me', {
+            headers: {
+                Authorization: `Bearer ${oauthToken}`
+            }
+        });
+        console.log('!!', ret.data);
+        return ret;
+    }
 }
