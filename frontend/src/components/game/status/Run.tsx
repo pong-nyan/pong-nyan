@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react';
-import Matter, { Engine, Render, World, Bodies, Body, Runner, Events } from 'matter-js';
+import Matter, { Engine, Render, World, Body, Runner, Events } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
 import { findTarget } from '../../../matterEngine/matterJsUnit';
@@ -43,7 +43,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       movePaddleKeyUp(engine, 0);
       break;
     }
-  }
+  };
 
   useEffect(() => {
     if (!scene.current) return;
@@ -75,7 +75,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     initEngine(engine.current);
 
     // start moving ball
-    Matter.Body.setVelocity(engine.current.world.bodies.find(body => body.label === 'Ball') as Body , { x: 10 , y: 12 });
+    Matter.Body.setVelocity(engine.current.world.bodies.find(body => body.label === 'Ball') as Body, { x: 10, y: 12 });
 
     //  Sensor 추가
     sensorAdd(engine.current.world, cw, ch); 
@@ -86,16 +86,16 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
         // Ball 이 센서에 충돌하면 게임 끝
         if (pair.isSensor && (pair.bodyA.label === 'Ball' || pair.bodyB.label === 'Ball')) {
           // setGameStatus(2);
-          console.log('game over')
+          console.log('game over');
         }
       });
       const bodies = e.source.world.bodies;
       bodies.forEach(body => {
         if (body.label === 'Ball') {
           socket.emit('ball', [ body.position, body.velocity ]);
-          }
-        })
-      }
+        }
+      });
+    }
     );
     Events.on(engine.current, 'collisionEnd', (e) => {
       const pairs = e.pairs;
@@ -109,7 +109,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
           Matter.Body.setVelocity(pair.bodyB, { x: 0, y: 0 });
           Matter.Body.setAngularVelocity(pair.bodyB, 0);
         }
-      })
+      });
     });
     Events.on(engine.current, 'beforeUpdate', (e) => {
       // limit Balls max speed
@@ -133,8 +133,8 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
             Matter.Body.setAngularVelocity(body, -0.42);
           }
         }
-      })
-    })
+      });
+    });
     const me = initPlayer(cw, ch, 0.9, nonCollisionGroupRef.current, hingeGroupRef.current);
     // const opponent = initPlayer(cw, ch, 0.06, nonCollisionGroupRef.current);
     World.add(engine.current.world, Object.values(me));
@@ -159,13 +159,13 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       className={styles.sceneWrapper}
       onKeyDown={(e) =>  {
         if (!engine.current) return;
-        handleKeyDown(engine.current, e)
-        }
+        handleKeyDown(engine.current, e);
+      }
       }
       onKeyUp={(e) =>  {
         if (!engine.current) return;
-        handleKeyUp(engine.current, e)
-        }
+        handleKeyUp(engine.current, e);
+      }
       }
       tabIndex={0} >
       <div ref={scene} className={styles.scene}></div>
