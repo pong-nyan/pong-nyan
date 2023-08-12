@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
-import styles from '../../styles/Login.module.css'
+import styles from '../../styles/Login.module.css';
 
-export default function OauthButton() {
+export default function SignInButton() {
   const router = useRouter();
   const loginWithRedirect = () => {
     const client_id = process.env.NEXT_PUBLIC_CLIENT_ID;
@@ -12,6 +12,6 @@ export default function OauthButton() {
   };
 
   return (
-    <button onClick={loginWithRedirect} className={styles.loginButton}>Login</button>
+    <button onClick={loginWithRedirect} className={styles.loginButton} >Sign In</button>
   );
 }

@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Query, Res, Headers} from '@nestjs/common';
+import { Controller, Get, Post, Query, Res, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -13,15 +13,13 @@ export class AuthController {
         return 'test';
     }
 
-    @Post('sign-up')
-    async signUp(@Headers('oauth-token') oauthToken: string | undefined, @Res() response: Response) {
+    @Post('signup')
+    async signUp(@Req() request: Request, @Res() response: Response) {
+        const oauthToken = request.cookies['oauth-token'];
         if (!oauthToken) return response.status(401).send('No token');
-        const decodeToken = decodeURIComponent(oauthToken);
-        const paredToken = decodeToken.substring(2);
-        const accessToken = JSON.parse(paredToken).access_token;
+        const accessToken = JSON.parse(JSON.stringify(oauthToken)).access_token;
         const ftInfo = await this.authService.signUp(accessToken);
         const { id, login } = ftInfo.data;
-        // TODO:chcek if (!user exist in db) then create user
         return response.send({ id, login });
     }
 }

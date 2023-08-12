@@ -1,12 +1,14 @@
-import OauthButton from './OauthButton'
+import SignInButton from './SignInButton'
+import SignUpButton from './SignUpButton'
 import styles from '../../styles/Login.module.css'
+import { Sign } from 'crypto'
 
 export default function Login() {
   return (
     <>
       <div className={styles.loginContainer}>
-        <h1>Login</h1>
-        <OauthButton />
+        <SignInButton />
+        <SignUpButton />
       </div>
     </>
   )
