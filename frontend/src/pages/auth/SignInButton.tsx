@@ -12,6 +12,6 @@ export default function SignInButton() {
   };
 
   return (
-    <button onClick={loginWithRedirect} className={styles.loginButton} >Sign In</button>
+    <button onClick={loginWithRedirect} className={styles.signInButton} >Sign In</button>
   );
 }
