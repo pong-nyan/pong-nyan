@@ -1,0 +1,17 @@
+.sceneWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* 상하좌우 반전  */
+    /* rotate: 180deg;
+    transform: scaleX(-1); */
+
+}
+
+.scene {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    max-width: 480px;
+}

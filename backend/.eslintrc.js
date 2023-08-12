@@ -30,5 +30,7 @@ module.exports = {
     "no-multiple-empty-lines": "warn",
     "no-multi-spaces": "warn",
     "no-useless-escape": "warn",
+    "space-infix-ops": "warn",
+    "comma-spacing": ["warn", { "before": false, "after": true }],
   },
 };

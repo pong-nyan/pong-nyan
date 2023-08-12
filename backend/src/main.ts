@@ -5,17 +5,17 @@ import * as fs from 'fs';
 import * as express from 'express';
 
 async function bootstrap() {
-  const httpsOptions = {
-    key: fs.readFileSync('../secrets/localhost.key'),
-    cert: fs.readFileSync('../secrets/localhost.crt'),
-  };
+  // const httpsOptions = {
+  //   key: fs.readFileSync('../secrets/localhost.key'),
+  //   cert: fs.readFileSync('../secrets/localhost.crt'),
+  // };
 
   const server = express();
-  const app = await NestFactory.create(AppModule, { httpsOptions });
+  const app = await NestFactory.create(AppModule);
   //  TODO : port should be in config
   app.enableCors(
     {
-      'origin': '*',
+      'origin': ['http://localhost:3000', 'https://localhost'],
       'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
       'preflightContinue': false,
       'optionsSuccessStatus': 204,
@@ -25,9 +25,10 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use(server);
 
+  app.setGlobalPrefix('api');
   await app.listen(4242);
 
-  console.log('🚀 Server ready at: https://localhost:4242');
+  console.log(`🚀 Server ready at: ${ await app.getUrl()}`);
 }
 
 bootstrap();

@@ -4,11 +4,11 @@ FROM node:18-alpine
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+COPY tsconfig.json ./
 
-RUN npm ci
-
-COPY . .
+RUN npm install
+#RUN npm cache clean --force
 
 EXPOSE 4242
 
-CMD [ "npm", "run", "dev", "echo","🚀 server is running 🚀"]
+ENTRYPOINT [ "npm", "run", "dev"]

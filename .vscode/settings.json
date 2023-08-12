@@ -2,7 +2,8 @@
     "conventionalCommits.scopes": [
         "frontend",
         "backend",
-        "docker"
+        "docker",
+        "game"
     ],
     "editor.formatOnSave": true,
     "eslint.codeActionsOnSave.rules": {
