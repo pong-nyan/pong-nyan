@@ -3,7 +3,8 @@
         "frontend",
         "backend",
         "docker",
-        "game"
+        "game",
+        "login"
     ],
     "editor.formatOnSave": true,
     "eslint.codeActionsOnSave.rules": {
