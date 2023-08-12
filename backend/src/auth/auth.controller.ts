@@ -17,11 +17,9 @@ export class AuthController {
     async signUp(@Headers('oauth-token') oauthToken: string | undefined, @Res() response: Response) {
         if (!oauthToken) return response.status(401).send('No token');
         const decodeToken = decodeURIComponent(oauthToken);
-        const oauthTokenJSON = JSON.parse(JSON.stringify(decodeToken).substring(2, decodeToken.length - 1));
-        console.log('oauthTokenJSON', oauthTokenJSON);
-        // const result = await this.authService.signUp(accessToken);
-        // console.log(result);
-        return 'hello';
+        const paredToken = decodeToken.substring(2);
+        const accessToken = JSON.parse(paredToken).access_token;
+        const result = await this.authService.signUp(accessToken);
+        return response.send(result.data);
     }
-
 }

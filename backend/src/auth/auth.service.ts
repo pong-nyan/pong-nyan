@@ -22,7 +22,6 @@ export class AuthService {
                 Authorization: `Bearer ${accessToken}`
             }
         });
-        console.log('!!', ret.data);
         return ret;
     }
 }
