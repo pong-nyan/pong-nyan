@@ -12,7 +12,7 @@ const LoginCallback = () => {
 
   useEffect(() => {
     if (code) {
-      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/login/token?code=${code}`, { withCredentials: true })
+      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/token?code=${code}`, { withCredentials: true })
       .then(() => {
         router.replace('/');
       })
