@@ -19,7 +19,9 @@ export class AuthController {
         const decodeToken = decodeURIComponent(oauthToken);
         const paredToken = decodeToken.substring(2);
         const accessToken = JSON.parse(paredToken).access_token;
-        const result = await this.authService.signUp(accessToken);
-        return response.send(result.data);
+        const ftInfo = await this.authService.signUp(accessToken);
+        const { id, login } = ftInfo.data;
+        // TODO:chcek if (!user exist in db) then create user
+        return response.send({ id, login });
     }
 }
