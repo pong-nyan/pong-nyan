@@ -16,10 +16,12 @@ export class AuthController {
     @Post('sign-up')
     async signUp(@Headers('oauth-token') oauthToken: string | undefined, @Res() response: Response) {
         if (!oauthToken) return response.status(401).send('No token');
-        const result = await this.authService.signUp(oauthToken);
-        console.log(result);
-        console.log(oauthToken);
-        return result;
+        const decodeToken = decodeURIComponent(oauthToken);
+        const oauthTokenJSON = JSON.parse(JSON.stringify(decodeToken).substring(2, decodeToken.length - 1));
+        console.log('oauthTokenJSON', oauthTokenJSON);
+        // const result = await this.authService.signUp(accessToken);
+        // console.log(result);
+        return 'hello';
     }
 
 }
