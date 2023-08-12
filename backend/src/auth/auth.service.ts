@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import { User } from '../entity/User';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
+    constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) { }
     async getToken(code: string) {
         //  post request oauth2 token
         const ret = await axios.post('https://api.intra.42.fr/oauth/token',
@@ -23,5 +27,17 @@ export class AuthService {
             }
         });
         return ret;
+    }
+    async findUser(intraId: number) {
+        return await this.userRepository.findOne({ where: { intraId: intraId } });
+    }
+    async createUser(intraId: number, intraNickname: string, nickname: string, avatar: string, rankScore: number) {
+        const user = new User();
+        user.intraId = intraId;
+        user.intraNickname = intraNickname;
+        user.nickname = nickname;
+        user.avatar = avatar;
+        user.rankScore = rankScore;
+        return await this.userRepository.save(user);
     }
 }

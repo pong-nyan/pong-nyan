@@ -4,19 +4,16 @@ import axios from 'axios';
 
 const SignUpButton = () => {
   const router = useRouter();
-  const signUp = () => {
-    axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
-    }).then(res => {
-      if (res.status === 201) {
-        alert('Sign up successful');
-        // TODO: redirect to user into settings page
-      } else {
-        alert('you are already signed up');
-        router.push('/login');
+  const signUp = async () => {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`);
+    if (res.status === 200) {
+      if (res.data === 'goto signup') {
+        router.push('/auth/signup');
+      } else if (res.data === 'goto signin') {
+        alert('You have already signed up. Please sign in.');
+        router.push('/auth/signin');
       }
-    }).catch(err => {
-      console.error(err);
-    });
+    }
   };
   return (
     <button onClick={signUp} className={styles.signUpButton}>Sign Up</button>
