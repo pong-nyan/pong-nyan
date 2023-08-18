@@ -5,7 +5,7 @@ import { Google2faService } from './google2fa.service';
 import { AuthService } from 'src/auth/auth.service';
 
 @Module({
-    imports: [],
+    imports: [AuthModule],
     controllers: [Google2faController],
     providers: [Google2faService]
 })

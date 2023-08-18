@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Query, Res, Req, ConsoleLogger, HttpException, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AuthController {
@@ -28,7 +29,6 @@ export class AuthController {
         if (!userInfo) return response.status(HttpStatus.UNAUTHORIZED).send('unauthorized');
         const { intraId, intraNickname } = userInfo;
         const { nickname, avatar, email } = request.body;
-        //TODO: qrcode register
         const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar, 0, email);
         if (!result) return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send('signup failed');
         return response.status(HttpStatus.CREATED).send('signup success');
@@ -43,6 +43,8 @@ export class AuthController {
         if (!user) return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send('signin failed');
 
         const jwt = await this.authService.createJwt(intraId, intraNickname, user.nickname);
+        // HERE 2FA
+
         response.cookie('pn-jwt', jwt, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
         return response.status(HttpStatus.ACCEPTED).send('signin success');
     }

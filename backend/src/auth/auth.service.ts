@@ -77,4 +77,7 @@ export class AuthService {
         return await this.jwtService.signAsync(payload);
     }
 
+    async updateUser2faSecret(intraId: number, secret: string) {
+        return await this.userRepository.update({intraId: intraId}, {google2faSecret: secret});
+    }
 }
