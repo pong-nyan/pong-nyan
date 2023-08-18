@@ -4,6 +4,7 @@ import axios from 'axios';
 
 const SignUpButton = () => {
   const router = useRouter();
+  
   const signUp = async () => {
     const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`);
     if (res.status === 200) {
@@ -15,8 +16,16 @@ const SignUpButton = () => {
       }
     }
   };
+
+  const redirectOauth = () => {
+    const client_id = process.env.NEXT_PUBLIC_CLIENT_ID;
+    const redirect_uri = process.env.NEXT_PUBLIC_REDIRECT_URI;
+    router.push(
+      `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code`
+    );
+  };
   return (
-    <button onClick={signUp} className={styles.signUpButton}>Sign Up</button>
+    <button onClick={redirectOauth} className={styles.signUpButton}>Sign Up</button>
   );
 };
 

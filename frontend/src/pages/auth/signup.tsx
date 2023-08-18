@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 
 const SignUp = () => {
   // create a form with nickname, image, email
   // with react, and use onChange to set the state
   // and onSubmit to send the data to the backend
+  const router = useRouter();
   const [nickname, setNickname] = useState('');
   const [avatar, setAvatar] = useState('');
   const [email, setEmail] = useState('');
@@ -15,6 +17,14 @@ const SignUp = () => {
       nickname,
       avatar,
       email,
+    }).then((res) => {
+      if (res.data === 'signup success') {
+        router.push('/auth/signin');
+      } else if (res.data === 'signup failed') {
+        alert('Sign Up failed. Please try again.');
+      }
+    }).catch((error) => {
+      console.error('Sign Up error:', error);
     });
   };
 

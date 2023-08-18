@@ -30,7 +30,7 @@ export class AuthService {
     }
 
     // get access token from cookie
-    async getUserInfo(request) {
+    async getUserInfoFromFt(request) {
         //  get access token from cookie
         const oauthToken = request.cookies['oauth-token'];
         if (!oauthToken) return null;
@@ -42,9 +42,18 @@ export class AuthService {
         return { intraId, intraNickname };
     }
 
+    async getUserInfoFromOurDB(intraId: number) {
+        return await this.userRepository.findOne({ where: { intraId: intraId } });
+    }
+
     async findUser(intraId: number) {
         return await this.userRepository.findOne({ where: { intraId: intraId } });
     }
+
+    /**
+     * @warning this function also updates user info
+     * @warning should be called after check if user exists
+    */
     async createUser(intraId: number, intraNickname: string, nickname: string, avatar: string, rankScore: number, email: string) {
         const user = new User();
         user.intraId = intraId;
