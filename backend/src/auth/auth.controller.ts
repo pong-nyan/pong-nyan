@@ -29,6 +29,7 @@ export class AuthController {
         if (!userInfo) return response.status(HttpStatus.UNAUTHORIZED).send('unauthorized');
         const { intraId, intraNickname } = userInfo;
         const { nickname, avatar, email } = request.body;
+        //TODO: qrcode register
         const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar, 0, email);
         if (!result) return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send('signup failed');
         return response.status(HttpStatus.CREATED).send('signup success');
