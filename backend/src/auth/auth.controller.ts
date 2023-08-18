@@ -16,30 +16,25 @@ export class AuthController {
         //  getUserInfoFromFt function change
         const ftUser = await this.authService.getUserInfoFromToken(result.access_token);
         if (!ftUser) throw new HttpException('unauthorized', 401);
-        const user = await this.authService.getUserInfoFromOurDB(ftUser.intraId);
+        const user = await this.authService.findUser(ftUser.intraId);
         if (!user) return 'goto signup';
         return 'goto signin';
     }
 
-    @Post('user-before-signup')
-    async userBeforeSignUp(@Req() request: Request, @Res() response: Response) {
-        const { intraId, intraNickname } = await this.authService.getUserInfoFromFt(request);
-        //  check if user already exists
-        //  if exist -> signin
-        //  if not exist -> signup
-        const user = await this.authService.findUser(intraId);
-        if (!user) return response.status(200).send('goto signup');
-        return response.status(200).send('goto signin');
-    }
-
     @Post('signup')
     async signUp(@Req() request: Request, @Res() response: Response) {
-        const userInfo = await this.authService.getUserInfoFromFt(request);
+        //  user exist check from my database
+        const userInfo = await this.authService.getUserInfoFromCookie(request);
         if (!userInfo) return response.status(401).send('unauthorized');
         const { intraId, intraNickname } = userInfo;
         const { nickname, avatar, email } = request.body;
         const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar, 0, email);
         if (!result) return response.status(500).send('signup failed');
         return response.status(200).send('signup success');
+    }
+    @GET('signin')
+    async signIn(@Req() request: Request, @Res() response: Response) {
+        //  use JWT
+
     }
 }

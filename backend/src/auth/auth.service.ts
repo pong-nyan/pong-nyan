@@ -30,7 +30,7 @@ export class AuthService {
     }
 
     // get access token from cookie
-    async getUserInfoFromFt(request) {
+    async getUserInfoFromCookie(request) {
         //  get access token from cookie
         const oauthToken = request.cookies['oauth-token'];
         if (!oauthToken) return null;
