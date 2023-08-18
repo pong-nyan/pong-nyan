@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Res, Req, ConsoleLogger } from '@nestjs/common';
+import { Controller, Get, Post, Query, Res, Req, ConsoleLogger, HttpException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 
@@ -13,8 +13,9 @@ export class AuthController {
         response.cookie('oauth-token', result, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
         // chceck if user already exists
         // TODO: getUserInfo MUST call OUR DATABASE to check if user exists
-        const ftUser = await this.authService.getUserInfoFromFt(request);
-        if (!ftUser) throw new Error('no ft user');
+        //  getUserInfoFromFt function change
+        const ftUser = await this.authService.getUserInfoFromToken(result.access_token);
+        if (!ftUser) throw new HttpException('unauthorized', 401);
         const user = await this.authService.getUserInfoFromOurDB(ftUser.intraId);
         if (!user) return 'goto signup';
         return 'goto signin';
