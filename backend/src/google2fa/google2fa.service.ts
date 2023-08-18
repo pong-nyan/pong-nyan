@@ -7,9 +7,6 @@ import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class Google2faService {
-    constructor(
-        private readonly authService: AuthService,
-    ) {}
     async generateTwoFactorAuthenticationSecret(nickname: string) {
 
     // otplib를 설치한 후, 해당 라이브러리를 통해 시크릿 키 생성

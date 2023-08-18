@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Query, Res, Req, ConsoleLogger, HttpException, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
-import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AuthController {
