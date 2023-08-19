@@ -10,6 +10,7 @@ import { GameService } from './game.service';
 
 @WebSocketGateway({
   cors: { origin: '*' },
+  path: '/socket/',
 })
 
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -34,6 +35,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('startGame')
   handleStartGame(client: Socket, data: any) {
+    console.log('startGame');
     const roomName = this.service.match(client);
     if (!roomName)
       this.server.to(client.id).emit('loading');
