@@ -28,5 +28,5 @@ dclean:
 
 #all clean
 aclean:
-	make dclean
 	rm -rf ./database/data
+	make dclean
