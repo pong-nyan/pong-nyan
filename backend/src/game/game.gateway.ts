@@ -4,6 +4,7 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
+  AbstractWsAdapter,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
@@ -36,11 +37,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('startGame')
   handleStartGame(client: Socket, data: any) {
     console.log('startGame');
-    const roomName = this.service.match(client);
+    const ret = this.service.match(client);
+    const roomName = ret?.roomName;
+    const p1 = ret?.p1;
     if (!roomName)
       this.server.to(client.id).emit('loading');
-    console.log(roomName);
-    this.server.to(roomName).emit('start');
+    this.server.to(roomName).emit('start', p1);
   }
 
   @SubscribeMessage('gameEvent')

@@ -1,6 +1,6 @@
 import { Constraint, Body, Engine } from 'matter-js';
 import { stopper, hinge, paddle } from './matterJsUnit';
-import { Colision, CollisionEvent, GameEvent, KeyDownEvent, KeyUpEvent, player } from './type';
+import { Colision, CollisionEvent, GameEvent, KeyDownEvent, KeyUpEvent, player } from '../type';
 import { socket } from '@/context/socket';
 
 export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionGroupRef: number, hingeGroupRef: number) : player {
@@ -15,7 +15,6 @@ export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionG
 
   Body.setCentre(paddleLeft, { x: -paddleWidth / 2, y: 0}, true);
   Body.setCentre(paddleRight, { x: paddleWidth / 2, y: 0}, true);
-  Body.set;
 
   // paddle stopper
   const stopperRadius = 50;

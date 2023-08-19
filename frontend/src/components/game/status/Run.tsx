@@ -2,12 +2,12 @@ import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react
 import Matter, { Engine, Render, World, Body, Runner, Events } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
-import { findTarget } from '../../../matterEngine/matterJsUnit';
-import { movePlayer, movePaddleKeyDown, movePaddleKeyUp, movePaddleKeyRotate, notifyPlayer, notifyGameEvent } from '../../../matterEngine/player';
+import { movePlayer, movePaddleKeyDown, movePaddleKeyUp } from '../../../matterEngine/player';
 import { initPlayer } from '@/matterEngine/player';
 import { socket } from '@/context/socket';
+import { PlayerNumber } from '../../../type';
 
-export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStateAction<number>> }) {
+export default function Run({ setGameStatus, playerNumber }: { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber }) {
   const scene = useRef<HTMLDivElement>(null);
   const engine = useRef<Engine>();
   const render = useRef<Render>();
@@ -41,7 +41,6 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     case ' ':
       debouncingFlag = false;
       movePaddleKeyUp(engine, 0);
-      notifyGameEvent({type:'keyUp', data:'keyUp'});
 
       break;
     }
@@ -50,6 +49,7 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
   useEffect(() => {
     if (!scene.current) return;
 
+    console.log('PlayerNumber: ', playerNumber);
     const cw = scene.current.clientWidth;
     const ch = scene.current.clientHeight;
 

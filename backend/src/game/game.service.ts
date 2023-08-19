@@ -12,9 +12,11 @@ export class GameService {
             const player1 = this.matchingQueue.shift();
             const player2 = this.matchingQueue.shift();
             const roomName = player1.id + player2.id;
+            console.log('roomName:', roomName);
             player1.join(roomName);
             player2.join(roomName);
-            return roomName;
+            const p1 = player1.id;
+            return { roomName, p1 };
         }
         return undefined;
     }
