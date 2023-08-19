@@ -18,6 +18,10 @@ const QR = () => {
   return (
     <>
       {imageUrl ? <Image src={imageUrl} alt='qrcode' width='300' height='300' /> : <p>Loading...</p>}
+      <form action={`${process.env.NEXT_PUBLIC_API_URL}/google2fa/enable`} method='POST'>
+        <input type='text' name='code' placeholder='Enter code' />
+        <button type='submit'>Submit</button>
+      </form>
     </>
   );
 };

@@ -21,4 +21,17 @@ export class Google2faController {
 
     return await this.google2faService.pipeQrCodeStream(res, otpAuthUrl);
   }
+
+  @Post('enable')
+  async enable(@Req() request: Request, @Body() body: { code: string }) {
+    console.log('enable code ', body.code);
+    const { intraId } = await this.authService.getUserInfoFromCookie(request);
+    const user = await this.authService.getUserInfoFromOurDB(intraId);
+    const isCodeValid = await this.google2faService.isTwoFactorAuthenticationCodeValid(body.code, user);
+    if (isCodeValid) {
+      await this.authService.enableTwoFactorAuthentication(user);
+      return 'success';
+    }
+    return 'fail';
+  }
 }

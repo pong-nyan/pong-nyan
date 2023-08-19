@@ -24,11 +24,18 @@ export class Google2faService {
             otpAuthUrl
         };
     }
-    // qrcode의 toFileStream()을 사용해 QR 이미지를 클라이언트에게 응답
 
+    // qrcode의 toFileStream()을 사용해 QR 이미지를 클라이언트에게 응답
     public async pipeQrCodeStream(stream: Response, otpAuthUrl: string): Promise<void> {
         return toFileStream(stream, otpAuthUrl);
     }
-    // 이때, Express의 Response 객체를 받아옴으로써 클라이언트에게 응답할 수 있다.
+    // isTwoFactorAuthenticationCodeValid()를 통해 사용자가 입력한 인증 코드가 유효한지 확인
+    public async isTwoFactorAuthenticationCodeValid(code: string, user: User): Promise<boolean> {
+        return authenticator.verify({ token: code, secret: user.google2faSecret });
+    }
 
+    // enableTwoFactorAuthentication()를 통해 사용자의 2FA 활성화 여부를 true로 설정
+    public async enableTwoFactorAuthentication(user: User): Promise<void> {
+        await this.authService.updateUser2faEnable(user.intraId, true);
+    }
 }
