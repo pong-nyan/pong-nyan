@@ -19,7 +19,7 @@ const SignUp = () => {
       email,
     }).then((res) => {
       if (res.data === 'signup success') {
-        router.push('/auth/signin');
+        router.push('/auth/qr');
       } else if (res.data === 'signup failed') {
         alert('Sign Up failed. Please try again.');
       }

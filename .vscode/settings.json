@@ -1,26 +1,27 @@
 {
-    "conventionalCommits.scopes": [
-        "frontend",
-        "backend",
-        "docker",
-        "game",
-        "login"
-    ],
-    "editor.formatOnSave": true,
-    "eslint.codeActionsOnSave.rules": {
-        "source.fixAll": true
-    },
-    "eslint.format.enable": true,
-    "[javascript]": {
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-    },
-    "[javascriptreact]": {
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-    },
-    "[typescript]": {
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-    },
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-    }
+  "conventionalCommits.scopes": [
+    "frontend",
+    "backend",
+    "docker",
+    "game",
+    "login",
+    "2FA"
+  ],
+  "editor.formatOnSave": true,
+  "eslint.codeActionsOnSave.rules": {
+    "source.fixAll": true
+  },
+  "eslint.format.enable": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  }
 }

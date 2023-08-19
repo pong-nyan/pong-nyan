@@ -23,6 +23,12 @@ export class User {
     @Column()
     email: string;
 
+    @Column({ nullable: true })
+    google2faSecret: string;
+
+    @Column({ default: false })
+    google2faEnable: boolean;
+
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     createdAt: Date;
 
