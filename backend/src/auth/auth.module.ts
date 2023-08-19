@@ -3,7 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entity/User';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { Google2faController } from './google2fa.controller';
 import { Google2faService } from './google2fa.service';
 
@@ -16,6 +16,6 @@ import { Google2faService } from './google2fa.service';
     })
   ],
   controllers: [AuthController, Google2faController],
-  providers: [AuthService, JwtService, Google2faService]
+  providers: [AuthService, Google2faService]
 })
 export class AuthModule {}

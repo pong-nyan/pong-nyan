@@ -7,7 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './datasource';
 
 @Module({
-  imports: [GameModule, ConfigModule.forRoot(), AuthModule, DatabaseModule],
+  imports: [ConfigModule.forRoot(), GameModule, AuthModule, DatabaseModule],
   controllers: [AppController],
   providers: [AppService],
 })
