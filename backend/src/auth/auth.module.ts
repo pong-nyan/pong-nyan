@@ -4,6 +4,8 @@ import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entity/User';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { Google2faController } from './google2fa.controller';
+import { Google2faService } from './google2fa.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ User ]),
@@ -13,7 +15,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
       signOptions: { expiresIn: '1d'}
     })
   ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtService]
+  controllers: [AuthController, Google2faController],
+  providers: [AuthService, JwtService, Google2faService]
 })
 export class AuthModule {}

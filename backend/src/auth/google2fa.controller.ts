@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { Google2faService } from './google2fa.service';
 import { AuthService } from 'src/auth/auth.service';
@@ -11,7 +11,7 @@ export class Google2faController {
     private readonly authService: AuthService,
   ) {}
 
-  @Get('qr')
+  @Post('qr')
   //  TODO: Add AuthGuard
   async register(@Res() res: Response, @Req() request: Request) {
     //  cookie 로 부터 user 정보를 가져옴
