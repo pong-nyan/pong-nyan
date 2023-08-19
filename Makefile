@@ -1,5 +1,15 @@
+.PHONY: all iclean cclean dclean aclean are re 
+
 all:
 	docker compose up
+
+re:
+	make dclean
+	make
+
+are:
+	make aclean
+	make
 
 #image clean
 iclean: 
@@ -9,7 +19,8 @@ iclean:
 cclean: 
 	docker container prune -f
 
-docker_clean:
+#docker clean
+dclean:
 	docker compose down -v
 	make iclean
 	make cclean
