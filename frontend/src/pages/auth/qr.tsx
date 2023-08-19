@@ -3,26 +3,23 @@ import axios from 'axios';
 import Image from 'next/image';
 
 const QR = () => {
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    // axios call to get the QR code /google2fa/qr
-    // then display the QR code
-
-    axios.post<Blob>(`${process.env.NEXT_PUBLIC_API_URL}/google2fa/qr`, { responseType: 'blob' })
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/google2fa/qr`, { responseType: 'blob' })
       .then((res) => {
         const url = URL.createObjectURL(res.data);
         setImageUrl(url);
-        // res.data 를 화면에 출
       }).catch((err) => {
         console.log(err);
       });
   }, []);
 
   return (
-    <Image src={imageUrl} alt='qrcode' width='300' height='300' />
+    <>
+      {imageUrl ? <Image src={imageUrl} alt='qrcode' width='300' height='300' /> : <p>Loading...</p>}
+    </>
   );
 };
 
 export default QR;
-    

@@ -11,7 +11,7 @@ export class Google2faController {
     private readonly authService: AuthService,
   ) {}
 
-  @Post('qr')
+  @Get('qr')
   //  TODO: Add AuthGuard
   async register(@Res() res: Response, @Req() request: Request) {
     //  cookie 로 부터 user 정보를 가져옴
