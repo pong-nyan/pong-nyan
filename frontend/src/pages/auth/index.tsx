@@ -1,5 +1,5 @@
-import SignUpButton from './SignUpButton';
-import SignInButton from './SignInButton';
+import SignUpButton from '../../components/button/SignUpButton';
+import SignInButton from '../../components/button/SignInButton';
 import styles from '../../styles/Login.module.css';
 
 export default function Login() {

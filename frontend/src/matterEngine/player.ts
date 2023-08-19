@@ -1,18 +1,7 @@
 import { Constraint, Body, Engine } from 'matter-js';
 import { stopper, hinge, paddle } from './matterJsUnit';
-
-type player = {
-    hingeLeft: Matter.Body;
-    hingeRight: Matter.Body;
-    paddleLeft: Matter.Body;
-    paddleRight: Matter.Body;
-    stopperLeftTop: Matter.Body;
-    stopperLeftBottom: Matter.Body;
-    stopperRightTop: Matter.Body;
-    stopperRightBottom: Matter.Body;
-    jointLeft: Matter.Constraint;
-    joinRight: Matter.Constraint;
-}
+import { Colision, CollisionEvent, GameEvent, KeyDownEvent, KeyUpEvent, player } from './type';
+import { socket } from '@/context/socket';
 
 export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionGroupRef: number, hingeGroupRef: number) : player {
   const xScale = 0.333;
@@ -93,14 +82,26 @@ export const movePaddleKeyUp = (engine: Engine, rad: number) => {
   const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
   if (!paddleLeft || !paddleRight) return;
   // setVelocity, applyForce
-  console.log('up');
+  // console.log('up');
   Body.setAngularVelocity(paddleLeft, 1);
   Body.setAngularVelocity(paddleRight, -1);
   
-  console.log('left sp   ', paddleLeft);
-  console.log('\nright sp ', paddleRight.velocity);
+  // console.log('left sp   ', paddleLeft);
+  // console.log('\nright sp ', paddleRight.velocity);
 };
 
 export const movePaddleKeyRotate = (body: Body, direction: number) => {
   Body.setAngularVelocity(body, direction);
+};
+
+export const notifyKeyDown= (keyDownEvent:KeyDownEvent) => {
+  socket.emit('gameEvent', keyDownEvent);
+};
+
+export const notifyKeyUp= (keyUpEvent:KeyUpEvent) => {
+  socket.emit('gameEvent', keyUpEvent);
+};
+
+export const notifyColision= (collisionEvent: CollisionEvent) => {
+  socket.emit('gameEvent', collisionEvent);
 };

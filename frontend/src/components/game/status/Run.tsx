@@ -3,7 +3,7 @@ import Matter, { Engine, Render, World, Body, Runner, Events } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
 import { findTarget } from '../../../matterEngine/matterJsUnit';
-import { movePlayer, movePaddleKeyDown, movePaddleKeyUp, movePaddleKeyRotate } from '../../../matterEngine/player';
+import { movePlayer, movePaddleKeyDown, movePaddleKeyUp, movePaddleKeyRotate, notifyPlayer, notifyGameEvent } from '../../../matterEngine/player';
 import { initPlayer } from '@/matterEngine/player';
 import { socket } from '@/context/socket';
 
@@ -41,6 +41,8 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
     case ' ':
       debouncingFlag = false;
       movePaddleKeyUp(engine, 0);
+      notifyGameEvent({type:'keyUp', data:'keyUp'});
+
       break;
     }
   };
