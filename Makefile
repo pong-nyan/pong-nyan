@@ -1,4 +1,4 @@
-.PHONY: all iclean cclean dclean aclean are re 
+.PHONY: all iclean cclean dclean aclean are re
 
 all:
 	docker compose up
@@ -12,11 +12,11 @@ are:
 	make
 
 #image clean
-iclean: 
+iclean:
 	docker image prune -f
 
 #container clean
-cclean: 
+cclean:
 	docker container prune -f
 
 #docker clean
@@ -28,5 +28,5 @@ dclean:
 
 #all clean
 aclean:
-	make docker_clean 
+	make dclean
 	rm -rf ./database/data
