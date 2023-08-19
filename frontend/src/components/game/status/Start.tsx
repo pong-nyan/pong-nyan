@@ -19,10 +19,9 @@ export default function Start({ setGameStatus }: { setGameStatus: Dispatch<SetSt
       <div className={styles.buttonWrapper} onClick={() => {
         socket.emit('startGame', { message: 'start' });
         // room 잡혀야만 게임시작
-        console.log(socket);
-      // if (socket.rooms) {
-      //   setGameStatus(1);
-      // }
+        if (socket.rooms) {
+          setGameStatus(1);
+        }
       }} tabIndex={0}>
         <button className={styles.startButton}>Start</button>
       </div> 

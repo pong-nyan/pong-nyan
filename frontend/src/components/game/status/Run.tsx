@@ -136,9 +136,9 @@ export default function Run({ setGameStatus }: { setGameStatus: Dispatch<SetStat
       });
     });
     const me = initPlayer(cw, ch, 0.9, nonCollisionGroupRef.current, hingeGroupRef.current);
-    // const opponent = initPlayer(cw, ch, 0.06, nonCollisionGroupRef.current);
+    const opponent = initPlayer(cw, ch, 0.06, nonCollisionGroupRef.current);
     World.add(engine.current.world, Object.values(me));
-    // World.add(engine.current.world, Object.values(opponent));
+    World.add(engine.current.world, Object.values(opponent));
   
     // run the engine
     Runner.run(runner.current, engine.current);
