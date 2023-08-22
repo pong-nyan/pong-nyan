@@ -53,12 +53,13 @@ export class AuthController {
     @UseGuards(AuthGuard)
     @Get('mypage')
     async myPage(@Req() request: Request, @Res() response: Response) {
+        console.log('mypage');
         // const userInfo = await this.authService.getUserInfoFromCookie(request);
         // if (!userInfo) return response.status(HttpStatus.UNAUTHORIZED).send('unauthorized');
         // const { intraId, intraNickname } = userInfo;
         // const user = await this.authService.findUser(intraId);
         // if (!user) return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send('signin failed');
         // return response.status(HttpStatus.OK).send(user);
-        return response.status(HttpStatus.OK);
+        return response.status(HttpStatus.OK).send('mypage auth sucess');
     }
 }
