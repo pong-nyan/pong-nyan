@@ -20,7 +20,7 @@ interface AuthProviderProps {
 
 // const CountProvider = ({ children }: Props): JSX.Element => {
 
-const AuthProvider = ({ children }: JSX.Element | JSX.Element[]): JSX.Element => {
+const AuthProvider : React.FC<AuthProviderProps> = ({ children }): JSX.Element => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   return (
