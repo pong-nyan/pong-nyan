@@ -19,7 +19,11 @@ export class AuthController {
         const ftUser = await this.authService.getUserInfoFromToken(result.access_token);
         if (!ftUser) throw new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
         const user = await this.authService.findUser(ftUser.intraId);
+        //  pong-nyan 회원이다
         if (!user) return 'goto signup';
+        //  pong-nyan 회원이 아니다
+        //  TODO: qr 전까지만 한 경우 체크하기
+        //  implement gotoQR
         return 'goto signin';
     }
 

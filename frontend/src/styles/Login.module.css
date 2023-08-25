@@ -21,19 +21,3 @@
   box-shadow: 0 7px 20px rgba(0, 0, 0, 0.2);
   cursor: pointer;
 }
-
-/* signInButton styles */
-.signInButton {
-  min-width: 100px;
-  min-height: 50px;
-  background-color: #008CBA;
-  color: white;
-  border-radius: 5px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.signInButton:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-}

@@ -39,7 +39,6 @@ export class AuthService {
         if (!oauthToken) return null;
         const accessToken = JSON.parse(JSON.stringify(oauthToken)).access_token;
         return await this.getUserInfoFromToken(accessToken);
-
     }
 
     async getUserInfoFromToken(accessToken: string) {

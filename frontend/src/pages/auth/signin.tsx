@@ -11,7 +11,8 @@ const SignIn = () => {
       .then(() => {
         router.replace('/');
       }).catch((error) => {
-        alert(`Sign In error: ${error}`);
+        console.log(error);
+        alert(`Sign In error: ${error.response.data}`);
       });
   }, []);
   return (
