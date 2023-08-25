@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import SendMessageButton from './SendMessageButton';
+import { socket } from '@/context/socket';
 
 function ChatRoom() {
   const [messages, setMessages] = useState<string[]>([]);
@@ -10,6 +11,7 @@ function ChatRoom() {
   const handleSendMessage = () => {
     if (inputMessage.trim() !== '') {
       setMessages([...messages, inputMessage]);
+      socket.emit('chat-message', inputMessage);
       setInputMessage('');
     }
   };
