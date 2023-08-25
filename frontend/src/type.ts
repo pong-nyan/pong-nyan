@@ -1,3 +1,4 @@
+// TODO player => Player
 export type player = {
     hingeLeft: Matter.Body;
     hingeRight: Matter.Body;

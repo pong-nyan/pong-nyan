@@ -22,11 +22,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   fps = 1000 / 60;
 
   async handleConnection(client: Socket) {
-    console.log('Connection', client.id);
+    console.log('Connection, client.id:', client.id);
   }
 
   async handleDisconnect(client: Socket) {
-    console.log('Disconnection');
+    console.log('Disconnection, client.id:', client.id);
   }
 
   @SubscribeMessage('ball')
@@ -40,9 +40,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const ret = this.service.match(client);
     const roomName = ret?.roomName;
     const p1 = ret?.p1;
-    if (!roomName)
-      this.server.to(client.id).emit('loading');
-    this.server.to(roomName).emit('start', p1);
+    const p2 = ret?.p2;
+    if (!roomName) this.server.to(client.id).emit('loading');
+    console.log(p1, p2);
+    this.server.to(roomName).emit('start', {p1, p2});
   }
 
   @SubscribeMessage('gameEvent')
@@ -50,5 +51,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     console.log('gameEvent');
     console.log('data:', data);
+
+    this.server.to(data.opponentId).emit('gameKeyEvent', {
+      opponentNumber: data.playerNumber,
+      message: data.message,
+      step: data.step,
+      velocity: data.velocity
+    });
   }
 }
