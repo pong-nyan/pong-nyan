@@ -6,7 +6,7 @@ interface AuthContextType {
   setIsLoggedIn: (value: boolean) => void;
 }
 
-const AuthContext = createContext<AuthContextType>({
+export const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
   setIsLoggedIn: () => {}
 });
@@ -18,8 +18,6 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// const CountProvider = ({ children }: Props): JSX.Element => {
-
 const AuthProvider : React.FC<AuthProviderProps> = ({ children }): JSX.Element => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
@@ -30,4 +28,4 @@ const AuthProvider : React.FC<AuthProviderProps> = ({ children }): JSX.Element =
   );
 };
 
-export { AuthProvider };
+export default AuthProvider ;
