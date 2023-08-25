@@ -6,7 +6,7 @@ import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {
+    constructor(private readonly authService: AuthService, private readonly jwtService: JwtService) {
     }
 
     @Get('token')
@@ -49,10 +49,9 @@ export class AuthController {
         if (!user) return response.status(HttpStatus.NOT_FOUND).send('user not found');
 
         const jwt = await this.authService.createJwt(intraId, intraNickname, user.nickname);
-        // HERE 2FA
-
+        const decodedJwt = JSON.parse(JSON.stringify(this.jwtService.decode(jwt)))
         response.cookie('pn-jwt', jwt, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
-        return response.status(HttpStatus.ACCEPTED).send('signin success');
+        return response.status(HttpStatus.ACCEPTED).send({ exp: decodedJwt.exp, nickname: decodedJwt.nickname });
     }
 
     @UseGuards(AuthGuard)
