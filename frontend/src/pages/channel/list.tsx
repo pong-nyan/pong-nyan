@@ -1,7 +1,13 @@
+import MakeChannelButton from '@/components/button/MakeChannelButton';
 import ChannelList from '@/components/chat/ChannelList';
 
 const ChannelListPage = () => {
-  return <ChannelList/>;
+  return (
+    <> 
+      <ChannelList/>
+      <MakeChannelButton/>
+    </>
+  );
 };
 
 export default ChannelListPage;

@@ -4,11 +4,10 @@ import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
   cors: { origin: '*' },
   path: '/socket/',
 })
-export class ChatGateway {
-  @SubscribeMessage('chat-message')
-  handleMessage(client: any, payload: any): string {
-    console.log('chat/message payload :', payload);
+export class ChannelGateway {
+  @SubscribeMessage('channel-make')
+  makeChannel(client: any, payload: any): string {
+    console.log('channel/make payload :', payload);
     return 'Hello world!';
   }
-
 }
