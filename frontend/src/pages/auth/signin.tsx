@@ -7,11 +7,15 @@ const SignIn = () => {
   const router = useRouter();
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, { withCredentials: true })
-      .then(() => {
+      .then((res) => {
+        console.log('res', res);
+        localStorage.setItem('user', JSON.stringify(res.data));
         router.replace('/');
+      }).catch((error) => {
+        console.log(error);
+        alert(`Sign In error: ${error.response.data}`);
       });
   }, []);
-
   return (
     <p>signin</p>
   );

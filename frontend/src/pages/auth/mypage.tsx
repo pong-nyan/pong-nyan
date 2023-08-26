@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import axios from 'axios';
+import useAuth from '@/context/useAuth';
 
 const MyPage = () => {
+  useAuth();
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/mypage`, { withCredentials: true })
       .then(() => {

@@ -111,4 +111,4 @@ next-env.d.ts
 *.crt
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux,visualstudiocode,nextjs
 
-makeEnv.sh
+*.sh

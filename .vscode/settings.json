@@ -5,7 +5,8 @@
     "docker",
     "game",
     "login",
-    "2FA"
+    "2FA",
+    "chat"
   ],
   "editor.formatOnSave": true,
   "eslint.codeActionsOnSave.rules": {
