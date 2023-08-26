@@ -18,6 +18,8 @@ const LoginCallback = () => {
             router.replace('/auth/signup');
           } else if (res.data === 'goto signin') {
             router.replace('/auth/signin');
+          } else if (res.data === 'goto qr') {
+            router.replace('/auth/qr');
           }
         })
         .catch((error) => {

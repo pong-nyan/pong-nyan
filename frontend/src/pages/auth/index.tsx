@@ -1,4 +1,4 @@
-import SignUpButton from '../../components/button/SignUpButton';
+import FortyTwoIntraSignInButton from '../../components/button/FortyTwoIntraSignInButton';
 import MyPageButton from '@/components/button/MyPageButton';
 import styles from '../../styles/Login.module.css';
 
@@ -6,7 +6,7 @@ export default function Login() {
   return (
     <>
       <div className={styles.loginContainer}>
-        <SignUpButton />
+        <FortyTwoIntraSignInButton />
         <MyPageButton />
       </div>
     </>

@@ -1,7 +1,7 @@
 import styles from '../../styles/Login.module.css';
 import { useRouter } from 'next/router';
 
-const SignUpButton = () => {
+const FortyTwoIntraSignInButton = () => {
   const router = useRouter();
   
   const redirectOauth = () => {
@@ -12,8 +12,8 @@ const SignUpButton = () => {
     );
   };
   return (
-    <button onClick={redirectOauth} className={styles.signUpButton}>Sign Up</button>
+    <button onClick={redirectOauth} className={styles.signUpButton}>42 Sign In</button>
   );
 };
 
-export default SignUpButton;
+export default FortyTwoIntraSignInButton;

@@ -49,13 +49,21 @@ export class AuthService {
     }
 
     async getUserInfoFromOurDB(intraId: number) {
+        if (!intraId) return null;
         return await this.userRepository.findOne({ where: { intraId: intraId } });
     }
 
     async findUser(intraId: number) {
+        if (!intraId) return null;
         return await this.userRepository.findOne({ where: { intraId: intraId } });
     }
 
+    async isUserRegisterdQR(intraId: number) {
+        if (!intraId) return false;
+        const user = await this.userRepository.findOne({ where: { intraId: intraId } });
+        if (!user) return false;
+        return user.google2faEnable;
+    }
     /**
      * @warning this function also updates user info
      * @warning should be called after check if user exists
