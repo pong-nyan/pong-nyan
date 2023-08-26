@@ -8,11 +8,12 @@ import { DatabaseModule } from './datasource';
 import { ChatModule } from './chat/chat.module';
 import { AppGateway } from './app.gateway';
 import { ChannelModule } from './channel/channel.module';
+import { UserService } from './user.service';
 
 @Module({
   imports: [ConfigModule.forRoot(), GameModule, AuthModule, DatabaseModule, ChatModule, ChannelModule],
   controllers: [AppController],
-  providers: [AppService, AppGateway],
+  providers: [AppService, AppGateway, UserService],
 })
 
 export class AppModule { }
