@@ -19,11 +19,8 @@ export class AuthController {
         const ftUser = await this.authService.getUserInfoFromToken(result.access_token);
         if (!ftUser) throw new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
         const user = await this.authService.findUser(ftUser.intraId);
-        //  pong-nyan 회원이다
         if (!user) return 'goto signup';
-        //  pong-nyan 회원이 아니다
-        //  TODO: qr 전까지만 한 경우 체크하기
-        //  implement gotoQR
+        if (!user.google2faEnable) return 'goto qr';
         return 'goto signin';
     }
 
@@ -40,18 +37,13 @@ export class AuthController {
     }
     @Get('signin')
     async signIn(@Req() request: Request, @Res() response: Response) {
-        //  use JWT
         const userInfo = await this.authService.getUserInfoFromCookie(request);
         if (!userInfo) return response.status(HttpStatus.UNAUTHORIZED).send('unauthorized');
-
-        const { intraId, intraNickname } = userInfo;
+        const { intraId } = userInfo;
         const user = await this.authService.findUser(intraId);
         if (!user) return response.status(HttpStatus.NOT_FOUND).send('user not found');
 
-        const jwt = await this.authService.createJwt(intraId, intraNickname, user.nickname);
-        const decodedJwt = JSON.parse(JSON.stringify(this.jwtService.decode(jwt)))
-        response.cookie('pn-jwt', jwt, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
-        return response.status(HttpStatus.ACCEPTED).send({ exp: decodedJwt.exp, nickname: decodedJwt.nickname });
+        return response.status(HttpStatus.ACCEPTED).send('goto 2fa');
     }
 
     @UseGuards(AuthGuard)

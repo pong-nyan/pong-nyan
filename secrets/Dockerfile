@@ -2,7 +2,7 @@
 
 FROM alpine:3.12
 
-RUN apk add openssl
+RUN apk update && apk add openssl
 
 COPY generate_ssl_cert.sh /app/generate_ssl_cert.sh
 

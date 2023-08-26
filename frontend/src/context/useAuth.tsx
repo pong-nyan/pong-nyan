@@ -1,10 +1,8 @@
-import { collectGenerateParams } from 'next/dist/build/utils';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 const useAuth = () => {
   const router = useRouter();
-  const isLoggedIn = true;
 
   useEffect(() => {
     const user = localStorage.getItem('user');

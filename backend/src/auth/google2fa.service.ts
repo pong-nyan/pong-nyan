@@ -9,9 +9,7 @@ import { AuthService } from 'src/auth/auth.service';
 export class Google2faService {
     constructor(private readonly authService: AuthService) {}
     async generateTwoFactorAuthenticationSecret(user: User) {
-
-        // otplib를 설치한 후, 해당 라이브러리를 통해 시크릿 키 생성
-        const secret = authenticator.generateSecret();
+        const secret = user.google2faSecret ?? authenticator.generateSecret();
 
         // accountName + issuer + secret 을 활용하여 인증 코드 갱신을 위한 인증 앱 주소 설정
         const otpAuthUrl = authenticator.keyuri(user.nickname, process.env.GOOGLE_2FA_APP_NAME, secret);
