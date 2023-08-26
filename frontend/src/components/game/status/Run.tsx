@@ -2,12 +2,13 @@ import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react
 import Matter, { Engine, Render, World, Body, Runner, Events } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
-import { movePlayer, movePaddleKeyDown, movePaddleKeyUp } from '../../../matterEngine/player';
+import { movePlayer, movePaddle } from '../../../matterEngine/player';
 import { initPlayer } from '@/matterEngine/player';
 import { socket } from '@/context/socket';
 import { PlayerNumber } from '../../../type';
 
-export default function Run({ setGameStatus, playerNumber }: { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber }) {
+export default function Run({ setGameStatus, playerNumber, opponentId }
+  : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string }) {
   const scene = useRef<HTMLDivElement>(null);
   const engine = useRef<Engine>();
   const render = useRef<Render>();
@@ -16,35 +17,82 @@ export default function Run({ setGameStatus, playerNumber }: { setGameStatus: Di
   const hingeGroupRef = useRef<number>(0);
   let debouncingFlag = false;
 
+
+
   const handleKeyDown = (engine: Engine, e: KeyboardEvent) => {
     const step = 24;
-    // TODO: 함수 제안
-    // const bar = findTarget(engine.world, 'bar');
-    // movePaddleKeyRotate(bar, step / 100);
+    const velocity = 1;
+
     switch (e.key) {
     case 'ArrowLeft':
-      movePlayer(engine, -step);
+      movePlayer(engine, playerNumber, -step);
+      socket.emit('gameEvent', {
+        playerNumber,
+        opponentId,
+        message: 'leftDown',
+        step,
+      });
       break;
     case 'ArrowRight':
-      movePlayer(engine, step);
+      movePlayer(engine, playerNumber, step);
+      socket.emit('gameEvent', {
+        playerNumber,
+        opponentId,
+        message: 'rightDown',
+        step
+      });
       break;
     case ' ':
       if (debouncingFlag) return ;
       debouncingFlag = true;
-      movePaddleKeyDown(engine, 0.1);
+      movePaddle(engine, playerNumber, velocity);
+      socket.emit('gameEvent', { 
+        playerNumber,
+        opponentId,
+        message: 'spaceDown',
+        velocity,
+      });
       break;
     }
   };
 
   const handleKeyUp = (engine: Engine, e: KeyboardEvent) => {
+    const velocity = 1;
+
     switch (e.key) {
     case ' ':
       debouncingFlag = false;
-      movePaddleKeyUp(engine, 0);
-
+      movePaddle(engine, playerNumber, -velocity);
+      socket.emit('gameEvent', { 
+        playerNumber,
+        opponentId,
+        message: 'spaceUp',
+        velocity,
+      });
       break;
     }
   };
+
+  socket.on('gameKeyEvent', ({opponentNumber, message, step, velocity}
+    : {opponentNumber: PlayerNumber, message: string, step: number, velocity: number}) => {
+    console.log('gameKeyEvent', playerNumber, opponentNumber);
+
+    switch (message) {
+    case 'leftDown':
+      movePlayer(engine.current, opponentNumber, -step);
+      break;
+    case 'rightDown':
+      movePlayer(engine.current, opponentNumber, step);
+      break;
+    case 'spaceDown':
+      movePaddle(engine.current, opponentNumber, -velocity);
+      break;
+    case 'spaceUp':
+      movePaddle(engine.current, opponentNumber, velocity);
+      break;
+    }
+
+  });
 
   useEffect(() => {
     if (!scene.current) return;
@@ -63,7 +111,7 @@ export default function Run({ setGameStatus, playerNumber }: { setGameStatus: Di
         wireframes: false,
         background: 'green'
       }
-    });
+    }, [playerNumber, opponentId]);
 
     runner.current = Runner.create();
 
@@ -138,7 +186,7 @@ export default function Run({ setGameStatus, playerNumber }: { setGameStatus: Di
       });
     });
     const me = initPlayer(cw, ch, 0.9, nonCollisionGroupRef.current, hingeGroupRef.current);
-    const opponent = initPlayer(cw, ch, 0.06, nonCollisionGroupRef.current);
+    const opponent = initPlayer(cw, ch, 0.06, nonCollisionGroupRef.current, hingeGroupRef.current);
     World.add(engine.current.world, Object.values(me));
     World.add(engine.current.world, Object.values(opponent));
   
@@ -154,7 +202,7 @@ export default function Run({ setGameStatus, playerNumber }: { setGameStatus: Di
       render.current.canvas.remove();
       render.current.textures = {};
     };
-  }, []);
+  }, [playerNumber, opponentId]);
 
   return (
     <div

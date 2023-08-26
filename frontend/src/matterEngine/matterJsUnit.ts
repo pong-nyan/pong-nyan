@@ -79,5 +79,9 @@ export const sensorBar = (x: number, y: number, width: number, height: number) :
 };
 
 export const findTarget = (world: World, label: string ) => {
-  return world.bodies.find(body => body.label === label) as Matter.Body;
+  return world.bodies.find(body => body.label === label) as Body;
+};
+
+export const findTargetAll = (world: World, label: string ) => {
+  return world.bodies.filter(body => body.label === label) as Body[];
 };
