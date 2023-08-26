@@ -9,12 +9,11 @@ const SignIn = () => {
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, { withCredentials: true })
       .then((res) => {
-        // TODO verify component make
-        // console.log('res', res);
-        // localStorage.setItem('user', JSON.stringify(res.data));
-        // router.replace('/');
+        if (res.data === 'goto 2fa') {
+          router.push('/auth/google-2fa-verify');
+        }
       }).catch((error) => {
-        console.log(error);
+        console.error(error);
         alert(`Sign In error: ${error.response.data}`);
       });
   }, []);

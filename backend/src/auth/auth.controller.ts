@@ -37,18 +37,13 @@ export class AuthController {
     }
     @Get('signin')
     async signIn(@Req() request: Request, @Res() response: Response) {
-        //  use JWT
         const userInfo = await this.authService.getUserInfoFromCookie(request);
         if (!userInfo) return response.status(HttpStatus.UNAUTHORIZED).send('unauthorized');
-
-        const { intraId, intraNickname } = userInfo;
+        const { intraId } = userInfo;
         const user = await this.authService.findUser(intraId);
         if (!user) return response.status(HttpStatus.NOT_FOUND).send('user not found');
 
-        const jwt = await this.authService.createJwt(intraId, intraNickname, user.nickname);
-        const decodedJwt = JSON.parse(JSON.stringify(this.jwtService.decode(jwt)));
-        // response.cookie('pn-jwt', jwt, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
-        return response.status(HttpStatus.ACCEPTED).send('signin success');
+        return response.status(HttpStatus.ACCEPTED).send('goto 2fa');
     }
 
     @UseGuards(AuthGuard)

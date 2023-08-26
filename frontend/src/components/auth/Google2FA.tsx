@@ -11,16 +11,12 @@ const Google2FA = () => {
     const code = e.currentTarget.code.value;
     axios.post(`${process.env.NEXT_PUBLIC_API_URL}/google2fa/enable`, { code }, { withCredentials: true })
       .then((res) => {
-        console.log('res', res);
-        console.log('res.data', res.data);
-
-        if (res.status === 200) {
+        if (res.status === 202) {
           localStorage.setItem('user', JSON.stringify(res.data));
           router.replace('/');
         }
       }
       ).catch((err) => {
-        console.log(err);
         if (err.response.status === 401) {
           alert('Enable failed. Please try again.');
         }
