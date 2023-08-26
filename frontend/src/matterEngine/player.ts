@@ -1,9 +1,9 @@
 import { Constraint, Body, Engine } from 'matter-js';
 import { stopper, hinge, paddle, findTargetAll } from './matterJsUnit';
-import { Colision, CollisionEvent, GameEvent, KeyDownEvent, KeyUpEvent, player, PlayerNumber } from '../type';
+import { Colision, CollisionEvent, GameEvent, KeyDownEvent, KeyUpEvent, Player, PlayerNumber } from '../type';
 import { socket } from '@/context/socket';
 
-export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionGroupRef: number, hingeGroupRef: number) : player {
+export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionGroupRef: number, hingeGroupRef: number) : Player {
   const xScale = 0.333;
 
   // hinge

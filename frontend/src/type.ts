@@ -1,5 +1,4 @@
-// TODO player => Player
-export type player = {
+export type Player = {
     hingeLeft: Matter.Body;
     hingeRight: Matter.Body;
     paddleLeft: Matter.Body;
