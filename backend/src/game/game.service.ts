@@ -16,7 +16,8 @@ export class GameService {
             player1.join(roomName);
             player2.join(roomName);
             const p1 = player1.id;
-            return { roomName, p1 };
+            const p2 = player2.id;
+            return { roomName, p1, p2 };
         }
         return undefined;
     }

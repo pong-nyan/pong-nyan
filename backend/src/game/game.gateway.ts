@@ -28,13 +28,19 @@ export class GameGateway {
     const ret = this.service.match(client);
     const roomName = ret?.roomName;
     const p1 = ret?.p1;
-    if (!roomName) this.server.to(client.id).emit("loading");
-    this.server.to(roomName).emit("start", p1);
+    const p2 = ret?.p2;
+    if (!roomName) this.server.to(client.id).emit('loading');
+    console.log(p1, p2);
+    this.server.to(roomName).emit('start', {p1, p2});
   }
 
   @SubscribeMessage("gameEvent")
   handleGameEvent(client: Socket, data: any) {
-    console.log("gameEvent");
-    console.log("data:", data);
+    this.server.to(data.opponentId).emit('gameKeyEvent', {
+      opponentNumber: data.playerNumber,
+      message: data.message,
+      step: data.step,
+      velocity: data.velocity
+    });
   }
 }

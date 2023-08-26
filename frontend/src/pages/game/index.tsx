@@ -16,12 +16,13 @@ export default function Game(): JSX.Element {
   // FIXME: game status
   const [gameStatus, setGameStatus] =  useState(0);
   const [playerNumber, setPlayerNumber] = useState<PlayerNumber>();
+  const [opponentId, setOpponentId] = useState<string>();
 
   switch (gameStatus) {
   case GameStatus.Start:
-    return (<Start setGameStatus={setGameStatus} setPlayerNumber={setPlayerNumber} />);
+    return (<Start setGameStatus={setGameStatus} setPlayerNumber={setPlayerNumber} setOpponentId={setOpponentId} />);
   case GameStatus.Run:
-    return (<Run setGameStatus={setGameStatus} playerNumber={playerNumber} />);
+    return (<Run setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} />);
   case GameStatus.End:
     return (<End setGameStatus={setGameStatus} setPlayerNumber={setPlayerNumber} />);
   default:

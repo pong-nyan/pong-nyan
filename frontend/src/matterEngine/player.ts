@@ -1,9 +1,9 @@
 import { Constraint, Body, Engine } from 'matter-js';
-import { stopper, hinge, paddle } from './matterJsUnit';
-import { Colision, CollisionEvent, GameEvent, KeyDownEvent, KeyUpEvent, player } from '../type';
+import { stopper, hinge, paddle, findTargetAll } from './matterJsUnit';
+import { Colision, CollisionEvent, GameEvent, KeyDownEvent, KeyUpEvent, Player, PlayerNumber } from '../type';
 import { socket } from '@/context/socket';
 
-export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionGroupRef: number, hingeGroupRef: number) : player {
+export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionGroupRef: number, hingeGroupRef: number) : Player {
   const xScale = 0.333;
 
   // hinge
@@ -44,17 +44,42 @@ export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionG
   return { hingeLeft, hingeRight, paddleLeft, paddleRight, stopperLeftTop, stopperLeftBottom, stopperRightTop, stopperRightBottom, jointLeft, joinRight};
 }
 
-export const movePlayer = (engine: Engine, dx: number) => {
-  const paddleLeft = engine.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
-  const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
-  const StopperLeftTop = engine.world.bodies.find(body => body.label === 'StopperLeftTop') as Matter.Body;
-  const StopperRightTop = engine.world.bodies.find(body => body.label === 'StopperRightTop') as Matter.Body;
-  const StopperLeftBottom = engine.world.bodies.find(body => body.label === 'StopperLeftBottom') as Matter.Body;
-  const StopperRightBottom = engine.world.bodies.find(body => body.label === 'StopperRightBottom') as Matter.Body;
-  const hingeLeft = engine.world.bodies.find(body => body.label === 'HingeLeft') as Matter.Body;
-  const hingeRight = engine.world.bodies.find(body => body.label === 'HingeRight') as Matter.Body;
+
+export const movePlayer = (engine: Engine, playerNumber: PlayerNumber, dx: number) => {
+
+
+  const paddleLefts = findTargetAll(engine.world, 'PaddleLeft');
+  const paddleRights = findTargetAll(engine.world, 'PaddleRight');
+  const stopperLeftTops = findTargetAll(engine.world, 'StopperLeftTop');
+  const stopperRightTops = findTargetAll(engine.world, 'StopperRightTop');
+  const stopperLeftBottoms = findTargetAll(engine.world, 'StopperLeftBottom');
+  const stopperRightBottoms = findTargetAll(engine.world, 'StopperRightBottom');
+  const hingeLefts = findTargetAll(engine.world, 'HingeLeft');
+  const hingeRights = findTargetAll(engine.world, 'HingeRight');
+
+  const paddleLeft = playerNumber === 'player1' ? paddleLefts[0] : paddleLefts[1];
+  const paddleRight = playerNumber === 'player1' ? paddleRights[0] : paddleRights[1];
+  const StopperLeftTop = playerNumber === 'player1' ? stopperLeftTops[0] : stopperLeftTops[1];
+  const StopperRightTop = playerNumber === 'player1' ? stopperRightTops[0] : stopperRightTops[1];
+  const StopperLeftBottom = playerNumber === 'player1' ? stopperLeftBottoms[0] : stopperLeftBottoms[1];
+  const StopperRightBottom = playerNumber === 'player1' ? stopperRightBottoms[0] : stopperRightBottoms[1];
+  const hingeLeft = playerNumber === 'player1' ? hingeLefts[0] : hingeLefts[1];
+  const hingeRight = playerNumber === 'player1' ? hingeRights[0] : hingeRights[1];
+
+  // old part
+  // const paddleLeft = engine.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
+  // const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
+  // const StopperLeftTop = engine.world.bodies.find(body => body.label === 'StopperLeftTop') as Matter.Body;
+  // const StopperRightTop = engine.world.bodies.find(body => body.label === 'StopperRightTop') as Matter.Body;
+  // const StopperLeftBottom = engine.world.bodies.find(body => body.label === 'StopperLeftBottom') as Matter.Body;
+  // const StopperRightBottom = engine.world.bodies.find(body => body.label === 'StopperRightBottom') as Matter.Body;
+  // const hingeLeft = engine.world.bodies.find(body => body.label === 'HingeLeft') as Matter.Body;
+  // const hingeRight = engine.world.bodies.find(body => body.label === 'HingeRight') as Matter.Body;
     
-  if (!paddleLeft || !paddleRight || !StopperLeftTop || !StopperRightTop || !StopperLeftBottom || !StopperRightBottom || !hingeLeft || !hingeRight) return;
+  if (!paddleLeft || !paddleRight 
+      || !StopperLeftTop || !StopperRightTop || !StopperLeftBottom || !StopperRightBottom 
+      || !hingeLeft || !hingeRight) return;
+  dx = playerNumber === 'player1' ? dx : -dx;
   Body.translate(paddleLeft, { x: dx, y: 0 });
   Body.translate(paddleRight, { x: dx, y: 0 });
   Body.translate(StopperLeftTop, { x: dx, y: 0 });
@@ -63,31 +88,33 @@ export const movePlayer = (engine: Engine, dx: number) => {
   Body.translate(StopperRightBottom, { x: dx, y: 0 });
   Body.translate(hingeLeft, { x: dx, y: 0 });
   Body.translate(hingeRight, { x: dx, y: 0 });
+
 };
 
-export const movePaddleKeyDown = (engine: Engine, rad: number) => {
-    
-  const paddleLeft = engine.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
-  const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
+export const movePaddle = (engine: Engine, playerNumber: PlayerNumber, velocity: number) => {
+  const paddleLefts = findTargetAll(engine.world, 'PaddleLeft');
+  const paddleRights = findTargetAll(engine.world, 'PaddleRight');
+  const paddleLeft = playerNumber === 'player1' ? paddleLefts[0] : paddleLefts[1];
+  const paddleRight = playerNumber === 'player1' ? paddleRights[0] : paddleRights[1];
+
+  // const paddleLeft = engine.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
+  // const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
   if (!paddleLeft || !paddleRight) return;
-  // setVelocity, applyForce
-  console.log('down');
-  Body.setAngularVelocity(paddleLeft, -1);
-  Body.setAngularVelocity(paddleRight, 1);
+  velocity = playerNumber === 'player1' ? velocity : -velocity;
+  Body.setAngularVelocity(paddleLeft, -velocity);
+  Body.setAngularVelocity(paddleRight, velocity);
 };
 
-export const movePaddleKeyUp = (engine: Engine, rad: number) => {
-  const paddleLeft = engine.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
-  const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
-  if (!paddleLeft || !paddleRight) return;
-  // setVelocity, applyForce
-  // console.log('up');
-  Body.setAngularVelocity(paddleLeft, 1);
-  Body.setAngularVelocity(paddleRight, -1);
-  
-  // console.log('left sp   ', paddleLeft);
-  // console.log('\nright sp ', paddleRight.velocity);
-};
+// export const movePaddleKeyUp = (engine: Engine, velocity: number) => {
+//     // TODO: 함수 제안
+//     // const bar = findTarget(engine.world, 'bar');
+//     // movePaddleKeyRotate(bar, step / 100);
+//   const paddleLeft = engine.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
+//   const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
+//   if (!paddleLeft || !paddleRight) return;
+//   Body.setAngularVelocity(paddleLeft, velocity);
+//   Body.setAngularVelocity(paddleRight, -velocity);
+// };
 
 export const movePaddleKeyRotate = (body: Body, direction: number) => {
   Body.setAngularVelocity(body, direction);
@@ -104,3 +131,4 @@ export const notifyKeyUp= (keyUpEvent:KeyUpEvent) => {
 export const notifyColision= (collisionEvent: CollisionEvent) => {
   socket.emit('gameEvent', collisionEvent);
 };
+

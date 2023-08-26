@@ -1,4 +1,4 @@
-export type player = {
+export type Player = {
     hingeLeft: Matter.Body;
     hingeRight: Matter.Body;
     paddleLeft: Matter.Body;
@@ -26,3 +26,4 @@ export type KeyUpEvent = {
     playerNumber: PlayerNumber;
     data: string;
 }
+
