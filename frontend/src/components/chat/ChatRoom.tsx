@@ -17,12 +17,13 @@ function ChatRoom() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      chatROMM
-      <MessageList messages={messages} />
-      <div style={{ display: 'flex', marginTop: 'auto' }}>
-        <MessageInput value={inputMessage} onChange={(e : React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)} />
-        <SendMessageButton onClick={handleSendMessage} />
+    <div style={{display: 'flex', justifyContent: 'center'}}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory'}}>
+        <MessageList messages={messages} />
+        <div style={{ display: 'flex', marginTop: 'auto' }}>
+          <MessageInput value={inputMessage} onChange={(e : React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)} />
+          <SendMessageButton onClick={handleSendMessage} />
+        </div>
       </div>
     </div>
   );
