@@ -97,6 +97,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
   useEffect(() => {
     if (!scene.current) return;
 
+    console.log('PlayerNumber: ', playerNumber);
     const cw = scene.current.clientWidth;
     const ch = scene.current.clientHeight;
 

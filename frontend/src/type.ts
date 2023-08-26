@@ -27,3 +27,4 @@ export type KeyUpEvent = {
     playerNumber: PlayerNumber;
     data: string;
 }
+

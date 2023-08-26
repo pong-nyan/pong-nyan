@@ -131,3 +131,4 @@ export const notifyKeyUp= (keyUpEvent:KeyUpEvent) => {
 export const notifyColision= (collisionEvent: CollisionEvent) => {
   socket.emit('gameEvent', collisionEvent);
 };
+

@@ -40,6 +40,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const ret = this.service.match(client);
     const roomName = ret?.roomName;
     const p1 = ret?.p1;
+
     const p2 = ret?.p2;
     if (!roomName) this.server.to(client.id).emit('loading');
     console.log(p1, p2);

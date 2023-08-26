@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Query, Res, Req, ConsoleLogger, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Query, Res, Req, ConsoleLogger, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -47,5 +48,18 @@ export class AuthController {
 
         response.cookie('pn-jwt', jwt, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
         return response.status(HttpStatus.ACCEPTED).send('signin success');
+    }
+
+    @UseGuards(AuthGuard)
+    @Get('mypage')
+    async myPage(@Req() request: Request, @Res() response: Response) {
+        console.log('mypage');
+        // const userInfo = await this.authService.getUserInfoFromCookie(request);
+        // if (!userInfo) return response.status(HttpStatus.UNAUTHORIZED).send('unauthorized');
+        // const { intraId, intraNickname } = userInfo;
+        // const user = await this.authService.findUser(intraId);
+        // if (!user) return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send('signin failed');
+        // return response.status(HttpStatus.OK).send(user);
+        return response.status(HttpStatus.OK).send('mypage auth sucess');
     }
 }
