@@ -47,8 +47,8 @@ export class AuthController {
 
         const jwt = await this.authService.createJwt(intraId, intraNickname, user.nickname);
         const decodedJwt = JSON.parse(JSON.stringify(this.jwtService.decode(jwt)));
-        response.cookie('pn-jwt', jwt, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
-        return response.status(HttpStatus.ACCEPTED).send({ exp: decodedJwt.exp, nickname: decodedJwt.nickname });
+        // response.cookie('pn-jwt', jwt, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
+        return response.status(HttpStatus.ACCEPTED).send('signin success');
     }
 
     @UseGuards(AuthGuard)
