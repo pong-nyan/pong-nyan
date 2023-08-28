@@ -12,7 +12,7 @@ export class ChannelGateway {
   @SubscribeMessage('channel-make')
   makeChannel(client: any, channelInfo: ChannelInfo) {
     this.channelService.addChannel(channelInfo, client);
-    console.log('channel/make payload :', channelInfo);
+    console.log('channelInfo channel/make :', channelInfo);
     console.log('chalist', this.channelService.getChannelMap());
     console.log('client', client.rooms);
   }

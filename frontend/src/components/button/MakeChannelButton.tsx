@@ -6,7 +6,6 @@ const MakeChannelButton = () => {
   const makeChannel = () => {
     const channelTitle = prompt('방제를 입력하세요');
     if (!channelTitle) return ;
-    // channelInfo 타입정리해야함
     const channelInfo = { channelTitle };
 
     socket.emit('channel-make', channelInfo);

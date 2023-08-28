@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Channel, ChannelInfo } from '../type/channel';
 
 
-
 @Injectable()
 export class ChannelService {
   channelMap = new Map<string, Channel>();
