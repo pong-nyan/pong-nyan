@@ -6,7 +6,7 @@ import {
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 // import { UserService } from "../user.service";
-// import { BallInfo } from "../type/game";
+import { BallInfo } from '../type/game';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -33,7 +33,7 @@ export class GameGateway {
 
   @SubscribeMessage('game-event')
   handleGameEvent(client: Socket, data: any) {
-    this.server.to(data.opponentId).emit('gameKeyEvent', {
+    this.server.to(data.opponentId).emit('game-keyEvent', {
       opponentNumber: data.playerNumber,
       message: data.message,
       step: data.step,
@@ -42,7 +42,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage('game-ball')
-  handleBall(client: Socket, ball: any) {
+  handleBall(client: Socket, ball: BallInfo) {
     // 보정
   }
 }

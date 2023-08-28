@@ -71,10 +71,8 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
     }
   };
 
-  socket.on('gameKeyEvent', ({opponentNumber, message, step, velocity}
+  socket.on('game-KeyEvent', ({opponentNumber, message, step, velocity}
     : {opponentNumber: PlayerNumber, message: string, step: number, velocity: number}) => {
-    console.log('gameKeyEvent', playerNumber, opponentNumber);
-
     switch (message) {
     case 'leftDown':
       movePlayer(engine.current, opponentNumber, -step);
