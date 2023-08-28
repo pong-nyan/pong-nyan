@@ -65,16 +65,6 @@ export const movePlayer = (engine: Engine, playerNumber: PlayerNumber, dx: numbe
   const StopperRightBottom = playerNumber === 'player1' ? stopperRightBottoms[0] : stopperRightBottoms[1];
   const hingeLeft = playerNumber === 'player1' ? hingeLefts[0] : hingeLefts[1];
   const hingeRight = playerNumber === 'player1' ? hingeRights[0] : hingeRights[1];
-
-  // old part
-  // const paddleLeft = engine.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
-  // const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
-  // const StopperLeftTop = engine.world.bodies.find(body => body.label === 'StopperLeftTop') as Matter.Body;
-  // const StopperRightTop = engine.world.bodies.find(body => body.label === 'StopperRightTop') as Matter.Body;
-  // const StopperLeftBottom = engine.world.bodies.find(body => body.label === 'StopperLeftBottom') as Matter.Body;
-  // const StopperRightBottom = engine.world.bodies.find(body => body.label === 'StopperRightBottom') as Matter.Body;
-  // const hingeLeft = engine.world.bodies.find(body => body.label === 'HingeLeft') as Matter.Body;
-  // const hingeRight = engine.world.bodies.find(body => body.label === 'HingeRight') as Matter.Body;
     
   if (!paddleLeft || !paddleRight 
       || !StopperLeftTop || !StopperRightTop || !StopperLeftBottom || !StopperRightBottom 
@@ -97,24 +87,11 @@ export const movePaddle = (engine: Engine, playerNumber: PlayerNumber, velocity:
   const paddleLeft = playerNumber === 'player1' ? paddleLefts[0] : paddleLefts[1];
   const paddleRight = playerNumber === 'player1' ? paddleRights[0] : paddleRights[1];
 
-  // const paddleLeft = engine.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
-  // const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
   if (!paddleLeft || !paddleRight) return;
   velocity = playerNumber === 'player1' ? velocity : -velocity;
   Body.setAngularVelocity(paddleLeft, -velocity);
   Body.setAngularVelocity(paddleRight, velocity);
 };
-
-// export const movePaddleKeyUp = (engine: Engine, velocity: number) => {
-//     // TODO: 함수 제안
-//     // const bar = findTarget(engine.world, 'bar');
-//     // movePaddleKeyRotate(bar, step / 100);
-//   const paddleLeft = engine.world.bodies.find(body => body.label === 'PaddleLeft') as Matter.Body;
-//   const paddleRight = engine.world.bodies.find(body => body.label === 'PaddleRight') as Matter.Body;
-//   if (!paddleLeft || !paddleRight) return;
-//   Body.setAngularVelocity(paddleLeft, velocity);
-//   Body.setAngularVelocity(paddleRight, -velocity);
-// };
 
 export const movePaddleKeyRotate = (body: Body, direction: number) => {
   Body.setAngularVelocity(body, direction);
