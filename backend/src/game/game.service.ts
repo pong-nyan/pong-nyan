@@ -21,6 +21,13 @@ export class GameService {
         }
         return undefined;
     }
+
+    // gameMap = new Map<string, Channel>();
+    //
+    // addGame(client: Socket) { 
+    //   {id: channelId, host: client.id, manager: [client.id], userList: [client.id], ...channelInfo }
+    // }
+
 }
 
 

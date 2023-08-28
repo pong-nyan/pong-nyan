@@ -142,7 +142,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       const bodies = e.source.world.bodies;
       bodies.forEach(body => {
         if (body.label === 'Ball') {
-          socket.emit('ball', [ body.position, body.velocity ]);
+          socket.emit('ball', { position: body.position, velocity: body.velocity });
         }
       });
     }
