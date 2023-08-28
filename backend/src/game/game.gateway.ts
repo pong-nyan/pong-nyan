@@ -27,7 +27,6 @@ export class GameGateway {
     const p1 = ret?.p1;
     const p2 = ret?.p2;
     if (!roomName) this.server.to(client.id).emit('loading');
-    // else this.gameService.addGame(roomName);
     this.server.to(roomName).emit('start', {p1, p2});
   }
 

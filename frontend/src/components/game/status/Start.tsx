@@ -12,12 +12,10 @@ export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
   socket.on('start', ({p1, p2}: {p1: string, p2: string}) => {
     if (socket.id === p1) { 
       setPlayerNumber('player1');
-      // setOpponentNumber('player2');
       setOpponentId(p2);
     }
     else if (socket.id == p2){
       setPlayerNumber('player2');
-      // setOpponentNumber('player1');
       setOpponentId(p1);
     }
     setGameStatus(1);
@@ -31,10 +29,6 @@ export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
       'Loading' :
       <div className={styles.buttonWrapper} onClick={() => {
         socket.emit('game-start', { message: 'start' });
-        // room 잡혀야만 게임시작
-        // if (socket.rooms) {
-        //   setGameStatus(1);
-        // }
       }} tabIndex={0}>
         <button className={styles.startButton}>Start</button>
       </div> 
