@@ -6,6 +6,7 @@ import { movePlayer, movePaddle } from '../../../matterEngine/player';
 import { initPlayer } from '@/matterEngine/player';
 import { socket } from '@/context/socket';
 import { PlayerNumber } from '../../../type';
+import { findTarget } from '@/matterEngine/matterJsUnit';
 
 export default function Run({ setGameStatus, playerNumber, opponentId }
   : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string }) {
@@ -73,6 +74,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
 
   socket.on('game-KeyEvent', ({opponentNumber, message, step, velocity}
     : {opponentNumber: PlayerNumber, message: string, step: number, velocity: number}) => {
+    if (!engine.current) return ;
     switch (message) {
     case 'leftDown':
       movePlayer(engine.current, opponentNumber, -step);
@@ -87,7 +89,15 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       movePaddle(engine.current, opponentNumber, velocity);
       break;
     }
+  });
 
+  // 공 위치, 속도 동기화
+  socket.on('game-ball', ({ position, velocity }: { position: Matter.Vector, velocity: Matter.Vector }) => {
+    if (!engine.current || !engine.current.world) return;
+    const ball = findTarget(engine.current.world, 'Ball');
+    if (!ball) return;
+    Matter.Body.setPosition(ball, position);
+    Matter.Body.setVelocity(ball, velocity);
   });
 
   useEffect(() => {

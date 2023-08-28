@@ -43,6 +43,19 @@ export class GameGateway {
 
   @SubscribeMessage('game-ball')
   handleBall(client: Socket, ball: BallInfo) {
-    // 보정
+    // get game-roomName
+    let roomName = '';
+    for (const value of client.rooms) {
+       if (value.startsWith('game-'))
+          {
+            roomName = value;
+            break;
+          }
+    }
+    if (roomName === '') return;
+
+    const updatedBallInfo = this.gameService.reconcilateBallInfo(roomName, ball);
+    if (!updatedBallInfo) return;
+    this.server.to(roomName).emit('game-ball', updatedBallInfo);
   }
 }
