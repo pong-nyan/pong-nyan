@@ -4,6 +4,7 @@ import { BallInfo, RoomName } from 'src/type/game';
 
 @Injectable()
 export class GameService {
+    // TODO: matchingQueue 확인해야함
     matchingQueue: Socket[] = [];
     // TODO: 적절하게  recentBallInfo 메모리 관리해야함.
     // IDEA: 게임이 끝나면 삭제하는 방법
