@@ -17,8 +17,6 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
   const hingeGroupRef = useRef<number>(0);
   let debouncingFlag = false;
 
-
-
   const handleKeyDown = (engine: Engine, e: KeyboardEvent) => {
     const step = 24;
     const velocity = 1;
@@ -26,7 +24,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
     switch (e.key) {
     case 'ArrowLeft':
       movePlayer(engine, playerNumber, -step);
-      socket.emit('gameEvent', {
+      socket.emit('game-event', {
         playerNumber,
         opponentId,
         message: 'leftDown',
@@ -35,7 +33,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       break;
     case 'ArrowRight':
       movePlayer(engine, playerNumber, step);
-      socket.emit('gameEvent', {
+      socket.emit('game-event', {
         playerNumber,
         opponentId,
         message: 'rightDown',
@@ -46,7 +44,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       if (debouncingFlag) return ;
       debouncingFlag = true;
       movePaddle(engine, playerNumber, velocity);
-      socket.emit('gameEvent', { 
+      socket.emit('game-event', { 
         playerNumber,
         opponentId,
         message: 'spaceDown',
@@ -63,7 +61,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
     case ' ':
       debouncingFlag = false;
       movePaddle(engine, playerNumber, -velocity);
-      socket.emit('gameEvent', { 
+      socket.emit('game-event', { 
         playerNumber,
         opponentId,
         message: 'spaceUp',
@@ -142,7 +140,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       const bodies = e.source.world.bodies;
       bodies.forEach(body => {
         if (body.label === 'Ball') {
-          socket.emit('ball', { position: body.position, velocity: body.velocity });
+          socket.emit('game-ball', { position: body.position, velocity: body.velocity });
         }
       });
     }

@@ -2,15 +2,15 @@ import {
   WebSocketGateway,
   WebSocketServer,
   SubscribeMessage,
-} from "@nestjs/websockets";
-import { Socket, Server } from "socket.io";
-import { GameService } from "./game.service";
+} from '@nestjs/websockets';
+import { Socket, Server } from 'socket.io';
+import { GameService } from './game.service';
 // import { UserService } from "../user.service";
 // import { BallInfo } from "../type/game";
 
 @WebSocketGateway({
-  cors: { origin: "*" },
-  path: "/socket/",
+  cors: { origin: '*' },
+  path: '/socket/',
 })
 export class GameGateway {
   constructor(private readonly gameService: GameService) {}
@@ -19,9 +19,9 @@ export class GameGateway {
   server: Server;
   fps = 1000 / 60;
 
-  @SubscribeMessage("startGame")
+  @SubscribeMessage('game-start')
   handleStartGame(client: Socket, data: any) {
-    console.log("startGame");
+    console.log('game-start');
     const ret = this.gameService.match(client);
     const roomName = ret?.roomName;
     const p1 = ret?.p1;
@@ -31,7 +31,7 @@ export class GameGateway {
     this.server.to(roomName).emit('start', {p1, p2});
   }
 
-  @SubscribeMessage("gameEvent")
+  @SubscribeMessage('game-event')
   handleGameEvent(client: Socket, data: any) {
     this.server.to(data.opponentId).emit('gameKeyEvent', {
       opponentNumber: data.playerNumber,
@@ -41,8 +41,8 @@ export class GameGateway {
     });
   }
 
-  @SubscribeMessage("ball")
+  @SubscribeMessage('game-ball')
   handleBall(client: Socket, ball: any) {
-    console.log(client.rooms);
+    // 보정
   }
 }

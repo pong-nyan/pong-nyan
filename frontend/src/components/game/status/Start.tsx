@@ -30,7 +30,7 @@ export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
     loading ?
       'Loading' :
       <div className={styles.buttonWrapper} onClick={() => {
-        socket.emit('startGame', { message: 'start' });
+        socket.emit('game-start', { message: 'start' });
         // room 잡혀야만 게임시작
         // if (socket.rooms) {
         //   setGameStatus(1);
