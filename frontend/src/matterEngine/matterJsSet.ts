@@ -6,7 +6,7 @@ export const initEngine = (engine: Matter.Engine) => {
   engine.gravity.x = 0;
   engine.gravity.y = 0;
 
-  engine.timing.timeScale = 0.1;
+  engine.timing.timeScale = 1;
   
   // 완전 탄성 충돌, zero friction
   engine.world.bodies.forEach(body => {
