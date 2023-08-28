@@ -5,7 +5,9 @@ import { BallInfo, RoomName } from 'src/type/game';
 @Injectable()
 export class GameService {
     matchingQueue: Socket[] = [];
-    recentBallInfMap = new Map<RoomName, BallInfo>();
+    // TODO: 적절하게  recentBallInfo 메모리 관리해야함.
+    // IDEA: 게임이 끝나면 삭제하는 방법
+    recentBallInfoMap = new Map<RoomName, BallInfo>();
 
     match(client: Socket) {
         this.matchingQueue.push(client);
@@ -25,19 +27,19 @@ export class GameService {
     }
 
     reconcilateBallInfo(roomName: RoomName, ballInfo: BallInfo) : BallInfo | undefined {
-        const recentBallInfo = this.recentBallInfMap.get(roomName);
+        const recentBallInfo = this.recentBallInfoMap.get(roomName);
+        // TODO: 적절한 acceptableDiff를 찾아야 함
         const accepableDiff = 0.1;
         if (!recentBallInfo) {
-            this.recentBallInfMap.set(roomName, ballInfo);
+            this.recentBallInfoMap.set(roomName, ballInfo);
             return undefined;
         }
         const diffX = Math.abs(ballInfo.position.x - recentBallInfo.position.x);
         const diffY = Math.abs(ballInfo.position.y - recentBallInfo.position.y);
         const diffVx = Math.abs(ballInfo.velocity.x - recentBallInfo.velocity.x);
         const diffVy = Math.abs(ballInfo.velocity.y - recentBallInfo.velocity.y);
-        console.log(diffVx, diffVy, diffX, diffY);
         if (diffX > accepableDiff || diffY > accepableDiff || diffVx > accepableDiff || diffVy > accepableDiff) {
-            this.recentBallInfMap.set(roomName, ballInfo);
+            this.recentBallInfoMap.set(roomName, ballInfo);
             return ballInfo;
         }
         return undefined;
