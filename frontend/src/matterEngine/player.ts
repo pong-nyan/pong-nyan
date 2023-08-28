@@ -44,10 +44,7 @@ export function initPlayer(cw: number, ch: number, yScale: number, nonCollisionG
   return { hingeLeft, hingeRight, paddleLeft, paddleRight, stopperLeftTop, stopperLeftBottom, stopperRightTop, stopperRightBottom, jointLeft, joinRight};
 }
 
-
 export const movePlayer = (engine: Engine, playerNumber: PlayerNumber, dx: number) => {
-
-
   const paddleLefts = findTargetAll(engine.world, 'PaddleLeft');
   const paddleRights = findTargetAll(engine.world, 'PaddleRight');
   const stopperLeftTops = findTargetAll(engine.world, 'StopperLeftTop');
