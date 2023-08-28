@@ -72,7 +72,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
     }
   };
 
-  socket.on('game-KeyEvent', ({opponentNumber, message, step, velocity}
+  socket.on('game-keyEvent', ({opponentNumber, message, step, velocity}
     : {opponentNumber: PlayerNumber, message: string, step: number, velocity: number}) => {
     if (!engine.current) return ;
     switch (message) {
