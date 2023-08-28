@@ -1,4 +1,4 @@
-import Matter, { Body } from 'matter-js';
+import Matter from 'matter-js';
 import { boundary, ball, sensorBar, paddle } from './matterJsUnit';
 
 export const initEngine = (engine: Matter.Engine) => {
