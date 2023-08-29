@@ -3,24 +3,37 @@ import { stopper, hinge, paddle, findTargetAll } from './matterJsUnit';
 import { Colision, CollisionEvent, GameEvent, KeyDownEvent, KeyUpEvent, Player, PlayerNumber } from '../type';
 import { socket } from '@/context/socket';
 
+const makeHinge = (baseX:number, baseY:number, hingeGroupRef:number) => {
+  const hingeGapX = 20;
+  const hingeRadius = 5;
+  const hingeLeft = hinge(baseX - hingeGapX, baseY, hingeRadius, 'HingeLeft', hingeGroupRef);
+  const hingeRight = hinge(2 * baseX + hingeGapX, baseY, hingeRadius, 'HingeRight', hingeGroupRef);
+  return [ hingeLeft, hingeRight ];
+}
 
+const makePaddle = (baseX:number, baseY:number, hingeGroupRef:number) => {
+  // const paddleWidth = 0.15 * cw;
+  const paddleWidth = 50;
+  const paddleHeight = 20;
+  const paddleLeft = paddle(baseX, baseY, paddleWidth, paddleHeight, 'PaddleLeft', hingeGroupRef);
+  const paddleRight = paddle(2 * baseX, baseY, paddleWidth, paddleHeight, 'PaddleRight', hingeGroupRef);
 
+  Body.setCentre(paddleLeft, { x: -paddleWidth / 2, y: 0}, true);
+  Body.setCentre(paddleRight, { x: paddleWidth / 2, y: 0}, true);
+  return [ paddleLeft, paddleRight ];
+}
 
-const makePlayerStopper = (baseX:number, baseY:number, stopperGapX:number, stopperGapY:number, stopperRadius:number, nonCollisionGroupRef: number) => {
-  const stopperLeftBottom = stopper(baseX + stopperGapX, baseY + stopperGapY, stopperRadius, nonCollisionGroupRef, 'StopperLeftBottom');
-  const stopperRightBottom = stopper(2 * baseX - stopperGapX, baseY + stopperGapY, stopperRadius, nonCollisionGroupRef, 'StopperRightBottom');
-  const stopperLeftTop = stopper(baseX + stopperGapX, baseY - stopperGapY, stopperRadius, nonCollisionGroupRef, 'StopperLeftTop');
-  const stopperRightTop = stopper(2 * baseX - stopperGapX, baseY - stopperGapY, stopperRadius, nonCollisionGroupRef, 'StopperRightTop');
+const makeStopper = (playerNumber:PlayerNumber, baseX:number, baseY:number, nonCollisionGroupRef: number) => {
+  const stopperRadius = 50;
+  const stopperGapY = 65;
+  const stopperGapX = -40;
+  const stopperLeftBottom = stopper(baseX + stopperGapX, baseY + stopperGapY, stopperRadius, nonCollisionGroupRef, playerNumber === 'player1'? 'StopperLeftBottom' : 'StopperRightTop');
+  const stopperRightBottom = stopper(2 * baseX - stopperGapX, baseY + stopperGapY, stopperRadius, nonCollisionGroupRef, playerNumber === 'player1' ? 'StopperRightBottom' : 'StopperLeftTop');
+  const stopperLeftTop = stopper(baseX + stopperGapX, baseY - stopperGapY, stopperRadius, nonCollisionGroupRef, playerNumber === 'player1' ? 'StopperLeftTop' : 'StopperRightBottom');
+  const stopperRightTop = stopper(2 * baseX - stopperGapX, baseY - stopperGapY, stopperRadius, nonCollisionGroupRef, playerNumber === 'player1' ? 'StopperRightTop' : 'StopperLeftBottom');
   return [ stopperLeftBottom, stopperRightBottom, stopperLeftTop, stopperRightTop ];
 }
 
-const makeOpponentStopper = (baseX:number, baseY:number, stopperGapX:number, stopperGapY:number, stopperRadius:number, nonCollisionGroupRef: number) => {
-  const stopperRightTop = stopper(baseX + stopperGapX, baseY + stopperGapY, stopperRadius, nonCollisionGroupRef, 'StopperRightTop');
-  const stopperLeftTop = stopper(2 * baseX - stopperGapX, baseY + stopperGapY, stopperRadius, nonCollisionGroupRef, 'StopperLeftTop');
-  const stopperRightBottom = stopper(baseX + stopperGapX, baseY - stopperGapY, stopperRadius, nonCollisionGroupRef, 'StopperRightBottom');
-  const stopperLeftBottom = stopper(2 * baseX - stopperGapX, baseY - stopperGapY, stopperRadius, nonCollisionGroupRef, 'StopperLeftBottom');
-  return [ stopperLeftBottom, stopperRightBottom, stopperLeftTop, stopperRightTop ];
-}
 
 const makeJoint = (hingeLeft: Body, hingeRight: Body, paddleLeft: Body, paddleRight: Body) => {
   const jointLeft = Constraint.create({
@@ -42,74 +55,31 @@ const makeJoint = (hingeLeft: Body, hingeRight: Body, paddleLeft: Body, paddleRi
   return [ jointLeft, joinRight ];
 }
 
-// const makeHinge = (baseX:number, hingeGapX) => {
-//
-// }
-
-
-
 export function initPlayer(playerNumber:PlayerNumber, cw: number, ch: number, yScale: number, nonCollisionGroupRef: number, hingeGroupRef: number) : Player {
   const xScale = 0.333;
-
-  // makeHinge
-  //
-  // makePaddle
-  // hinge
-  const hingeLeft = hinge(xScale * cw - 20, yScale * ch, 5, 'HingeLeft', hingeGroupRef);
-  const hingeRight = hinge(2 * xScale * cw + 20, yScale * ch, 5, 'HingeRight', hingeGroupRef);
-
-  const paddleWidth = 0.15 * cw;
-  const paddleLeft = paddle(xScale * cw * 0.0001, yScale * ch, paddleWidth, 20, 'PaddleLeft', hingeGroupRef);
-  const paddleRight = paddle(2 * xScale * cw, yScale * ch, paddleWidth, 20, 'PaddleRight', hingeGroupRef);
-
-  Body.setCentre(paddleLeft, { x: -paddleWidth / 2, y: 0}, true);
-  Body.setCentre(paddleRight, { x: paddleWidth / 2, y: 0}, true);
-
-  // paddle stopper
-  const stopperRadius = 50;
-  const stopperGapY = 65;
-  const stopperGapX = -40;
-
-
-  //
-  const [ stopperLeftBottom, stopperRightBottom, stopperLeftTop, stopperRightTop ] = playerNumber === 'player1'
-    ? makePlayerStopper(xScale * cw, yScale * ch, stopperGapX, stopperGapY, stopperRadius, nonCollisionGroupRef)
-    : makeOpponentStopper(xScale * cw, yScale * ch, stopperGapX, stopperGapY, stopperRadius, nonCollisionGroupRef);
-  //
-
+  const [ hingeLeft, hingeRight ] = makeHinge(xScale * cw, yScale * ch, hingeGroupRef);
+  const [ paddleLeft, paddleRight ] = makePaddle(xScale * cw, yScale * ch, hingeGroupRef);
+  const [ stopperLeftBottom, stopperRightBottom, stopperLeftTop, stopperRightTop ] = makeStopper(playerNumber, xScale * cw, yScale * ch, nonCollisionGroupRef);
   const [ jointLeft, joinRight ] = makeJoint(hingeLeft, hingeRight, paddleLeft, paddleRight);
-
-  // const stopperLeftBottom = stopper(xScale * cw + stopperGapX, yScale * ch + stopperGapY, stopperRadius, nonCollisionGroupRef, 'StopperLeftBottom');
-  // const stopperRightBottom = stopper(2 * xScale * cw - stopperGapX, yScale * ch + stopperGapY, stopperRadius, nonCollisionGroupRef, 'StopperRightBottom');
-  // const stopperLeftTop = stopper(xScale * cw + stopperGapX, yScale * ch - stopperGapY, stopperRadius, nonCollisionGroupRef, 'StopperLeftTop');
-  // const stopperRightTop = stopper(2 * xScale * cw - stopperGapX, yScale * ch - stopperGapY, stopperRadius, nonCollisionGroupRef, 'StopperRightTop');
   return { hingeLeft, hingeRight, paddleLeft, paddleRight, stopperLeftTop, stopperLeftBottom, stopperRightTop, stopperRightBottom, jointLeft, joinRight};
 }
 
-
-
+const getOwnTarget = (engine: Engine, playerNumber:PlayerNumber, label:string) => {
+  const targets = findTargetAll(engine.world, label);
+  return playerNumber === 'player1' ? targets[0] : targets[1];
+}
 
 export const movePlayer = (engine: Engine, playerNumber: PlayerNumber, dx: number) => {
-  const paddleLefts = findTargetAll(engine.world, 'PaddleLeft');
-  const paddleRights = findTargetAll(engine.world, 'PaddleRight');
-  const stopperLeftTops = findTargetAll(engine.world, 'StopperLeftTop');
-  const stopperRightTops = findTargetAll(engine.world, 'StopperRightTop');
-  const stopperLeftBottoms = findTargetAll(engine.world, 'StopperLeftBottom');
-  const stopperRightBottoms = findTargetAll(engine.world, 'StopperRightBottom');
-  const hingeLefts = findTargetAll(engine.world, 'HingeLeft');
-  const hingeRights = findTargetAll(engine.world, 'HingeRight');
+  const paddleLeft = getOwnTarget(engine, playerNumber, 'PaddleLeft');
+  const paddleRight = getOwnTarget(engine, playerNumber, 'PaddleRight');
+  const StopperLeftTop = getOwnTarget(engine, playerNumber, 'StopperLeftTop');
+  const StopperRightTop = getOwnTarget(engine, playerNumber, 'StopperRightTop');
+  const StopperLeftBottom = getOwnTarget(engine, playerNumber, 'StopperLeftBottom');
+  const StopperRightBottom = getOwnTarget(engine, playerNumber, 'StopperRightBottom');
+  const hingeLeft = getOwnTarget(engine, playerNumber, 'HingeLeft');
+  const hingeRight = getOwnTarget(engine, playerNumber, 'HingeRight');
 
-  const paddleLeft = playerNumber === 'player1' ? paddleLefts[0] : paddleLefts[1];
-  const paddleRight = playerNumber === 'player1' ? paddleRights[0] : paddleRights[1];
-  const StopperLeftTop = playerNumber === 'player1' ? stopperLeftTops[0] : stopperLeftTops[1];
-  const StopperRightTop = playerNumber === 'player1' ? stopperRightTops[0] : stopperRightTops[1];
-  const StopperLeftBottom = playerNumber === 'player1' ? stopperLeftBottoms[0] : stopperLeftBottoms[1];
-  const StopperRightBottom = playerNumber === 'player1' ? stopperRightBottoms[0] : stopperRightBottoms[1];
-  const hingeLeft = playerNumber === 'player1' ? hingeLefts[0] : hingeLefts[1];
-  const hingeRight = playerNumber === 'player1' ? hingeRights[0] : hingeRights[1];
-
-  if (!paddleLeft || !paddleRight 
-      || !StopperLeftTop || !StopperRightTop || !StopperLeftBottom || !StopperRightBottom 
+  if (!paddleLeft || !paddleRight || !StopperLeftTop || !StopperRightTop || !StopperLeftBottom || !StopperRightBottom 
       || !hingeLeft || !hingeRight) return;
   dx = playerNumber === 'player1' ? dx : -dx;
   Body.translate(paddleLeft, { x: dx, y: 0 });
@@ -120,15 +90,11 @@ export const movePlayer = (engine: Engine, playerNumber: PlayerNumber, dx: numbe
   Body.translate(StopperRightBottom, { x: dx, y: 0 });
   Body.translate(hingeLeft, { x: dx, y: 0 });
   Body.translate(hingeRight, { x: dx, y: 0 });
-
 };
 
-//TODO: sperate key
 export const movePaddle = (engine: Engine, playerNumber: PlayerNumber, velocity: number) => {
-  const paddleLefts = findTargetAll(engine.world, 'PaddleLeft');
-  const paddleRights = findTargetAll(engine.world, 'PaddleRight');
-  const paddleLeft = playerNumber === 'player1' ? paddleLefts[0] : paddleLefts[1];
-  const paddleRight = playerNumber === 'player1' ? paddleRights[0] : paddleRights[1];
+  const paddleLeft = getOwnTarget(engine, playerNumber, 'PaddleLeft');
+  const paddleRight = getOwnTarget(engine, playerNumber, 'PaddleRight');
   if (!paddleLeft || !paddleRight) return;
   velocity = playerNumber === 'player1' ? velocity : -velocity;
   Body.setAngularVelocity(paddleLeft, -velocity);
