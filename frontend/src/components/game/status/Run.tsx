@@ -83,10 +83,10 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       movePlayer(engine.current, opponentNumber, step);
       break;
     case 'spaceDown':
-      movePaddle(engine.current, opponentNumber, -velocity);
+      movePaddle(engine.current, opponentNumber, velocity);
       break;
     case 'spaceUp':
-      movePaddle(engine.current, opponentNumber, velocity);
+      movePaddle(engine.current, opponentNumber, -velocity);
       break;
     }
   });
@@ -191,8 +191,8 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
         }
       });
     });
-    const me = initPlayer(cw, ch, 0.9, nonCollisionGroupRef.current, hingeGroupRef.current);
-    const opponent = initPlayer(cw, ch, 0.06, nonCollisionGroupRef.current, hingeGroupRef.current);
+    const me = initPlayer('player1', cw, ch, 0.9, nonCollisionGroupRef.current, hingeGroupRef.current);
+    const opponent = initPlayer('player2', cw, ch, 0.10, nonCollisionGroupRef.current, hingeGroupRef.current);
     World.add(engine.current.world, Object.values(me));
     World.add(engine.current.world, Object.values(opponent));
   
