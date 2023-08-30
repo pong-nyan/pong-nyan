@@ -7,6 +7,7 @@ import { socket } from '@/context/socket';
 function ChatRoom({ channelId, selectedChannel, onLeaveChannel }) {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputMessage, setInputMessage] = useState('');
+  const [channelUsers, setChannelUsers] = useState<string[]>([]);
 
   useEffect(() => {
     socket.on('chat-new-message', (message) => {
@@ -15,6 +16,16 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }) {
 
     return () => {
       socket.off('chat-new-message');
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on('chat-update-users', (users) => {
+      setChannelUsers(users);
+    });
+
+    return () => {
+      socket.off('chat-update-users');
     };
   }, []);
 
@@ -38,7 +49,14 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }) {
           <strong>Current Channel:</strong> {selectedChannel.title}
           <button onClick={handleLeaveChannel}>Leave Channel</button>
         </div>
-
+        <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
+          <h3>Users in Channel</h3>
+          <ul>
+            {channelUsers.map(user => (
+              <li key={user}>{user}</li>
+            ))}
+          </ul>
+        </div>
         <MessageList messages={messages} />
         <div style={{ display: 'flex', marginTop: 'auto' }}>
           <MessageInput value={inputMessage} onChange={(e : React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)} />

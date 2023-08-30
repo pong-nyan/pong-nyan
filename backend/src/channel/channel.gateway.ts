@@ -25,10 +25,10 @@ export class ChannelGateway {
   }
 
   @SubscribeMessage('chat-join-channel')
-  handleJoinChannel(client: any, channelId: string) {
-    // channelId값의 room에 입장
-    client.join(channelId);
-    // TODO: 채널에 입장한 사용자 목록 업데이트
+  joinChannel(client: any, channelId: string) {
+    this.channelService.joinChannel(channelId, client.id);
+    const users = this.channelService.getChannelUsers(channelId);
+    this.server.to(channelId).emit('chat-update-users', users);
   }
 
   @SubscribeMessage('chat-message-in-channel')
@@ -39,7 +39,9 @@ export class ChannelGateway {
 
   @SubscribeMessage('chat-leave-channel')
   leaveChannel(client: any, channelId: string) {
-    client.leave(channelId);
+      this.channelService.leaveChannel(channelId, client.id);
+      const users = this.channelService.getChannelUsers(channelId);
+      this.server.to(channelId).emit('chat-update-users', users);
   }
 
   handleConnection(client: any) {
