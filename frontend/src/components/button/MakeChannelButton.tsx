@@ -4,11 +4,12 @@ import { socket } from '@/context/socket';
 const MakeChannelButton = () => {
 
   const makeChannel = () => {
-    const channelTitle = prompt('방제를 입력하세요');
-    if (!channelTitle) return ;
-    const channelInfo = { channelTitle };
+    const title = prompt('방제를 입력하세요');
+    if (!title) return ;
+    const channelInfo = { title: title };
 
     socket.emit('chat-channel-make', channelInfo);
+    console.log('makeCh channelInfo ', channelInfo);
     // const channelPassword = prompt('채널 비밀번호를 입력하세요');
     // if (!channelPassword) return ;
     // socket.emit('channel-password', channelPassword);

@@ -14,7 +14,10 @@ export class ChannelService {
     const newChannel = {id: channelId, host: client.id, manager: [client.id], userList: [client.id], ...channelInfo };
     client.join(channelId);
     this.channelMap.set(channelId, newChannel);
-    console.log('channel id :', this.channelMap[0].id);
+    const allChannels = Array.from(this.channelMap.values());
+    allChannels.forEach(channel => {
+        console.log('channel id:', channel.id, 'channel title:', channel.title);
+    });
     console.log('channel List :', this.channelMap);
   }
 
@@ -22,12 +25,12 @@ export class ChannelService {
     return this.channelMap;
   }
 
-  getChannel(channelTitle: string) {
-    return this.channelMap.get(channelTitle);
+  getChannel(title: string) {
+    return this.channelMap.get(title);
   }
 
-  deleteChannel(channelTitle: string) {
-    return this.channelMap.delete(channelTitle);
+  deleteChannel(title: string) {
+    return this.channelMap.delete(title);
   }
 
 }

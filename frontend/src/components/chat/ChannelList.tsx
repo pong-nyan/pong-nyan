@@ -1,25 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { socket } from '@/context/socket';
+import { Channel } from '@/type';
 
 const ChannelList = () => {
+  const [channelList, setChannelList] = useState<Channel[]>([]);
 
-  const channelList = [
-    // TODO: channel backend API 연동
-    { id: 1, name: 'channel 1' },
-    { id: 2, name: 'channel 2' },
-    { id: 3, name: 'channel 3' },
-    // ... 추가 채팅방 정보
-  ];
-  
+  useEffect(() => {
+    socket.on('chat-update-channel-list', (updatedList) => {
+      console.log('chat-update-ch-list', updatedList);
+      setChannelList(updatedList);
+    });
+
+    return () => {
+      socket.off('chat-update-channel-list');
+    };
+  }, []);
+
   return (
     <div className="chat-room-list">
       <h2>Channel list</h2>
       <ul>
         {channelList.map(channel => (
-          <li key={channel.id}> {channel.name}</li>
+          console.log('ChannelList.tsx channel', channel),
+          <li key={channel.id}> {channel.title}</li>
         ))}
       </ul>
     </div>
   );
 };
-
 export default ChannelList;

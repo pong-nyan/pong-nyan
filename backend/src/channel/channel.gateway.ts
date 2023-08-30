@@ -13,9 +13,9 @@ export class ChannelGateway {
   @SubscribeMessage('chat-channel-make')
   makeChannel(client: any, channelInfo: ChannelInfo) {
     this.channelService.addChannel(channelInfo, client);
-    console.log('channelInfo channel/make :', channelInfo);
-    console.log('chalist', this.channelService.getChannelMap());
-    console.log('client', client.rooms);
+    const updatedChannelList = Array.from(this.channelService.getChannelMap().values());
+    client.server.emit('chat-update-channel-list', updatedChannelList);
+    console.log('chat-ch-make, updatedChList', updatedChannelList);
   }
 
   handleConnection(client: any) {
