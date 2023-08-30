@@ -9,4 +9,14 @@ export type BallInfo = {
     };
 }
 
+export type GameInfo = {
+    roomName: string;
+    p1: string; // nickname
+    p2: string; // nickname
+    score: {
+        p1: number;
+        p2: number;
+    };
+}
+
 export type RoomName = string;

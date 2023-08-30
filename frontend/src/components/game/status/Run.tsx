@@ -25,7 +25,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
     switch (e.key) {
     case 'ArrowLeft':
       movePlayer(engine, playerNumber, -step);
-      socket.emit('game-event', {
+      socket.emit('game-keyEvent', {
         playerNumber,
         opponentId,
         message: 'leftDown',
@@ -34,7 +34,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       break;
     case 'ArrowRight':
       movePlayer(engine, playerNumber, step);
-      socket.emit('game-event', {
+      socket.emit('game-keyEvent', {
         playerNumber,
         opponentId,
         message: 'rightDown',
@@ -45,7 +45,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       if (debouncingFlag) return ;
       debouncingFlag = true;
       movePaddle(engine, playerNumber, velocity);
-      socket.emit('game-event', { 
+      socket.emit('game-keyEvent', { 
         playerNumber,
         opponentId,
         message: 'spaceDown',
@@ -62,7 +62,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
     case ' ':
       debouncingFlag = false;
       movePaddle(engine, playerNumber, -velocity);
-      socket.emit('game-event', { 
+      socket.emit('game-keyEvent', { 
         playerNumber,
         opponentId,
         message: 'spaceUp',

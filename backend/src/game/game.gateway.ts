@@ -19,6 +19,16 @@ export class GameGateway {
   server: Server;
   fps = 1000 / 60;
 
+  async handleConnection(client: Socket) {
+    console.log('GameGateway Connection', client.id);
+  }
+
+  async handleDisconnect(client: Socket) {
+    console.log('GameGateway Disconnection', client.id);
+    this.gameService.removeMatchingClient(client);
+  }
+
+
   @SubscribeMessage('game-start')
   handleStartGame(client: Socket, data: any) {
     console.log('game-start');
@@ -30,8 +40,8 @@ export class GameGateway {
     this.server.to(roomName).emit('start', {p1, p2});
   }
 
-  @SubscribeMessage('game-event')
-  handleGameEvent(client: Socket, data: any) {
+  @SubscribeMessage('game-keyEvent')
+  handleGameKeyEvent(client: Socket, data: any) {
     this.server.to(data.opponentId).emit('game-keyEvent', {
       opponentNumber: data.playerNumber,
       message: data.message,
@@ -40,9 +50,24 @@ export class GameGateway {
     });
   }
 
+  @SubscribeMessage('game-score')
+  handleScore(client: Socket, data: any) {
+    const roomName = client.rooms.forEach((room) => {
+        if (room.startsWith('game-')) {
+            console.log('forEach', room);
+            return room;
+        }
+    });
+
+  }
+
   @SubscribeMessage('game-ball')
   handleBall(client: Socket, ball: BallInfo) {
     // get game-roomName
+    // TODO : refactoring
+    // const roomName = Array.from(client.rooms).find(room => room.startsWith('game-'));
+    // if (!roomName) return;
+
     let roomName = '';
     for (const value of client.rooms) {
        if (value.startsWith('game-'))
@@ -51,6 +76,7 @@ export class GameGateway {
             break;
           }
     }
+    console.log('game-ball', roomName);
     if (roomName === '') return;
 
     const updatedBallInfo = this.gameService.reconcilateBallInfo(roomName, ball);

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { BallInfo, RoomName } from 'src/type/game';
+import { BallInfo, GameInfo, RoomName } from 'src/type/game';
 
 @Injectable()
 export class GameService {
@@ -9,6 +9,8 @@ export class GameService {
     // TODO: 적절하게  recentBallInfo 메모리 관리해야함.
     // IDEA: 게임이 끝나면 삭제하는 방법
     recentBallInfoMap = new Map<RoomName, BallInfo>();
+    gameMap = new Map<RoomName, GameInfo>();
+
 
     match(client: Socket) {
         this.matchingQueue.push(client);
@@ -17,11 +19,12 @@ export class GameService {
             const prefix = 'game-';
             const player1 = this.matchingQueue.shift();
             const player2 = this.matchingQueue.shift();
-            const roomName = prefix + player1.id + player2.id;
+            const roomName = prefix + player1.id + '-' + player2.id;
             player1.join(roomName);
             player2.join(roomName);
             const p1 = player1.id;
             const p2 = player2.id;
+            this.gameMap.set(roomName, { roomName, p1, p2, score: { p1: 0, p2: 0 } });
             return { roomName, p1, p2 };
         }
         return undefined;
@@ -44,6 +47,11 @@ export class GameService {
             return ballInfo;
         }
         return undefined;
+    }
+
+    removeMatchingClient(client: Socket) {
+        this.matchingQueue = this.matchingQueue.filter(item => item !== client);
+        console.log(this.matchingQueue.length);
     }
 }
 

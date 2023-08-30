@@ -3,19 +3,21 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
-} from "@nestjs/websockets";
-import { Socket } from "socket.io";
+} from '@nestjs/websockets';
+import { Socket } from 'socket.io';
+import { GameService } from './game/game.service';
 
 @WebSocketGateway({
-  cors: { origin: "*" },
-  path: "/socket/",
+  cors: { origin: '*' },
+  path: '/socket/',
 })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: Socket) {
-    console.log("Connection", client.id);
+    console.log('AppGateway Connection');
   }
 
+
   async handleDisconnect(client: Socket) {
-    console.log("Disconnection");
+    console.log('AppGateway Disconnection');
   }
 }
