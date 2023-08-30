@@ -4,47 +4,43 @@ import MessageInput from './MessageInput';
 import SendMessageButton from './SendMessageButton';
 import { socket } from '@/context/socket';
 
-function ChatRoom({ channelId, selectedChannel }) {
+function ChatRoom({ channelId, selectedChannel, onLeaveChannel }) {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputMessage, setInputMessage] = useState('');
-  const [targetUserId, setTargetUserId] = useState('');
 
   useEffect(() => {
-    socket.on('chat-private-message', (message) => {
-      // 메시지를 추가합니다.
+    socket.on('chat-new-message', (message) => {
       setMessages(prevMessages => [...prevMessages, message]);
     });
 
     return () => {
-      socket.off('chat-private-message');
+      socket.off('chat-new-message');
     };
   }, []);
 
   const handleSendMessage = () => {
     if (inputMessage.trim() !== '') {
       setMessages([...messages, inputMessage]);
-      socket.emit('chat-private-message', { targetUserId, message: inputMessage });
+      socket.emit('chat-message-in-channel', { channelId, message: inputMessage });
       setInputMessage('');
     }
+  };
+
+  const handleLeaveChannel = () => {
+    socket.emit('chat-leave-channel', channelId);
+    onLeaveChannel();
   };
 
   return (
     <div style={{display: 'flex', justifyContent: 'center'}}>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory'}}>
-        {/* 선택된 채팅방 정보 표시 */}
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
           <strong>Current Channel:</strong> {selectedChannel.title}
+          <button onClick={handleLeaveChannel}>Leave Channel</button>
         </div>
 
         <MessageList messages={messages} />
         <div style={{ display: 'flex', marginTop: 'auto' }}>
-          <input
-            type="text"
-            value={targetUserId}
-            onChange={(e) => setTargetUserId(e.target.value)}
-            placeholder="대상 사용자 ID"
-            style={{ flexGrow: 0.5, marginRight: '10px' }}
-          />
           <MessageInput value={inputMessage} onChange={(e : React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)} />
           <SendMessageButton onClick={handleSendMessage} />
         </div>
