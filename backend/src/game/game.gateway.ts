@@ -28,7 +28,6 @@ export class GameGateway {
     this.gameService.removeMatchingClient(client);
   }
 
-
   @SubscribeMessage('game-start')
   handleStartGame(client: Socket, data: any) {
     console.log('game-start');
