@@ -8,7 +8,7 @@ const MakeChannelButton = () => {
     if (!channelTitle) return ;
     const channelInfo = { channelTitle };
 
-    socket.emit('channel-make', channelInfo);
+    socket.emit('chat-channel-make', channelInfo);
     // const channelPassword = prompt('채널 비밀번호를 입력하세요');
     // if (!channelPassword) return ;
     // socket.emit('channel-password', channelPassword);

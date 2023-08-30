@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class ChannelGateway {
   constructor(private readonly channelService: ChannelService) {}
 
-  @SubscribeMessage('channel-make')
+  @SubscribeMessage('chat-channel-make')
   makeChannel(client: any, channelInfo: ChannelInfo) {
     this.channelService.addChannel(channelInfo, client);
     console.log('channelInfo channel/make :', channelInfo);
