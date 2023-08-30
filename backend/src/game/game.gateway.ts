@@ -49,16 +49,16 @@ export class GameGateway {
     });
   }
 
-  @SubscribeMessage('game-score')
-  handleScore(client: Socket, data: any) {
-    const roomName = client.rooms.forEach((room) => {
-        if (room.startsWith('game-')) {
-            console.log('forEach', room);
-            return room;
-        }
-    });
-
-  }
+  // TODO: sensor에 닿을 시 score 변경
+  // @SubscribeMessage('game-score')
+  // handleScore(client: Socket, data: any) {
+  //   const roomName = client.rooms.forEach((room) => {
+  //       if (room.startsWith('game-')) {
+  //           console.log('forEach', room);
+  //           return room;
+  //       }
+  //   });
+  // }
 
   @SubscribeMessage('game-ball')
   handleBall(client: Socket, ball: BallInfo) {
