@@ -9,7 +9,7 @@ type CatButtonProps = {
 const CatButton = ({ onClickFunction, width, height }: CatButtonProps) => {
   return (
     <button>
-      <Image src="/assets/cat-footprint.png" alt="cat-footprint" onClick={onClickFunction} width={width ?? 42} height={height ?? 42} />
+      <Image src="/assets/catFootprint.png" alt="catFootprint" onClick={onClickFunction} width={width ?? 42} height={height ?? 42} />
     </button>
   );
 };
