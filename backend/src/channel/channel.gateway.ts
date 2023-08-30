@@ -18,6 +18,14 @@ export class ChannelGateway {
     console.log('chat-ch-make, updatedChList', updatedChannelList);
   }
 
+  @SubscribeMessage('chat-join-channel')
+  handleJoinChannel(client: any, channelId: string) {
+    // channelId값의 room에 입장
+    client.join(channelId);
+    // 필요한 경우 추가 작업 수행 (예: 채널에 입장한 사용자 목록 업데이트 등)
+
+  }
+
   handleConnection(client: any) {
     console.log('in cha gateway handleConnection');
     console.log('client connected', client.id);

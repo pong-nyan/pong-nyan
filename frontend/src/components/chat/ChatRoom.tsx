@@ -4,7 +4,7 @@ import MessageInput from './MessageInput';
 import SendMessageButton from './SendMessageButton';
 import { socket } from '@/context/socket';
 
-function ChatRoom() {
+function ChatRoom({ channelId, selectedChannel }) {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [targetUserId, setTargetUserId] = useState('');
@@ -31,6 +31,11 @@ function ChatRoom() {
   return (
     <div style={{display: 'flex', justifyContent: 'center'}}>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory'}}>
+        {/* 선택된 채팅방 정보 표시 */}
+        <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
+          <strong>Current Channel:</strong> {selectedChannel.title}
+        </div>
+
         <MessageList messages={messages} />
         <div style={{ display: 'flex', marginTop: 'auto' }}>
           <input
