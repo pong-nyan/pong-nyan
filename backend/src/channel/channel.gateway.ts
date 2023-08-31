@@ -2,7 +2,7 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { ChannelService } from './channel.service';
 import { ChannelInfo } from '../type/channel';
 import { v4 as uuidv4 } from 'uuid';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -17,7 +17,7 @@ export class ChannelGateway {
   fps = 1000 / 60;
 
   @SubscribeMessage('chat-channel-make')
-  handleMakeChannel(client: any, channelInfo: ChannelInfo) {
+  handleMakeChannel(client: Socket, channelInfo: ChannelInfo) {
     this.channelService.addChannel(channelInfo, client);
     const updatedChannelList = Array.from(this.channelService.getChannelMap().values());
     this.server.emit('chat-update-channel-list', updatedChannelList);
@@ -25,7 +25,7 @@ export class ChannelGateway {
   }
 
   @SubscribeMessage('chat-join-channel')
-  handleJoinChannel(client: any, channelId: string) {
+  handleJoinChannel(client: Socket, channelId: string) {
     client.join(channelId);
     this.channelService.joinChannel(channelId, client.id);
     const users = this.channelService.getChannelUsers(channelId);
@@ -40,7 +40,7 @@ export class ChannelGateway {
   }
 
   @SubscribeMessage('chat-message-in-channel')
-  handleMessageInChannel(client: any, payload: { channelId: string, message: string }) {
+  handleMessageInChannel(client: Socket, payload: { channelId: string, message: string }) {
     // 해당 채널의 모든 사용자에게 메시지 전송
     console.log('chat-message-in-channel, payload', payload);
     const chTest = this.channelService.getChannel(payload.channelId);
@@ -49,12 +49,14 @@ export class ChannelGateway {
   }
 
   @SubscribeMessage('chat-leave-channel')
-  leaveChannel(client: any, channelId: string) {
+  handleLeaveChannel(client: Socket, channelId: string) {
+      client.leave(channelId);
       this.channelService.leaveChannel(channelId, client.id);
       const users = this.channelService.getChannelUsers(channelId);
       this.server.to(channelId).emit('chat-update-users', users);
   }
 
+  // TODO: Socket이 userId를 담고 있지 않아서 오류가 생김
   handleConnection(client: any) {
     console.log('in cha gateway handleConnection');
     console.log('client connected', client.id);
