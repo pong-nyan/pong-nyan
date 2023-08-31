@@ -10,6 +10,7 @@ export class ChannelService {
 
   // 사용자가 채널을 추가
   addChannel(channelInfo: ChannelInfo, client: Socket) {
+    console.log('service addChannel, channelInfo', channelInfo);
     const channelId = uuidv4();
     const newChannel = {id: channelId, host: client.id, manager: [client.id], userList: [client.id], ...channelInfo };
     client.join(channelId);
@@ -22,7 +23,6 @@ export class ChannelService {
   }
 
   // 채널이 사용자를 추가
-// 채널이 사용자를 추가
   joinChannel(channelId: string, userId: string) {
     console.log('service joinChannel, channelId, userId', channelId, userId);
 

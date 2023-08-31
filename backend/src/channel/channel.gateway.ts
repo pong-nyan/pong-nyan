@@ -17,7 +17,7 @@ export class ChannelGateway {
   fps = 1000 / 60;
 
   @SubscribeMessage('chat-channel-make')
-  makeChannel(client: any, channelInfo: ChannelInfo) {
+  handleMakeChannel(client: any, channelInfo: ChannelInfo) {
     this.channelService.addChannel(channelInfo, client);
     const updatedChannelList = Array.from(this.channelService.getChannelMap().values());
     this.server.emit('chat-update-channel-list', updatedChannelList);
@@ -26,6 +26,7 @@ export class ChannelGateway {
 
   @SubscribeMessage('chat-join-channel')
   handleJoinChannel(client: any, channelId: string) {
+    client.join(channelId);
     this.channelService.joinChannel(channelId, client.id);
     const users = this.channelService.getChannelUsers(channelId);
     console.log('chat-join-channel, channelId, users', channelId, users);
