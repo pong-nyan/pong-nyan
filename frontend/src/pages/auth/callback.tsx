@@ -13,15 +13,12 @@ const LoginCallback = () => {
   useEffect(() => {
     if (code) {
       axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/token?code=${code}`, { withCredentials: true })
-        .then((res) => {
-          if (res.data === 'goto signup') {
-            router.replace('/auth/signup');
-          } else if (res.data === 'goto signin') {
-            router.replace('/auth/signin');
-          } else if (res.data === 'goto qr') {
-            router.replace('/auth/qr');
-          }
-        })
+      .then((res) => {
+        console.log(res)
+        if (res.status === 200 && res.data.redirectUrl) {
+          router.push(res.data.redirectUrl);
+        }
+      })
         .catch((error) => {
           console.error('Login Redirect error:', error);
         });
