@@ -4,7 +4,7 @@ export default function Document() {
   return (
     <Html lang="en"> 
       <Head> 
-        <link rel="icon" href="pongNyan.png"/> 
+        <link rel="icon" href="pong-nyan.png"/> 
       </Head>
       <body>
         <Main />
