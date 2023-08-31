@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from './auth.guard';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { RedirectDto, DefaultDto, CodeDto } from './auth.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -20,11 +21,11 @@ export class AuthController {
      */
     @Get('token')
     @ApiOperation({ summary: 'get access token from code and redirect', description: 'intra 에서 받아온 code 값으로 access token 을 발급한다. signup, signin, qr 로 redirect 한다.' })
-    @ApiResponse({ status: 302, description: 'redirect to signup or signin or qr'})
-    @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'unauthorized'})
-    async getToken(@Req() request: Request, @Query('code') code: string, @Res({passthrough: true}) response: Response) {
+    @ApiResponse({ status: HttpStatus.OK, type: RedirectDto, description: 'auth/signup, auth/signin, auth/qr 같은 리디렉션 경로를 반환한다.' })
+    @ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: DefaultDto, description: '인증되지 않은 유저'})
+    async getToken(@Query() codeDto: CodeDto, @Res({passthrough: true}) response: Response): Promise<RedirectDto> {
         //  code 값은 42 oauth2 인증 후 받아온 값
-        const result = await this.authService.getToken(code);
+        const result = await this.authService.getToken(codeDto.code);
         response.cookie('oauth-token', result, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
         // chceck if user already exists
         // TODO: getUserInfo MUST call OUR DATABASE to check if user exists
@@ -32,12 +33,18 @@ export class AuthController {
         const ftUser = await this.authService.getUserInfoFromToken(result.access_token);
         if (!ftUser) throw new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
         const user = await this.authService.findUser(ftUser.intraId);
-        if (!user) return response.redirect('https://localhost/auth/signup');
-        if (!user.google2faEnable) return response.redirect('https://localhost/auth/qr');
-        return response.redirect('https://localhost/auth/signin');
+
+        //  user 가 없으면 회원가입하러 signin 으로
+        if (!user) return { redirectUrl: '/auth/signup' };
+        //  2fa 가 등록되어 있지 않으면 2fa 등록하러 qr 으로
+        if (!user.google2faEnable) return { redirectUrl: '/auth/qr' };
+        //  2fa 가 활성화 되어있으면 signin 으로
+        return { redirectUrl: '/auth/signin' };
     }
 
     @Post('signup')
+    @ApiOperation({ summary: 'signup', description: '회원가입을 진행한다.' })
+    @ApiResponse({ status: HttpStatus.CREATED, type: DefaultDto , description: '회원가입 성공'})
     async signUp(@Req() request: Request, @Res() response: Response) {
         //  user exist check from my database
         const userInfo = await this.authService.getUserInfoFromCookie(request);
