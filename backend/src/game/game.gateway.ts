@@ -5,8 +5,8 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
-// import { UserService } from "../user.service";
 import { BallInfo } from '../type/game';
+// import { UserService } from "../user.service;
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -50,15 +50,22 @@ export class GameGateway {
   }
 
   // TODO: sensor에 닿을 시 score 변경
-  // @SubscribeMessage('game-score')
-  // handleScore(client: Socket, data: any) {
-  //   const roomName = client.rooms.forEach((room) => {
-  //       if (room.startsWith('game-')) {
-  //           console.log('forEach', room);
-  //           return room;
-  //       }
-  //   });
-  // }
+  @SubscribeMessage('game-score')
+  handleScore(client: Socket, data: string[]) {
+    console.log('game-score', data);
+    console.log('client', client);
+    console.log('game-room', client.rooms);
+    const roomName = data[0];
+    const playerNumber = data[1];
+    const score = data[2];
+    this.server.to(roomName).emit('game-score', {playerNumber, score});
+    // const roomName = client.rooms.forEach((room) => {
+    //   if (room.startsWith('game-')) {
+    //     console.log('forEach', room);
+    //     return room;
+    //   }
+    // });
+  }
 
   @SubscribeMessage('game-ball')
   handleBall(client: Socket, ball: BallInfo) {

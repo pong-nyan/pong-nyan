@@ -6,7 +6,7 @@ import { movePlayer, movePaddle } from '../../../matterEngine/player';
 import { initPlayer } from '@/matterEngine/player';
 import { socket } from '@/context/socket';
 import { PlayerNumber } from '../../../type';
-import { findTarget } from '@/matterEngine/matterJsUnit';
+import { ball, findTarget } from '@/matterEngine/matterJsUnit';
 
 export default function Run({ setGameStatus, playerNumber, opponentId }
   : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string }) {
@@ -103,7 +103,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
   useEffect(() => {
     if (!scene.current) return;
 
-    console.log('PlayerNumber: ', playerNumber);
+    // console.log('PlayerNumber: ', playerNumber);
     const cw = scene.current.clientWidth;
     const ch = scene.current.clientHeight;
 
@@ -133,26 +133,27 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
     // start moving ball
     Matter.Body.setVelocity(engine.current.world.bodies.find(body => body.label === 'Ball') as Body, { x: 10, y: 12 });
 
-    //  Sensor 추가
-    sensorAdd(engine.current.world, cw, ch); 
+    // 각 유저마다 Sensor 추가
+    sensorAdd(engine.current.world, 'player1', cw, ch); 
+    sensorAdd(engine.current.world, 'player2', cw, ch * 0.05); 
 
     Events.on(engine.current, 'collisionStart', (e) => {
       const pairs = e.pairs;
       pairs.forEach(pair => {
-        // Ball 이 센서에 충돌하면 게임 끝
-        if (pair.isSensor && (pair.bodyA.label === 'Ball' || pair.bodyB.label === 'Ball')) {
-          // setGameStatus(2);
-          console.log('game over');
+        if (pair.isSensor && pair.bodyA.label === 'Ball' ) {
+          socket.emit('game-score', { player: playerNumber, loser: pair.bodyB.label});
         }
       });
+
       const bodies = e.source.world.bodies;
+
       bodies.forEach(body => {
         if (body.label === 'Ball') {
           socket.emit('game-ball', { position: body.position, velocity: body.velocity });
         }
       });
-    }
-    );
+    });
+
     Events.on(engine.current, 'collisionEnd', (e) => {
       const pairs = e.pairs;
       pairs.forEach(pair => {
@@ -167,6 +168,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
         }
       });
     });
+
     Events.on(engine.current, 'beforeUpdate', (e) => {
       // limit Balls max speed
       const bodies = e.source.world.bodies;
@@ -180,8 +182,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
             const ratio = 10 / speed;
             Matter.Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
           }
-        }
-        else if (body.label.match(/^Paddle/)) {
+        } else if (body.label.match(/^Paddle/)) {
           // set limit paddle angular
           if (body.angularVelocity > 0.42) {
             Matter.Body.setAngularVelocity(body, 0.42);
@@ -216,13 +217,11 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       onKeyDown={(e) =>  {
         if (!engine.current) return;
         handleKeyDown(engine.current, e);
-      }
-      }
+      } }
       onKeyUp={(e) =>  {
         if (!engine.current) return;
         handleKeyUp(engine.current, e);
-      }
-      }
+      } }
       tabIndex={0} >
       <div ref={scene} className={styles.scene}></div>
     </div>

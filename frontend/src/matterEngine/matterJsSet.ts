@@ -28,8 +28,8 @@ export const initWorld = (world: Matter.World, cw: number, ch: number, radius: n
   ]);
 };
 
-export const sensorAdd = (world: Matter.World, cw: number, ch: number) => {
+export const sensorAdd = (world: Matter.World, loserName: string, cw: number, ch: number) => {
   Matter.World.add(world, [
-    sensorBar(cw / 2, 0.97 * ch, cw, 20)
+    sensorBar(loserName, cw / 2, 0.97 * ch, cw, 20)
   ]);
 };
