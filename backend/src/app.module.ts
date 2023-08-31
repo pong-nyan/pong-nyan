@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { GameModule } from './game/game.module';
 import { AuthModule } from './auth/auth.module';
-import { DatabaseModule } from './datasource';
+import { DatabaseModule } from './config/datasource';
 import { ChatModule } from './chat/chat.module';
 import { AppGateway } from './app.gateway';
 
