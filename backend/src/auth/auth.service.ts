@@ -33,14 +33,6 @@ export class AuthService {
     }
 
     // get access token from cookie
-    async getUserInfoFromCookie(request) {
-        //  get access token from cookie
-        const oauthToken = request.cookies['oauth-token'];
-        if (!oauthToken) return null;
-        const accessToken = JSON.parse(JSON.stringify(oauthToken)).access_token;
-        return await this.getUserInfoFromToken(accessToken);
-    }
-
     async getUserInfoFromToken(accessToken: string) {
         //  get user info from 42 api
         const ftUserInfo = await this.getFtUserInfo(accessToken);

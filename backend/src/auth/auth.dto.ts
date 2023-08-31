@@ -1,8 +1,8 @@
-import { createParamDecorator, ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
+import { ExecutionContext, HttpException, HttpStatus, createParamDecorator } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { plainToClass } from 'class-transformer';
-import { IsString, IsNotEmpty, validateOrReject } from 'class-validator';
+import { IsString, IsNotEmpty, validateOrReject, IsNumber, IsEmail } from 'class-validator';
 
 export class RedirectDto {
     @ApiProperty() 
@@ -22,6 +22,14 @@ export class CodeDto {
     code: string;
 }
 
+export class SignupDto {
+    @IsEmail()
+    email: string;
+    @IsString()
+    nickname: string;
+    @IsString()
+    avatar: string;
+}
 
 class CookieValueDto {
   @IsString()
@@ -29,24 +37,21 @@ class CookieValueDto {
   oauth_token: string;
 }
 
-class OauthDto {
-  @IsString()
-  @IsNotEmpty()
-  oauth_token: string;
+export class OauthDto {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  refresh_token: string;
+  scope: string;
+  created_at: number;
+  secret_valid_until: number;
 }
 /**
- * CookieValue Decorator
+ * CookieValue Custom Decorator
  */
 export const CookieValue = createParamDecorator(async (data: unknown, ctx: ExecutionContext): Promise<string> => {
-  const request = ctx.switchToHttp().getRequest();
-  const cookieValue = request.cookies['oauth-token'];
-  
-  const cookieValueDto = plainToClass(CookieValueDto, { oauth_token: cookieValue });
-  try {
-    await validateOrReject(cookieValueDto)
-    const oauthToken = plainToClass(OauthDto, { oauth_token: cookieValueDto.oauth_token});
-    return cookieValueDto.oauth_token;
-  } catch(err) {
-    throw new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
-  } // class-validator를 이용한 검증
+  const request = await ctx.switchToHttp().getRequest();
+  const oauthCookie = request.cookies['oauth-token'];
+  plainToClass(OauthDto, { oauthCookie });
+  return oauthCookie.access_token;
 });

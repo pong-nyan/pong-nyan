@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Query, Res, Req, ConsoleLogger, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Res, Req, Body, ConsoleLogger, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from './auth.guard';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { RedirectDto, DefaultDto, CodeDto } from './auth.dto';
+import { RedirectDto, DefaultDto, CodeDto, CookieValue, SignupDto } from './auth.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -45,19 +45,19 @@ export class AuthController {
     @Post('signup')
     @ApiOperation({ summary: 'signup', description: '회원가입을 진행한다.' })
     @ApiResponse({ status: HttpStatus.CREATED, type: DefaultDto , description: '회원가입 성공'})
-    async signUp(@Req() request: Request, @Res() response: Response) {
+    async signUp(@CookieValue() accessToken: string, @Body() signupDto: SignupDto , @Res() response: Response) {
         //  user exist check from my database
-        const userInfo = await this.authService.getUserInfoFromCookie(request);
+        const userInfo = await this.authService.getUserInfoFromToken(accessToken);
         if (!userInfo) return response.status(HttpStatus.UNAUTHORIZED).send('unauthorized');
         const { intraId, intraNickname } = userInfo;
-        const { nickname, avatar, email } = request.body;
+        const { email, nickname, avatar } = signupDto;
         const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar, 0, email);
         if (!result) return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send('signup failed');
         return response.status(HttpStatus.CREATED).send('signup success');
     }
     @Get('signin')
-    async signIn(@Req() request: Request, @Res() response: Response) {
-        const userInfo = await this.authService.getUserInfoFromCookie(request);
+    async signIn(@CookieValue() accessToken: string, @Req() request: Request, @Res() response: Response) {
+        const userInfo = await this.authService.getUserInfoFromToken(accessToken);
         if (!userInfo) return response.status(HttpStatus.UNAUTHORIZED).send('unauthorized');
         const { intraId } = userInfo;
         const user = await this.authService.findUser(intraId);

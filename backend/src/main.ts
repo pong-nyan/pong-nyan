@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import * as fs from 'fs';
@@ -24,6 +25,7 @@ async function bootstrap() {
     }
   );
   app.use(cookieParser());
+  app.useGlobalPipes(new ValidationPipe());
   setupSwagger(app);
   app.use(server);
 
