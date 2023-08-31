@@ -8,12 +8,18 @@ const ChannelList = ({ onChannelSelect }) => {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
 
   const handleChannelSelect = (channel: Channel) => {
-    setSelectedChannel(channel);
+    const currentChannel = channelList.find(ch => ch.id === channel.id);
+    if (!currentChannel) return;
+
+    // console.log('handleChannelSelect 채널제목눌림 222', currentChannel);
+    setSelectedChannel(currentChannel);
     // 백엔드에 채널 입장 이벤트 전송
-    socket.emit('chat-join-channel', channel.id);
+    socket.emit('chat-join-channel', currentChannel.id);
 
     // 부모 컴포넌트로 선택된 채널 전달
-    onChannelSelect(channel);
+    onChannelSelect(currentChannel);
+    
+    console.log('handleChannelSelect 채널제목눌림 222', currentChannel);
   };
 
   useEffect(() => {
@@ -21,7 +27,7 @@ const ChannelList = ({ onChannelSelect }) => {
       console.log('chat-update-ch-list', updatedList);
       setChannelList(updatedList);
     });
-
+  
     return () => {
       socket.off('chat-update-channel-list');
     };

@@ -11,6 +11,7 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }) {
 
   useEffect(() => {
     socket.on('chat-new-message', (message) => {
+      console.log('chat-new-message message 실행됨', message);
       setMessages(prevMessages => [...prevMessages, message]);
     });
 

@@ -21,19 +21,29 @@ export class ChannelGateway {
     this.channelService.addChannel(channelInfo, client);
     const updatedChannelList = Array.from(this.channelService.getChannelMap().values());
     this.server.emit('chat-update-channel-list', updatedChannelList);
-    console.log('chat-ch-make, updatedChList', updatedChannelList);
+    // console.log('chat-ch-make, updatedChList', updatedChannelList);
   }
 
   @SubscribeMessage('chat-join-channel')
-  joinChannel(client: any, channelId: string) {
+  handleJoinChannel(client: any, channelId: string) {
     this.channelService.joinChannel(channelId, client.id);
     const users = this.channelService.getChannelUsers(channelId);
+    console.log('chat-join-channel, channelId, users', channelId, users);
+
+    // 해당 채널의 유저 목록 업데이트
     this.server.to(channelId).emit('chat-update-users', users);
+
+    // 전체 채널 목록 업데이트
+    const updatedChannelList = Array.from(this.channelService.getChannelMap().values());
+    this.server.emit('chat-update-channel-list', updatedChannelList);
   }
 
   @SubscribeMessage('chat-message-in-channel')
   handleMessageInChannel(client: any, payload: { channelId: string, message: string }) {
     // 해당 채널의 모든 사용자에게 메시지 전송
+    console.log('chat-message-in-channel, payload', payload);
+    const chTest = this.channelService.getChannel(payload.channelId);
+    console.log('chat-message-in-channel, chTest', chTest);
     this.server.to(payload.channelId).emit('chat-new-message', payload.message);
   }
 

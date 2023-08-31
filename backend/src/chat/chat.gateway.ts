@@ -6,7 +6,7 @@ import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 })
 
 export class ChatGateway {
-  @SubscribeMessage('chat-message')
+  @SubscribeMessage('chat-message-in-private')
   handleMessage(client: any, payload: any): string {
     console.log('chat/message client : ', client.id, '-----------------------------------------------');
     console.log('chat/message payload :', payload);

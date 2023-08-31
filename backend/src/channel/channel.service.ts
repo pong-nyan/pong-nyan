@@ -22,10 +22,20 @@ export class ChannelService {
   }
 
   // 채널이 사용자를 추가
+// 채널이 사용자를 추가
   joinChannel(channelId: string, userId: string) {
+    console.log('service joinChannel, channelId, userId', channelId, userId);
+
     const channel = this.channelMap.get(channelId);
-    if (channel && !channel.userList.includes(userId)) {
-      channel.userList.push(userId);
+    console.log('service joinChannel, channelMap.get channel', channel);
+    if (!channel) return; // 채널이 없다면 종료
+
+    if (!channel.userList) {
+        channel.userList = []; // 사용자 목록 초기화
+    }
+
+    if (!channel.userList.includes(userId)) {
+        channel.userList.push(userId);
     }
   }
 
