@@ -1,0 +1,11 @@
+.MakeChannelButton {
+    background-color: #3f0e40;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+    margin-top: 10px;
+}
