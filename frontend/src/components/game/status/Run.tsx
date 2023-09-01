@@ -5,11 +5,12 @@ import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJs
 import { movePlayer, movePaddle } from '../../../matterEngine/player';
 import { initPlayer } from '@/matterEngine/player';
 import { socket } from '@/context/socket';
-import { PlayerNumber } from '../../../type';
+import { PlayerNumber, Score } from '../../../type';
 import { ball, findTarget } from '@/matterEngine/matterJsUnit';
+import { ScoreBoard } from '../../../components/game/ScoreBoard';
 
-export default function Run({ setGameStatus, playerNumber, opponentId }
-  : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string }) {
+export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore }
+  : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string, score: Score, setScore: Dispatch<SetStateAction<Score>> }) {
   const scene = useRef<HTMLDivElement>(null);
   const engine = useRef<Engine>();
   const render = useRef<Render>();
@@ -115,9 +116,9 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
         width: cw,
         height: ch,
         wireframes: false,
-        background: 'green'
+        background: 'transparent'
       }
-    }, [playerNumber, opponentId]);
+    });
 
     runner.current = Runner.create();
 
@@ -141,6 +142,11 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       const pairs = e.pairs;
       pairs.forEach(pair => {
         if (pair.isSensor && pair.bodyA.label === 'Ball' ) {
+          setScore((prevScore: Score) => {
+            if (pair.bodyB.label === 'player1') { return { p1: prevScore.p1 + 1, p2: prevScore.p2 }; }
+            else { return { p1: prevScore.p1, p2: prevScore.p2 + 1 }; }
+          });
+          // pair.bodyB.label === 'player1' ? setScore({p1: score.p1 + 1, p2: score.p2}) : setScore({p1: score.p1, p2: score.p2 + 1}); 
           socket.emit('game-score', { player: playerNumber, loser: pair.bodyB.label});
         }
       });
@@ -223,7 +229,10 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
         handleKeyUp(engine.current, e);
       } }
       tabIndex={0} >
-      <div ref={scene} className={styles.scene}></div>
+      <div ref={scene} className={styles.scene}>
+        <ScoreBoard score={score} />
+      </div>
     </div>
   );
 }
+      // <Score />
