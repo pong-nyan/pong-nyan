@@ -13,11 +13,11 @@ export class AuthController {
     }
 
     /**
-     * 
-     * @param request 
+     *
+     * @param request
      * @param code "42 oauth2 인증 후 받아온 값"
-     * @param response 
-     * @returns 
+     * @param response
+     * @returns
      */
     @Get('token')
     @ApiOperation({ summary: 'get access token from code and redirect', description: 'intra 에서 받아온 code 값으로 access token 을 발급한다. signup, signin, qr 로 redirect 한다.' })
@@ -44,26 +44,27 @@ export class AuthController {
 
     @Post('signup')
     @ApiOperation({ summary: 'signup', description: '회원가입을 진행한다.' })
-    @ApiResponse({ status: HttpStatus.CREATED, type: DefaultDto , description: '회원가입 성공'})
-    async signUp(@CookieValue() accessToken: string, @Body() signupDto: SignupDto , @Res() response: Response) {
+    @ApiResponse({ status: HttpStatus.CREATED, type: DefaultDto, description: '회원가입 성공. qr 등록하러 이동'})
+    async signUp(@CookieValue() accessToken: string, @Body() signupDto: SignupDto, @Res() response: Response) {
         //  user exist check from my database
         const userInfo = await this.authService.getUserInfoFromToken(accessToken);
         if (!userInfo) return response.status(HttpStatus.UNAUTHORIZED).send('unauthorized');
         const { intraId, intraNickname } = userInfo;
         const { email, nickname, avatar } = signupDto;
         const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar, 0, email);
-        if (!result) return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send('signup failed');
-        return response.status(HttpStatus.CREATED).send('signup success');
+        if (!result) return new HttpException('Create User Faild', HttpStatus.INTERNAL_SERVER_ERROR);
+        return { redirectUrl: '/auth/qr' };
     }
     @Get('signin')
-    async signIn(@CookieValue() accessToken: string, @Req() request: Request, @Res() response: Response) {
+    @ApiOperation({ summary: 'signin', description: '로그인을 진행한다.' })
+    @ApiResponse({ status: HttpStatus.OK, type: RedirectDto, description: '로그인 성공. 2fa 인증하러 이동'})
+    async signIn(@CookieValue() accessToken: string) {
         const userInfo = await this.authService.getUserInfoFromToken(accessToken);
-        if (!userInfo) return response.status(HttpStatus.UNAUTHORIZED).send('unauthorized');
+        if (!userInfo) return new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
         const { intraId } = userInfo;
         const user = await this.authService.findUser(intraId);
-        if (!user) return response.status(HttpStatus.NOT_FOUND).send('user not found');
-
-        return response.status(HttpStatus.ACCEPTED).send('goto 2fa');
+        if (!user) return new HttpException('User not found', HttpStatus.NOT_FOUND);
+        return { redirectUrl: '/auth/google-2fa-verify'};
     }
 
     @UseGuards(AuthGuard)
