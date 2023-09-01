@@ -67,9 +67,9 @@ export const ball = (x: number, y: number, radius: number, collisionGroup: numbe
   });
 };
 
-export const sensorBar = (x: number, y: number, width: number, height: number) : Body => {
+export const sensorBar = (loserName: string, x: number, y: number, width: number, height: number) : Body => {
   return Bodies.rectangle(x, y, width, height, {
-    label: 'Sensor', 
+    label: loserName, 
     isStatic: true, 
     isSensor: true, 
     render: { 
