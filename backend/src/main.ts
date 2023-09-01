@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import * as fs from 'fs';
 import * as express from 'express';
+import { setupSwagger } from './config/swagger';
 
 async function bootstrap() {
   // const httpsOptions = {
@@ -23,6 +24,7 @@ async function bootstrap() {
     }
   );
   app.use(cookieParser());
+  setupSwagger(app);
   app.use(server);
 
   app.setGlobalPrefix('api');

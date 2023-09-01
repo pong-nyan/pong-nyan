@@ -1,13 +1,13 @@
+import Start from '../../components/game/status/Start';
+import Run from '../../components/game/status/Run';
+import End from '../../components/game/status/End';
+import { PlayerNumber } from '../../type';
+
 enum GameStatus {
 	Start,
 	Run,
 	End
 }
-
-import Start from '../../components/game/status/Start';
-import Run from '../../components/game/status/Run';
-import End from '../../components/game/status/End';
-import { PlayerNumber } from '../../type';
 
 // 0 start 1 run 2 end
 import { useState } from 'react';

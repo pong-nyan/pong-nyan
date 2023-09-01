@@ -6,6 +6,7 @@ import { movePlayer, movePaddle } from '../../../matterEngine/player';
 import { initPlayer } from '@/matterEngine/player';
 import { socket } from '@/context/socket';
 import { PlayerNumber } from '../../../type';
+import { ball, findTarget } from '@/matterEngine/matterJsUnit';
 
 export default function Run({ setGameStatus, playerNumber, opponentId }
   : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string }) {
@@ -17,8 +18,6 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
   const hingeGroupRef = useRef<number>(0);
   let debouncingFlag = false;
 
-
-
   const handleKeyDown = (engine: Engine, e: KeyboardEvent) => {
     const step = 24;
     const velocity = 1;
@@ -26,7 +25,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
     switch (e.key) {
     case 'ArrowLeft':
       movePlayer(engine, playerNumber, -step);
-      socket.emit('gameEvent', {
+      socket.emit('game-keyEvent', {
         playerNumber,
         opponentId,
         message: 'leftDown',
@@ -35,7 +34,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       break;
     case 'ArrowRight':
       movePlayer(engine, playerNumber, step);
-      socket.emit('gameEvent', {
+      socket.emit('game-keyEvent', {
         playerNumber,
         opponentId,
         message: 'rightDown',
@@ -46,7 +45,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       if (debouncingFlag) return ;
       debouncingFlag = true;
       movePaddle(engine, playerNumber, velocity);
-      socket.emit('gameEvent', { 
+      socket.emit('game-keyEvent', { 
         playerNumber,
         opponentId,
         message: 'spaceDown',
@@ -63,7 +62,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
     case ' ':
       debouncingFlag = false;
       movePaddle(engine, playerNumber, -velocity);
-      socket.emit('gameEvent', { 
+      socket.emit('game-keyEvent', { 
         playerNumber,
         opponentId,
         message: 'spaceUp',
@@ -73,10 +72,9 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
     }
   };
 
-  socket.on('gameKeyEvent', ({opponentNumber, message, step, velocity}
+  socket.on('game-keyEvent', ({opponentNumber, message, step, velocity}
     : {opponentNumber: PlayerNumber, message: string, step: number, velocity: number}) => {
-    console.log('gameKeyEvent', playerNumber, opponentNumber);
-
+    if (!engine.current) return ;
     switch (message) {
     case 'leftDown':
       movePlayer(engine.current, opponentNumber, -step);
@@ -85,19 +83,27 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       movePlayer(engine.current, opponentNumber, step);
       break;
     case 'spaceDown':
-      movePaddle(engine.current, opponentNumber, -velocity);
-      break;
-    case 'spaceUp':
       movePaddle(engine.current, opponentNumber, velocity);
       break;
+    case 'spaceUp':
+      movePaddle(engine.current, opponentNumber, -velocity);
+      break;
     }
+  });
 
+  // 공 위치, 속도 동기화
+  socket.on('game-ball', ({ position, velocity }: { position: Matter.Vector, velocity: Matter.Vector }) => {
+    if (!engine.current || !engine.current.world) return;
+    const ball = findTarget(engine.current.world, 'Ball');
+    if (!ball) return;
+    Matter.Body.setPosition(ball, position);
+    Matter.Body.setVelocity(ball, velocity);
   });
 
   useEffect(() => {
     if (!scene.current) return;
 
-    console.log('PlayerNumber: ', playerNumber);
+    // console.log('PlayerNumber: ', playerNumber);
     const cw = scene.current.clientWidth;
     const ch = scene.current.clientHeight;
 
@@ -127,26 +133,27 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
     // start moving ball
     Matter.Body.setVelocity(engine.current.world.bodies.find(body => body.label === 'Ball') as Body, { x: 10, y: 12 });
 
-    //  Sensor 추가
-    sensorAdd(engine.current.world, cw, ch); 
+    // 각 유저마다 Sensor 추가
+    sensorAdd(engine.current.world, 'player1', cw, ch); 
+    sensorAdd(engine.current.world, 'player2', cw, ch * 0.05); 
 
     Events.on(engine.current, 'collisionStart', (e) => {
       const pairs = e.pairs;
       pairs.forEach(pair => {
-        // Ball 이 센서에 충돌하면 게임 끝
-        if (pair.isSensor && (pair.bodyA.label === 'Ball' || pair.bodyB.label === 'Ball')) {
-          // setGameStatus(2);
-          console.log('game over');
+        if (pair.isSensor && pair.bodyA.label === 'Ball' ) {
+          socket.emit('game-score', { player: playerNumber, loser: pair.bodyB.label});
         }
       });
+
       const bodies = e.source.world.bodies;
+
       bodies.forEach(body => {
         if (body.label === 'Ball') {
-          socket.emit('ball', [ body.position, body.velocity ]);
+          socket.emit('game-ball', { position: body.position, velocity: body.velocity });
         }
       });
-    }
-    );
+    });
+
     Events.on(engine.current, 'collisionEnd', (e) => {
       const pairs = e.pairs;
       pairs.forEach(pair => {
@@ -161,6 +168,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
         }
       });
     });
+
     Events.on(engine.current, 'beforeUpdate', (e) => {
       // limit Balls max speed
       const bodies = e.source.world.bodies;
@@ -174,8 +182,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
             const ratio = 10 / speed;
             Matter.Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
           }
-        }
-        else if (body.label.match(/^Paddle/)) {
+        } else if (body.label.match(/^Paddle/)) {
           // set limit paddle angular
           if (body.angularVelocity > 0.42) {
             Matter.Body.setAngularVelocity(body, 0.42);
@@ -185,8 +192,8 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
         }
       });
     });
-    const me = initPlayer(cw, ch, 0.9, nonCollisionGroupRef.current, hingeGroupRef.current);
-    const opponent = initPlayer(cw, ch, 0.06, nonCollisionGroupRef.current, hingeGroupRef.current);
+    const me = initPlayer('player1', cw, ch, 0.9, nonCollisionGroupRef.current, hingeGroupRef.current);
+    const opponent = initPlayer('player2', cw, ch, 0.10, nonCollisionGroupRef.current, hingeGroupRef.current);
     World.add(engine.current.world, Object.values(me));
     World.add(engine.current.world, Object.values(opponent));
   
@@ -210,13 +217,11 @@ export default function Run({ setGameStatus, playerNumber, opponentId }
       onKeyDown={(e) =>  {
         if (!engine.current) return;
         handleKeyDown(engine.current, e);
-      }
-      }
+      } }
       onKeyUp={(e) =>  {
         if (!engine.current) return;
         handleKeyUp(engine.current, e);
-      }
-      }
+      } }
       tabIndex={0} >
       <div ref={scene} className={styles.scene}></div>
     </div>
