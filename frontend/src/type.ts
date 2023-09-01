@@ -27,3 +27,7 @@ export type KeyUpEvent = {
     data: string;
 }
 
+export type Score = {
+    p1: number,
+    p2: number
+}

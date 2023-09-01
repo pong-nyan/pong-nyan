@@ -5,7 +5,6 @@
     /* 상하좌우 반전  */
     /* rotate: 180deg;
     transform: scaleX(-1); */
-
 }
 
 .scene {
@@ -14,3 +13,21 @@
     width: 300px;
     height: 500px;
 }
+
+.scene canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.score {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  font-weight: bold;
+  z-index: 1;
+}
+
