@@ -1,9 +1,8 @@
-import { useRouter } from 'next/router';
+import { NextRouter } from 'next/router';
 import { useEffect } from 'react';
 import axios from 'axios';
 
-const usePostRedirect = (url: string, method: 'get' | 'post') => {
-  const router = useRouter();
+const useRedirect = (router: NextRouter, url: string | null, method: 'get' | 'post') => {
   
   useEffect(() => {
     const fetchAndRedirect = async () => {
@@ -31,4 +30,4 @@ const usePostRedirect = (url: string, method: 'get' | 'post') => {
   }, [url, router]);
 };
   
-export default usePostRedirect;
+export default useRedirect;
