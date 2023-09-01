@@ -9,7 +9,7 @@ export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
   const socket = useContext(SocketContext);
   const [ loading, setLoading ] = useState(false);
 
-  socket.on('start', ({p1, p2}: {p1: string, p2: string}) => {
+  socket.on('game-randomStart', ({p1, p2}: {p1: string, p2: string}) => {
     if (socket.id === p1) { 
       setPlayerNumber('player1');
       setOpponentId(p2);
@@ -20,7 +20,7 @@ export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
     }
     setGameStatus(1);
   });
-  socket.on('loading', () => {
+  socket.on('game-loading', () => {
     setLoading(true);
   });
 
@@ -28,7 +28,7 @@ export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
     loading ?
       'Loading' :
       <div className={styles.buttonWrapper} onClick={() => {
-        socket.emit('game-start', { message: 'start' });
+        socket.emit('game-randomStart', { message: 'start' });
       }} tabIndex={0}>
         <button className={styles.startButton}>Start</button>
       </div> 

@@ -28,15 +28,14 @@ export class GameGateway {
     this.gameService.removeMatchingClient(client);
   }
 
-  @SubscribeMessage('game-start')
+  @SubscribeMessage('game-randomStart')
   handleStartGame(client: Socket, data: any) {
-    console.log('game-start');
     const ret = this.gameService.match(client);
     const roomName = ret?.roomName;
     const p1 = ret?.p1;
     const p2 = ret?.p2;
-    if (!roomName) this.server.to(client.id).emit('loading');
-    this.server.to(roomName).emit('start', {p1, p2});
+    if (!roomName) this.server.to(client.id).emit('game-loading');
+    this.server.to(roomName).emit('game-randomStart', {p1, p2});
   }
 
   @SubscribeMessage('game-keyEvent')
