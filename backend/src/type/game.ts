@@ -1,3 +1,5 @@
+export type PlayerNumber = 'player1' | 'player2';
+
 export type BallInfo = {
     position: {
         x: number;
@@ -7,6 +9,11 @@ export type BallInfo = {
         x: number;
         y: number;
     };
+}
+
+export type ScoreInfo = {
+    playerNumber: PlayerNumber;
+    loser: PlayerNumber;
 }
 
 export type GameInfo = {
