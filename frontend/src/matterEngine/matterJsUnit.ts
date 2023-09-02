@@ -42,7 +42,7 @@ export const stopper = (x: number, y: number, radius: number, group: number, lab
     },
     restitution: 0, 
     render: {
-      visible: true 
+      visible: false
     }
   });
 };

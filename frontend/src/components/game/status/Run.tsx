@@ -27,25 +27,24 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     const step = 24;
     const velocity = 1;
 
-
     switch (e.key) {
     case 'ArrowLeft':
       if (playerNumber === 'player1' && getOwnTarget(engine, playerNumber, 'HingeLeft').position.x - step < 0) return;
       else if (playerNumber === 'player2' && getOwnTarget(engine, playerNumber, 'HingeRight').position.x + step > cw) return;
       movePlayer(engine, playerNumber, -step);
-      socketEmitGameKeyEvent(playerNumber, opponentId, 'leftDown', step);
+      socketEmitGameKeyEvent(playerNumber, opponentId, 'leftDown', step, 0);
       break;
     case 'ArrowRight':
       if (playerNumber === 'player1' && getOwnTarget(engine, playerNumber, 'HingeRight').position.x + step > cw) return;
       else if (playerNumber === 'player2' && getOwnTarget(engine, playerNumber, 'HingeLeft').position.x - step < 0) return;
       movePlayer(engine, playerNumber, step);
-      socketEmitGameKeyEvent(playerNumber, opponentId, 'rightDown', step);
+      socketEmitGameKeyEvent(playerNumber, opponentId, 'rightDown', step, 0);
       break;
     case ' ':
       if (debouncingFlag) return ;
       debouncingFlag = true;
       movePaddle(engine, playerNumber, velocity);
-      socketEmitGameKeyEvent(playerNumber, opponentId, 'spaceDown', velocity);
+      socketEmitGameKeyEvent(playerNumber, opponentId, 'spaceDown', 0, velocity);
       break;
     }
   };
@@ -57,15 +56,10 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     case ' ':
       debouncingFlag = false;
       movePaddle(engine, playerNumber, -velocity);
-      socketEmitGameKeyEvent(playerNumber, opponentId, 'spaceUp', velocity);
+      socketEmitGameKeyEvent(playerNumber, opponentId, 'spaceUp', 0, velocity);
       break;
     }
   };
-
-  // 상대방의 키 이벤트를 받아서 처리
-  socketOnGameKeyEvent(engine);
-  // 공 위치, 속도 동기화
-  socketOnGameBallEvent(engine);
 
   useEffect(() => {
     if (!scene.current) return;
@@ -102,7 +96,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
 
     // 각 유저마다 Sensor 추가
     sensorAdd(engine.current.world, 'player1', cw, ch); 
-    sensorAdd(engine.current.world, 'player2', cw, ch * 0.05); 
+    sensorAdd(engine.current.world, 'player2', cw, ch); 
 
     Events.on(engine.current, 'collisionStart', (e) => {
       const pairs = e.pairs;
@@ -145,11 +139,13 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       bodies.forEach(body => {
         if (body.label === 'Ball') {
           const speed = Math.sqrt(body.velocity.x ** 2 + body.velocity.y ** 2);
-          if (speed > 20) {
-            const ratio = 20 / speed;
+          const minVelocity = 5;
+          const maxVelocity = 10;
+          if (speed > maxVelocity) {
+            const ratio = maxVelocity / speed;
             Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
-          } else if (speed < 10) {
-            const ratio = 10 / speed;
+          } else if (speed < minVelocity) {
+            const ratio = minVelocity / speed;
             Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
           }
         } else if (body.label.match(/^Paddle/)) {
@@ -166,7 +162,12 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     const opponent = initPlayer('player2', cw, ch, 0.10, nonCollisionGroupRef.current, hingeGroupRef.current);
     World.add(engine.current.world, Object.values(me));
     World.add(engine.current.world, Object.values(opponent));
-  
+    
+    // 상대방의 키 이벤트를 받아서 처리
+    socketOnGameKeyEvent(engine.current);
+
+    // 공 위치, 속도 동기화
+    socketOnGameBallEvent(engine.current);
     // run the engine
     Runner.run(runner.current, engine.current);
     Render.run(render.current);
@@ -190,7 +191,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       }}
       onKeyUp={(e) => {
         if (!engine.current || !scene.current) return;
-        handleKeyUp(engine.current, e, scene.current.clientWidth);
+        handleKeyUp(engine.current, e);
       }}
       tabIndex={0} >
       <div ref={scene} className={styles.scene}>

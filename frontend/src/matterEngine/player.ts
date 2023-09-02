@@ -89,7 +89,6 @@ export const movePlayer = (engine: Engine, playerNumber: PlayerNumber, dx: numbe
   if (!paddleLeft || !paddleRight || !StopperLeftTop || !StopperRightTop || !StopperLeftBottom || !StopperRightBottom 
       || !hingeLeft || !hingeRight) return;
   dx = playerNumber === 'player1' ? dx : -dx;
-  console.log(playerNumber, hingeLeft.position.x, hingeRight.position.x);
   Body.translate(paddleLeft, { x: dx, y: 0 });
   Body.translate(paddleRight, { x: dx, y: 0 });
   Body.translate(StopperLeftTop, { x: dx, y: 0 });
