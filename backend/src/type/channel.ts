@@ -1,8 +1,8 @@
 
 export type Channel = ChannelInfo & {
     id: string,
-    host: string,
-    manager: string[],
+    owner: string,
+    administrator: string[],
     userList: string[]
 }
 
