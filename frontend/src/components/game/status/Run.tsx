@@ -2,8 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react
 import { Engine, Render, World, Body, Runner, Events } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
-import { movePlayer, movePaddle } from '../../../matterEngine/player';
-import { initPlayer } from '@/matterEngine/player';
+import { movePlayer, movePaddle, initPlayer, getOwnTarget } from '@/matterEngine/player';
 import { socket } from '@/context/socket';
 import { KeyEventMessage, PlayerNumber, Score } from '../../../type';
 import { ball, findTarget } from '@/matterEngine/matterJsUnit';
@@ -24,16 +23,21 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     // scene 의 css transform 을 이용해 180도 회전
     scene.current?.style.setProperty('transform', 'rotate(180deg)');
   }
-  const handleKeyDown = (engine: Engine, e: KeyboardEvent) => {
+  const handleKeyDown = (engine: Engine, e: KeyboardEvent, cw: number) => {
     const step = 24;
     const velocity = 1;
 
+
     switch (e.key) {
     case 'ArrowLeft':
+      if (playerNumber === 'player1' && getOwnTarget(engine, playerNumber, 'HingeLeft').position.x - step < 0) return;
+      else if (playerNumber === 'player2' && getOwnTarget(engine, playerNumber, 'HingeRight').position.x + step > cw) return;
       movePlayer(engine, playerNumber, -step);
       socketEmitGameKeyEvent(playerNumber, opponentId, 'leftDown', step);
       break;
     case 'ArrowRight':
+      if (playerNumber === 'player1' && getOwnTarget(engine, playerNumber, 'HingeRight').position.x + step > cw) return;
+      else if (playerNumber === 'player2' && getOwnTarget(engine, playerNumber, 'HingeLeft').position.x - step < 0) return;
       movePlayer(engine, playerNumber, step);
       socketEmitGameKeyEvent(playerNumber, opponentId, 'rightDown', step);
       break;
@@ -180,14 +184,14 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
   return (
     <div
       className={styles.sceneWrapper}
-      onKeyDown={(e) =>  {
-        if (!engine.current) return;
-        handleKeyDown(engine.current, e);
-      } }
-      onKeyUp={(e) =>  {
-        if (!engine.current) return;
-        handleKeyUp(engine.current, e);
-      } }
+      onKeyDown={(e) => {
+        if (!engine.current || !scene.current) return;
+        handleKeyDown(engine.current, e, scene.current.clientWidth);
+      }}
+      onKeyUp={(e) => {
+        if (!engine.current || !scene.current) return;
+        handleKeyUp(engine.current, e, scene.current.clientWidth);
+      }}
       tabIndex={0} >
       <div ref={scene} className={styles.scene}>
         <ScoreBoard score={score} playerNumber={playerNumber}/>
