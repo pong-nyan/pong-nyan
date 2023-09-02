@@ -1,32 +1,23 @@
-import axios from 'axios';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import useRedirect from '../../context/useRedirect';
+import { useEffect, useState } from 'react';
+import { useGetFetchData } from '../../context/useGetFetchData';
 
 const LoginCallback = () => {
   const router = useRouter();
-  // const [isClient, setIsClient] = useState(false)
-  // useEffect(() => {
-  //   setIsClient(true)
-  // }, [])
   const code = router.query.code;
+  const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
+  const url =  code ? `${process.env.NEXT_PUBLIC_API_URL}/auth/token?code=${code}`: null;
+  const getFetchData = useGetFetchData(url);
 
   useEffect(() => {
-    if (code) {
-      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/token?code=${code}`, { withCredentials: true })
-        .then((res) => {
-          if (res.data === 'goto signup') {
-            router.replace('/auth/signup');
-          } else if (res.data === 'goto signin') {
-            router.replace('/auth/signin');
-          } else if (res.data === 'goto qr') {
-            router.replace('/auth/qr');
-          }
-        })
-        .catch((error) => {
-          console.error('Login Redirect error:', error);
-        });
-    }
+    const fetchData = async () => {
+      const output = await getFetchData();
+      setRedirectUrl(output);
+    };
+    fetchData();
   }, [code]);
+  useRedirect(redirectUrl);
 
   return (
     <div>

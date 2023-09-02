@@ -12,15 +12,15 @@ export class AuthService {
     ) { }
     async getToken(code: string) {
         //  post request oauth2 token
-        const ret = await axios.post('https://api.intra.42.fr/oauth/token',
-            {
-                client_id: process.env.CLIENT_ID,
-                client_secret: process.env.CLIENT_SECRET,
-                code: code,
-                grant_type: 'authorization_code',
-                redirect_uri: process.env.REDIRECT_URI
-            });
-        return ret.data;
+            const ret = await axios.post('https://api.intra.42.fr/oauth/token',
+                {
+                    client_id: process.env.CLIENT_ID,
+                    client_secret: process.env.CLIENT_SECRET,
+                    code: code,
+                    grant_type: 'authorization_code',
+                    redirect_uri: process.env.REDIRECT_URI
+                });
+            return ret.data;
     }
     async getFtUserInfo(accessToken: string) {
         //  get request user info
@@ -33,14 +33,6 @@ export class AuthService {
     }
 
     // get access token from cookie
-    async getUserInfoFromCookie(request) {
-        //  get access token from cookie
-        const oauthToken = request.cookies['oauth-token'];
-        if (!oauthToken) return null;
-        const accessToken = JSON.parse(JSON.stringify(oauthToken)).access_token;
-        return await this.getUserInfoFromToken(accessToken);
-    }
-
     async getUserInfoFromToken(accessToken: string) {
         //  get user info from 42 api
         const ftUserInfo = await this.getFtUserInfo(accessToken);
@@ -76,7 +68,9 @@ export class AuthService {
         user.avatar = avatar;
         user.rankScore = rankScore;
         user.email = email;
-        return await this.userRepository.save(user);
+        const existUser = this.userRepository.findOne({ where: { intraId: intraId } });
+        if (!existUser) return await this.userRepository.update({ intraId: intraId }, user);
+        else return await this.userRepository.save(user);
     }
 
     async createJwt(intraId: number, intraNickname: string, nickname: string) {

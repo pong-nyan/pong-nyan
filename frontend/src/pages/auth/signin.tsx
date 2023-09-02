@@ -1,22 +1,24 @@
-import { useEffect } from 'react';
-import { useRouter } from 'next/router';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
 import useNotAuth from '@/context/useNotAuth';
+import { useGetFetchData } from '@/context/useGetFetchData';
+import useRedirect from '@/context/useRedirect';
 
 const SignIn = () => {
+  const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   useNotAuth();
-  const router = useRouter();
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/signin`;
+  const getFetchData = useGetFetchData(url);
+
   useEffect(() => {
-    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, { withCredentials: true })
-      .then((res) => {
-        if (res.data === 'goto 2fa') {
-          router.push('/auth/google-2fa-verify');
-        }
-      }).catch((error) => {
-        console.error(error);
-        alert(`Sign In error: ${error.response.data}`);
-      });
-  }, []);
+    const fetchData = async () => {
+      const output = await getFetchData();
+      setRedirectUrl(output);
+    };
+    fetchData();
+  });
+
+  useRedirect(redirectUrl);
+
   return (
     <p>signin</p>
   );

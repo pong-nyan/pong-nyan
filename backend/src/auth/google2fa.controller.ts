@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { Google2faService } from './google2fa.service';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { CookieValue } from './auth.dto';
 
 @Controller('google2fa')
 export class Google2faController {
@@ -14,9 +15,10 @@ export class Google2faController {
 
   @Get('qr')
   //  TODO: Add AuthGuard
-  async register(@Res() response: Response, @Req() request: Request) {
+  async register(@Res() response: Response, @CookieValue() accessToken: string) {
     //  cookie 로 부터 user 정보를 가져옴
-    const { intraId } = await this.authService.getUserInfoFromCookie(request);
+    console.log('accessToken', accessToken)
+    const { intraId } = await this.authService.getUserInfoFromToken(accessToken);
     const user = await this.authService.getUserInfoFromOurDB(intraId);
     const { otpAuthUrl } = await this.google2faService.generateTwoFactorAuthenticationSecret(user);
 
@@ -24,10 +26,10 @@ export class Google2faController {
   }
 
   @Post('enable')
-  async enable(@Res() response: Response, @Req() request: Request, @Body() body: { code: string }) {
+  async enable(@Res() response: Response, @CookieValue() accessToken: string, @Body() body: { code: string }) {
     console.log('enable code ', body.code);
 
-    const { intraId } = await this.authService.getUserInfoFromCookie(request);
+    const { intraId } = await this.authService.getUserInfoFromToken(accessToken);
     const user = await this.authService.getUserInfoFromOurDB(intraId);
     const isCodeValid = await this.google2faService.isTwoFactorAuthenticationCodeValid(body.code, user);
 
