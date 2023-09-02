@@ -108,7 +108,6 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
             if (pair.bodyB.label === 'player1') { return { p1: prevScore.p1 + 1, p2: prevScore.p2 }; }
             else { return { p1: prevScore.p1, p2: prevScore.p2 + 1 }; }
           });
-          // pair.bodyB.label === 'player1' ? setScore({p1: score.p1 + 1, p2: score.p2}) : setScore({p1: score.p1, p2: score.p2 + 1}); 
           socketEmitGameScoreEvent(playerNumber, pair.bodyB.label);
         }
       });
@@ -176,7 +175,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       render.current.canvas.remove();
       render.current.textures = {};
     };
-  }, [playerNumber, opponentId]);
+  }, [playerNumber, opponentId, setScore]);
 
   return (
     <div

@@ -29,7 +29,12 @@ export const initWorld = (world: Matter.World, cw: number, ch: number, radius: n
 };
 
 export const sensorAdd = (world: Matter.World, loserName: string, cw: number, ch: number) => {
+  const thickness = 20;
+  const offset = 10;
+  const sensorY1 = ch - thickness / 2;
+  const sensorY2 = thickness / 2;
   Matter.World.add(world, [
-    sensorBar(loserName, cw / 2, 0.97 * ch, cw, 20)
+    loserName === 'player1' ? sensorBar(loserName, cw / 2, sensorY1 - offset, cw, thickness) 
+      : sensorBar(loserName, cw / 2, sensorY2 + offset, cw, thickness)
   ]);
 };
