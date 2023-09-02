@@ -1,6 +1,6 @@
 import { socket } from '@/context/socket';
 import { KeyEventMessage, PlayerNumber } from '@/type';
-import { Body } from 'matter-js';
+import { Body, Engine } from 'matter-js';
 import { findTarget } from '@/matterEngine/matterJsUnit';
 import { movePlayer, movePaddle } from '@/matterEngine/player';
 
@@ -28,22 +28,24 @@ export const socketEmitGameKeyEvent = (playerNumber: PlayerNumber, opponentId: s
  * @returns
  *
  */
-export const socketOnGameKeyEvent = (engine: React.MutableRefObject<Matter.Engine | undefined>) => {
+export const socketOnGameKeyEvent = (engine: Engine | undefined) => {
   socket.on('game-keyEvent', ({opponentNumber, message, step, velocity}
     : {opponentNumber: PlayerNumber, message: KeyEventMessage, step: number, velocity: number}) => {
-    if (!engine.current) return ;
+    console.log('game-keyEvent', opponentNumber, message, step, velocity);
+    // console.log(engine);
+    if (!engine) return ;
     switch (message) {
     case 'leftDown':
-      movePlayer(engine.current, opponentNumber, -step);
+      movePlayer(engine, opponentNumber, -step);
       break;
     case 'rightDown':
-      movePlayer(engine.current, opponentNumber, step);
+      movePlayer(engine, opponentNumber, step);
       break;
     case 'spaceDown':
-      movePaddle(engine.current, opponentNumber, velocity);
+      movePaddle(engine, opponentNumber, velocity);
       break;
     case 'spaceUp':
-      movePaddle(engine.current, opponentNumber, -velocity);
+      movePaddle(engine, opponentNumber, -velocity);
       break;
     }
   });
@@ -66,10 +68,10 @@ export const socketEmitGameBallEvent = (position: Matter.Vector, velocity: Matte
  * @param engine 
  * @returns 
  */
-export const socketOnGameBallEvent = (engine: React.MutableRefObject<Matter.Engine | undefined>) =>
+export const socketOnGameBallEvent = (engine: Engine | undefined) =>
   socket.on('game-ball', ({ position, velocity }: { position: Matter.Vector, velocity: Matter.Vector }) => {
-    if (!engine.current || !engine.current.world) return;
-    const ball = findTarget(engine.current.world, 'Ball');
+    if (!engine || !engine.world) return;
+    const ball = findTarget(engine.world, 'Ball');
     if (!ball) return;
     Body.setPosition(ball, position);
     Body.setVelocity(ball, velocity);

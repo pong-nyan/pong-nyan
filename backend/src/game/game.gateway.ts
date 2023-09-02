@@ -40,6 +40,7 @@ export class GameGateway {
 
   @SubscribeMessage('game-keyEvent')
   handleGameKeyEvent(client: Socket, data: any) {
+    console.log('game-keyEvent', data);
     this.server.to(data.opponentId).emit('game-keyEvent', {
       opponentNumber: data.playerNumber,
       message: data.message,
@@ -51,9 +52,9 @@ export class GameGateway {
   // TODO: sensor에 닿을 시 score 변경
   @SubscribeMessage('game-score')
   handleScore(client: Socket, data: string[]) {
-    console.log('game-score', data);
-    console.log('client', client);
-    console.log('game-room', client.rooms);
+    // console.log('game-score', data);
+    // console.log('client', client);
+    // console.log('game-room', client.rooms);
     const roomName = data[0];
     const playerNumber = data[1];
     const score = data[2];
@@ -81,7 +82,7 @@ export class GameGateway {
             break;
           }
     }
-    console.log('game-ball', roomName);
+    // console.log('game-ball', roomName);
     if (roomName === '') return;
 
     const updatedBallInfo = this.gameService.reconcilateBallInfo(roomName, ball);
