@@ -1,13 +1,12 @@
 import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react';
-import { Engine, Render, World, Body, Runner, Events } from 'matter-js';
+import { Engine, Render, World, Runner, Body } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
-import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
-import { movePlayer, movePaddle, initPlayer, getOwnTarget } from '@/matterEngine/player';
-import { socket } from '@/context/socket';
-import { KeyEventMessage, PlayerNumber, Score } from '../../../type';
-import { ball, findTarget } from '@/matterEngine/matterJsUnit';
+import { initEngine, initWorld } from '../../../matterEngine/matterJsSet';
+import { movePlayer, movePaddle, getOwnTarget } from '@/matterEngine/player';
+import { eventOnCollisionStart, eventOnCollisionEnd, eventOnBeforeUpdate } from '@/matterEngine/matterJsGameEvent';
+import { PlayerNumber, Score } from '../../../type';
 import { ScoreBoard } from '../../../components/game/ScoreBoard';
-import { socketEmitGameBallEvent, socketEmitGameKeyEvent, socketEmitGameScoreEvent, socketOnGameBallEvent, socketOnGameKeyEvent } from '@/context/socketGameEvent';
+import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent } from '@/context/socketGameEvent';
 
 export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore }
   : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string, score: Score, setScore: Dispatch<SetStateAction<Score>> }) {
@@ -66,6 +65,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     const cw = scene.current.clientWidth;
     const ch = scene.current.clientHeight;
 
+    /* create 3 matterjs instance */
     engine.current = Engine.create();
     render.current = Render.create({
       element: scene.current,
@@ -77,98 +77,25 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
         background: 'transparent'
       }
     });
-
     runner.current = Runner.create();
 
-    const radius = cw / 10;
-
-    // 충돌 안하는 그룹
-    nonCollisionGroupRef.current = Body.nextGroup(true);
-    hingeGroupRef.current= Body.nextGroup(true);
-    
-    initWorld(engine.current.world, cw, ch, radius, nonCollisionGroupRef.current);
+    /* init matterjs(순서 정말 중요함)*/ 
+    initWorld(engine.current.world, cw, ch, nonCollisionGroupRef.current, hingeGroupRef.current);
     initEngine(engine.current);
 
-    // start moving ball
-    Body.setVelocity(engine.current.world.bodies.find(body => body.label === 'Ball') as Body, { x: 10, y: 12 });
+    /* matterjs event on */
+    eventOnBeforeUpdate(engine.current);
+    eventOnCollisionStart(engine.current, playerNumber, setScore);
+    eventOnCollisionEnd(engine.current);
 
-    // 각 유저마다 Sensor 추가
-    sensorAdd(engine.current.world, 'player1', cw, ch); 
-    sensorAdd(engine.current.world, 'player2', cw, ch); 
+    /* socket on event */
+    socketOnGameKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
+    socketOnGameBallEvent(engine.current);  // 공 위치, 속도 동기화
 
-    Events.on(engine.current, 'collisionStart', (e) => {
-      const pairs = e.pairs;
-      pairs.forEach(pair => {
-        if (pair.isSensor && pair.bodyA.label === 'Ball' ) {
-          setScore((prevScore: Score) => {
-            if (pair.bodyB.label === 'player1') { return { p1: prevScore.p1 + 1, p2: prevScore.p2 }; }
-            else { return { p1: prevScore.p1, p2: prevScore.p2 + 1 }; }
-          });
-          socketEmitGameScoreEvent(playerNumber, pair.bodyB.label);
-        }
-      });
-
-      const bodies = e.source.world.bodies;
-      bodies.forEach(body => {
-        if (body.label === 'Ball') {
-          socketEmitGameBallEvent(body.position, body.velocity);
-        }
-      });
-    });
-
-    Events.on(engine.current, 'collisionEnd', (e) => {
-      const pairs = e.pairs;
-      pairs.forEach(pair => {
-        // BottomStopper 와 Paddle 충돌 시 Paddle 의 Velocity, AngularVelocity 0으로 설정하는 이벤트
-        if (pair.bodyA.label.match(/^Paddle/) && pair.bodyB.label.match(/^Stopper(.)*Bottom$/)) {
-          Body.setVelocity(pair.bodyA, { x: 0, y: 0 });
-          Body.setAngularVelocity(pair.bodyA, 0);
-        }
-        if (pair.bodyB.label.match(/^Paddle/) && pair.bodyA.label.match(/^Stopper(.)*Bottom$/)) {
-          Body.setVelocity(pair.bodyB, { x: 0, y: 0 });
-          Body.setAngularVelocity(pair.bodyB, 0);
-        }
-      });
-    });
-
-    Events.on(engine.current, 'beforeUpdate', (e) => {
-      // limit Balls max speed
-      const bodies = e.source.world.bodies;
-      bodies.forEach(body => {
-        if (body.label === 'Ball') {
-          const speed = Math.sqrt(body.velocity.x ** 2 + body.velocity.y ** 2);
-          const minVelocity = 5;
-          const maxVelocity = 10;
-          if (speed > maxVelocity) {
-            const ratio = maxVelocity / speed;
-            Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
-          } else if (speed < minVelocity) {
-            const ratio = minVelocity / speed;
-            Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
-          }
-        } else if (body.label.match(/^Paddle/)) {
-          // set limit paddle angular
-          if (body.angularVelocity > 0.42) {
-            Body.setAngularVelocity(body, 0.42);
-          } else if (body.angularVelocity < -0.42) {
-            Body.setAngularVelocity(body, -0.42);
-          }
-        }
-      });
-    });
-    const me = initPlayer('player1', cw, ch, 0.9, nonCollisionGroupRef.current, hingeGroupRef.current);
-    const opponent = initPlayer('player2', cw, ch, 0.10, nonCollisionGroupRef.current, hingeGroupRef.current);
-    World.add(engine.current.world, Object.values(me));
-    World.add(engine.current.world, Object.values(opponent));
-    
-    // 상대방의 키 이벤트를 받아서 처리
-    socketOnGameKeyEvent(engine.current);
-
-    // 공 위치, 속도 동기화
-    socketOnGameBallEvent(engine.current);
     // run the engine
     Runner.run(runner.current, engine.current);
     Render.run(render.current);
+
     return () => {
       // destroy Matter
       if (!engine.current || !render.current) return;
@@ -198,4 +125,3 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     </div>
   );
 }
-// <Score />
