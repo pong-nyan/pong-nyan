@@ -1,13 +1,14 @@
 import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react';
-import Matter, { Engine, Render, World, Body, Runner, Events } from 'matter-js';
+import { Engine, Render, World, Body, Runner, Events } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld, sensorAdd } from '../../../matterEngine/matterJsSet';
 import { movePlayer, movePaddle } from '../../../matterEngine/player';
 import { initPlayer } from '@/matterEngine/player';
 import { socket } from '@/context/socket';
-import { PlayerNumber, Score } from '../../../type';
+import { KeyEventMessage, PlayerNumber, Score } from '../../../type';
 import { ball, findTarget } from '@/matterEngine/matterJsUnit';
 import { ScoreBoard } from '../../../components/game/ScoreBoard';
+import { socketEmitGameBallEvent, socketEmitGameKeyEvent, socketEmitGameScoreEvent, socketOnGameBallEvent, socketOnGameKeyEvent } from '@/context/socketGameEvent';
 
 export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore }
   : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string, score: Score, setScore: Dispatch<SetStateAction<Score>> }) {
@@ -30,32 +31,17 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     switch (e.key) {
     case 'ArrowLeft':
       movePlayer(engine, playerNumber, -step);
-      socket.emit('game-keyEvent', {
-        playerNumber,
-        opponentId,
-        message: 'leftDown',
-        step,
-      });
+      socketEmitGameKeyEvent(playerNumber, opponentId, 'leftDown', step);
       break;
     case 'ArrowRight':
       movePlayer(engine, playerNumber, step);
-      socket.emit('game-keyEvent', {
-        playerNumber,
-        opponentId,
-        message: 'rightDown',
-        step
-      });
+      socketEmitGameKeyEvent(playerNumber, opponentId, 'rightDown', step);
       break;
     case ' ':
       if (debouncingFlag) return ;
       debouncingFlag = true;
       movePaddle(engine, playerNumber, velocity);
-      socket.emit('game-keyEvent', { 
-        playerNumber,
-        opponentId,
-        message: 'spaceDown',
-        velocity,
-      });
+      socketEmitGameKeyEvent(playerNumber, opponentId, 'spaceDown', velocity);
       break;
     }
   };
@@ -67,43 +53,15 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     case ' ':
       debouncingFlag = false;
       movePaddle(engine, playerNumber, -velocity);
-      socket.emit('game-keyEvent', { 
-        playerNumber,
-        opponentId,
-        message: 'spaceUp',
-        velocity,
-      });
+      socketEmitGameKeyEvent(playerNumber, opponentId, 'spaceUp', velocity);
       break;
     }
   };
 
-  socket.on('game-keyEvent', ({opponentNumber, message, step, velocity}
-    : {opponentNumber: PlayerNumber, message: string, step: number, velocity: number}) => {
-    if (!engine.current) return ;
-    switch (message) {
-    case 'leftDown':
-      movePlayer(engine.current, opponentNumber, -step);
-      break;
-    case 'rightDown':
-      movePlayer(engine.current, opponentNumber, step);
-      break;
-    case 'spaceDown':
-      movePaddle(engine.current, opponentNumber, velocity);
-      break;
-    case 'spaceUp':
-      movePaddle(engine.current, opponentNumber, -velocity);
-      break;
-    }
-  });
-
+  // 상대방의 키 이벤트를 받아서 처리
+  socketOnGameKeyEvent(engine);
   // 공 위치, 속도 동기화
-  socket.on('game-ball', ({ position, velocity }: { position: Matter.Vector, velocity: Matter.Vector }) => {
-    if (!engine.current || !engine.current.world) return;
-    const ball = findTarget(engine.current.world, 'Ball');
-    if (!ball) return;
-    Matter.Body.setPosition(ball, position);
-    Matter.Body.setVelocity(ball, velocity);
-  });
+  socketOnGameBallEvent(engine);
 
   useEffect(() => {
     if (!scene.current) return;
@@ -136,7 +94,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     initEngine(engine.current);
 
     // start moving ball
-    Matter.Body.setVelocity(engine.current.world.bodies.find(body => body.label === 'Ball') as Body, { x: 10, y: 12 });
+    Body.setVelocity(engine.current.world.bodies.find(body => body.label === 'Ball') as Body, { x: 10, y: 12 });
 
     // 각 유저마다 Sensor 추가
     sensorAdd(engine.current.world, 'player1', cw, ch); 
@@ -151,15 +109,14 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
             else { return { p1: prevScore.p1, p2: prevScore.p2 + 1 }; }
           });
           // pair.bodyB.label === 'player1' ? setScore({p1: score.p1 + 1, p2: score.p2}) : setScore({p1: score.p1, p2: score.p2 + 1}); 
-          socket.emit('game-score', { player: playerNumber, loser: pair.bodyB.label});
+          socketEmitGameScoreEvent(playerNumber, pair.bodyB.label);
         }
       });
 
       const bodies = e.source.world.bodies;
-
       bodies.forEach(body => {
         if (body.label === 'Ball') {
-          socket.emit('game-ball', { position: body.position, velocity: body.velocity });
+          socketEmitGameBallEvent(body.position, body.velocity);
         }
       });
     });
@@ -169,12 +126,12 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       pairs.forEach(pair => {
         // BottomStopper 와 Paddle 충돌 시 Paddle 의 Velocity, AngularVelocity 0으로 설정하는 이벤트
         if (pair.bodyA.label.match(/^Paddle/) && pair.bodyB.label.match(/^Stopper(.)*Bottom$/)) {
-          Matter.Body.setVelocity(pair.bodyA, { x: 0, y: 0 });
-          Matter.Body.setAngularVelocity(pair.bodyA, 0);
+          Body.setVelocity(pair.bodyA, { x: 0, y: 0 });
+          Body.setAngularVelocity(pair.bodyA, 0);
         }
         if (pair.bodyB.label.match(/^Paddle/) && pair.bodyA.label.match(/^Stopper(.)*Bottom$/)) {
-          Matter.Body.setVelocity(pair.bodyB, { x: 0, y: 0 });
-          Matter.Body.setAngularVelocity(pair.bodyB, 0);
+          Body.setVelocity(pair.bodyB, { x: 0, y: 0 });
+          Body.setAngularVelocity(pair.bodyB, 0);
         }
       });
     });
@@ -187,17 +144,17 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
           const speed = Math.sqrt(body.velocity.x ** 2 + body.velocity.y ** 2);
           if (speed > 20) {
             const ratio = 20 / speed;
-            Matter.Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
+            Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
           } else if (speed < 10) {
             const ratio = 10 / speed;
-            Matter.Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
+            Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
           }
         } else if (body.label.match(/^Paddle/)) {
           // set limit paddle angular
           if (body.angularVelocity > 0.42) {
-            Matter.Body.setAngularVelocity(body, 0.42);
+            Body.setAngularVelocity(body, 0.42);
           } else if (body.angularVelocity < -0.42) {
-            Matter.Body.setAngularVelocity(body, -0.42);
+            Body.setAngularVelocity(body, -0.42);
           }
         }
       });
