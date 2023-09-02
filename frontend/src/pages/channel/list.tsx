@@ -13,17 +13,19 @@ const ChannelListPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', height: '100vh' }}>
-      <div style={{ flex: 1, borderRight: '1px solid gray', overflowY: 'auto' }}>
-        <ChannelList onChannelSelect={setSelectedChannel} />
-        <MakeChannelButton />
-        <NavButtonWrapper />
-      </div>
-      {selectedChannel && (
-        <div style={{ flex: 2, overflowY: 'auto' }}>
-          <ChatRoom channelId={selectedChannel.id} selectedChannel={selectedChannel} onLeaveChannel={handleLeaveChannel}/>
+    <div style={{height: '100vh' }}>
+      <div style={{ display: 'flex', flexDirection: 'row'  }}>
+        <div style={{ flex: 1, borderRight: '1px solid gray', overflowY: 'auto' }}>
+          <ChannelList onChannelSelect={setSelectedChannel} />
+          <MakeChannelButton />
         </div>
-      )}
+        {selectedChannel && (
+          <div style={{ flex: 2, overflowY: 'auto' }}>
+            <ChatRoom channelId={selectedChannel.id} selectedChannel={selectedChannel} onLeaveChannel={handleLeaveChannel}/>
+          </div>
+        )}
+      </div>
+      <NavButtonWrapper />
     </div>
   );
 };

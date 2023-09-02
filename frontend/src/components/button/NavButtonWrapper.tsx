@@ -1,97 +1,80 @@
-import Image from 'next/image';
+import styles from '@/styles/NavButtonWrapper.module.css';
 
 // home button
 type HomeButtonProps = {
   onClickFunction: () => void;
-  width: number;
-  height: number;
 };
 
-const HomeButton = ({ onClickFunction, width, height }: HomeButtonProps) => {
+const HomeButton = ({ onClickFunction}: HomeButtonProps) => {
   return (
     <button>
-      <Image src="/assets/home-button.png" alt="home-button" onClick={onClickFunction} width={width ?? 42} height={height ?? 42} />
+      <img src="/assets/home-button.png" alt="home-button" onClick={onClickFunction} />
     </button>
   );
 };
 
 HomeButton.defaultProps = {
   onClickFunction: () => { console.error('onClickFunction is not defined');},
-  width: 42,
-  height: 42,
 };
 
 // list button
 type ListButtonProps = {
   onClickFunction: () => void;
-  width: number;
-  height: number;
 };
 
-const ListButton = ({ onClickFunction, width, height }: ListButtonProps) => {
+const ListButton = ({ onClickFunction}: ListButtonProps) => {
   return (
     <button>
-      <Image src="/assets/list-button.png" alt="list-button" onClick={onClickFunction} width={width ?? 42} height={height ?? 42} />
+      <img src="/assets/list-button.png" alt="list-button" onClick={onClickFunction} />
     </button>
   );
 };
 
 ListButton.defaultProps = {
   onClickFunction: () => { console.error('onClickFunction is not defined');},
-  width: 42,
-  height: 42,
 };
 
 // publicRomm button
 type PublicRoomButtonProps = {
   onClickFunction: () => void;
-  width: number;
-  height: number;
 };
 
-const PublicRoomButton = ({ onClickFunction, width, height }: PublicRoomButtonProps) => {
+const PublicRoomButton = ({ onClickFunction }: PublicRoomButtonProps) => {
   return (
     <button>
-      <Image src="/assets/public-room-button.png" alt="public-room-button" onClick={onClickFunction} width={width ?? 42} height={height ?? 42} />
+      <img src="/assets/public-room-button.png" alt="public-room-button" onClick={onClickFunction}  />
     </button>
   );
 };
 
 PublicRoomButton.defaultProps = {
   onClickFunction: () => { console.error('onClickFunction is not defined');},
-  width: 42,
-  height: 42,
 };
 
 // game button
 type GameButtonProps = {
   onClickFunction: () => void;
-  width: number;
-  height: number;
 };
 
-const GameButton = ({ onClickFunction, width, height }: GameButtonProps) => {
+const GameButton = ({ onClickFunction}: GameButtonProps) => {
   return (
     <button>
-      <Image src="/assets/game-button.png" alt="game-button" onClick={onClickFunction} width={width ?? 42} height={height ?? 42} />
+      <img src="/assets/game-button.png" alt="game-button" onClick={onClickFunction} />
     </button>
   );
 };
 
 GameButton.defaultProps = {
   onClickFunction: () => { console.error('onClickFunction is not defined');},
-  width: 42,
-  height: 42,
 };
 
 const NavButtonWrapper= () => {
   return (
-    <nav style={{display:'flex'}} className="NavButtonWrapper">{/* 하단 네비게이션 최상위 태그 */}
+    <nav className={styles.navButtonWrapper}>{/* 하단 네비게이션 최상위 태그 */}
       <HomeButton />
-      <div>button2</div>
-      <div>button3</div>
-      <div>button4</div>
-      <div>button5</div>
+      <ListButton />
+      <PublicRoomButton />
+      <GameButton />
     </nav>
   );
 };
