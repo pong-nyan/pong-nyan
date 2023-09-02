@@ -16,7 +16,7 @@ const LoginCallback = () => {
       setRedirectUrl(output);
     };
     fetchData();
-  });
+  }, [code]);
   useRedirect(redirectUrl);
 
   return (

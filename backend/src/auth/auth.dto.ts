@@ -2,10 +2,10 @@ import { ExecutionContext, HttpException, HttpStatus, createParamDecorator } fro
 import { ApiProperty } from '@nestjs/swagger';
 
 import { plainToClass } from 'class-transformer';
-import { IsString, IsNotEmpty, validateOrReject, IsNumber, IsEmail } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
 
 export class RedirectDto {
-    @ApiProperty() 
+    @ApiProperty()
     redirectUrl: RedirectUrl;
 }
 
@@ -23,10 +23,13 @@ export class CodeDto {
 }
 
 export class SignupDto {
+    @IsNotEmpty()
     @IsEmail()
     email: string;
+    @IsNotEmpty()
     @IsString()
     nickname: string;
+    @IsNotEmpty()
     @IsString()
     avatar: string;
 }

@@ -45,10 +45,10 @@ export class AuthController {
     @Post('signup')
     @ApiOperation({ summary: 'signup', description: '회원가입을 진행한다.' })
     @ApiResponse({ status: HttpStatus.CREATED, type: DefaultDto, description: '회원가입 성공. qr 등록하러 이동'})
-    async signUp(@CookieValue() accessToken: string, @Body() signupDto: SignupDto, @Res() response: Response) {
+    async signUp(@CookieValue() accessToken: string, @Body() signupDto: SignupDto) {
         //  user exist check from my database
         const userInfo = await this.authService.getUserInfoFromToken(accessToken);
-        if (!userInfo) return response.status(HttpStatus.UNAUTHORIZED).send('unauthorized');
+        if (!userInfo) return new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
         const { intraId, intraNickname } = userInfo;
         const { email, nickname, avatar } = signupDto;
         const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar, 0, email);
