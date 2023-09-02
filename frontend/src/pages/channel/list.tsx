@@ -1,4 +1,5 @@
 import MakeChannelButton from '@/components/button/MakeChannelButton';
+import MakeChannel from '@/components/chat/MakeChannel';
 import ChannelList from '@/components/chat/ChannelList';
 import ChatRoom from '@/components/chat/ChatRoom';
 import { useState } from 'react';
@@ -6,16 +7,22 @@ import { Channel } from '@/type';
 
 const ChannelListPage = () => {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
+  const [showMakeChannel, setShowMakeChannel] = useState(false);
 
   const handleLeaveChannel = () => {
     setSelectedChannel(null);
+  };
+
+  const toggleMakeChannel = () => {
+    setShowMakeChannel(prevState => !prevState);
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'row', height: '100vh' }}>
       <div style={{ flex: 1, borderRight: '1px solid gray', overflowY: 'auto' }}>
         <ChannelList onChannelSelect={setSelectedChannel} />
-        <MakeChannelButton />
+        {showMakeChannel && <MakeChannel />}
+        <MakeChannelButton onClick={toggleMakeChannel} />
       </div>
       {selectedChannel && (
         <div style={{ flex: 2, overflowY: 'auto' }}>
