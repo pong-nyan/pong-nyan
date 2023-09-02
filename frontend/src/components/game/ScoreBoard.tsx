@@ -1,7 +1,7 @@
 import{ useEffect, useRef } from 'react';
-import { Score } from '../../type';
+import { Score, PlayerNumber } from '../../type';
 
-export const ScoreBoard = ({score}: {score: Score})  => {
+export const ScoreBoard = ({score, playerNumber}: {score: Score, playerNumber: PlayerNumber})  => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -32,7 +32,9 @@ export const ScoreBoard = ({score}: {score: Score})  => {
     ctx.fillText(`${score.p1}`, middleX1, baseHeight1 + offsetHeight);
     ctx.fillText(`${score.p2}`, middleX2, baseHeight2 - offsetHeight);
   }, [score]);
+  //  playerNumber 가 2 이면 canvas 의 위아래를 바꿔서 렌더링 해야함
 
-  return <canvas ref={canvasRef} width="300" height="500"></canvas>;
+  if (playerNumber === 'player2') return <canvas ref={canvasRef} width="300" height="500" style={{transform: 'rotate(180deg)'}}></canvas>;
+  else return <canvas ref={canvasRef} width="300" height="500"></canvas>;
 };
 

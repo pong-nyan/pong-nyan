@@ -1,7 +1,7 @@
 export type Channel = ChannelInfo & {
     id: string,
-    host: string,
-    manager: string[],
+    owner: string,
+    administrator: string[],
     userList: string[]
 }
 
@@ -11,6 +11,8 @@ export type ChannelInfo = {
     private: boolean,
     maxUser: number,
 }
+
+export type KeyEventMessage = 'leftDown' | 'rightDown' | 'leftUp' | 'rightUp' | 'spaceDown' | 'spaceUp';
 
 export type Player = {
     hingeLeft: Matter.Body;
