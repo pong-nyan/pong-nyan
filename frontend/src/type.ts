@@ -12,6 +12,8 @@ export type ChannelInfo = {
     maxUser: number,
 }
 
+export type KeyEventMessage = 'leftDown' | 'rightDown' | 'leftUp' | 'rightUp' | 'spaceDown' | 'spaceUp';
+
 export type Player = {
     hingeLeft: Matter.Body;
     hingeRight: Matter.Body;
