@@ -234,7 +234,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       } }
       tabIndex={0} >
       <div ref={scene} className={styles.scene}>
-        <ScoreBoard score={score}/>
+        <ScoreBoard score={score} playerNumber={playerNumber}/>
       </div>
     </div>
   );
