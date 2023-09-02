@@ -71,7 +71,7 @@ const makeJoint = (hingeLeft: Body, hingeRight: Body, paddleLeft: Body, paddleRi
 }
 
 
-const getOwnTarget = (engine: Engine, playerNumber:PlayerNumber, label:string) => {
+export const getOwnTarget = (engine: Engine, playerNumber:PlayerNumber, label:string) => {
   const targets = findTargetAll(engine.world, label);
   return playerNumber === 'player1' ? targets[0] : targets[1];
 }
@@ -89,6 +89,7 @@ export const movePlayer = (engine: Engine, playerNumber: PlayerNumber, dx: numbe
   if (!paddleLeft || !paddleRight || !StopperLeftTop || !StopperRightTop || !StopperLeftBottom || !StopperRightBottom 
       || !hingeLeft || !hingeRight) return;
   dx = playerNumber === 'player1' ? dx : -dx;
+  console.log(playerNumber, hingeLeft.position.x, hingeRight.position.x);
   Body.translate(paddleLeft, { x: dx, y: 0 });
   Body.translate(paddleRight, { x: dx, y: 0 });
   Body.translate(StopperLeftTop, { x: dx, y: 0 });
@@ -97,6 +98,9 @@ export const movePlayer = (engine: Engine, playerNumber: PlayerNumber, dx: numbe
   Body.translate(StopperRightBottom, { x: dx, y: 0 });
   Body.translate(hingeLeft, { x: dx, y: 0 });
   Body.translate(hingeRight, { x: dx, y: 0 });
+  // print player position
+  //
+
 };
 
 export const movePaddle = (engine: Engine, playerNumber: PlayerNumber, velocity: number) => {
