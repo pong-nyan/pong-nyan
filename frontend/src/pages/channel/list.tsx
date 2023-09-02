@@ -4,6 +4,7 @@ import ChatRoom from '@/components/chat/ChatRoom';
 import { useState } from 'react';
 import { Channel } from '@/type';
 import NavButtonWrapper from '@/components/button/NavButtonWrapper';
+import styles from '@/styles/Common.module.css';
 
 const ChannelListPage = () => {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
@@ -13,11 +14,12 @@ const ChannelListPage = () => {
   };
 
   return (
-    <div style={{height: '100vh' }}>
+    <div className={styles.commonLayout}>
       <div style={{ display: 'flex', flexDirection: 'row'  }}>
         <div style={{ flex: 1, borderRight: '1px solid gray', overflowY: 'auto' }}>
           <ChannelList onChannelSelect={setSelectedChannel} />
           <MakeChannelButton />
+          <NavButtonWrapper />
         </div>
         {selectedChannel && (
           <div style={{ flex: 2, overflowY: 'auto' }}>
@@ -25,7 +27,6 @@ const ChannelListPage = () => {
           </div>
         )}
       </div>
-      <NavButtonWrapper />
     </div>
   );
 };
