@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Engine, Events, Body } from 'matter-js';
-import { PlayerNumber, Score } from '@/type';
+import { Score } from '@/type';
 import { socketEmitGameBallEvent } from '@/context/socketGameEvent';
 
 export const eventOnBeforeUpdate = (engine: Engine) => {
@@ -31,11 +31,10 @@ export const eventOnBeforeUpdate = (engine: Engine) => {
   });
 };
 
-export const eventOnCollisionStart = (engine: Engine, playerNumber:PlayerNumber, setScore: Dispatch<SetStateAction<Score>>) => {
+export const eventOnCollisionStart = (engine: Engine, setScore: Dispatch<SetStateAction<Score>>) => {
   Events.on(engine, 'collisionStart', (e) => {
     const pairs = e.pairs;
     pairs.forEach(pair => {
-      // console.log('pair is: ', pair);
       if (pair.isSensor) {
         if (pair.bodyA.label === 'Ball' || pair.bodyB.label === 'Ball') {
           setScore((prevScore: Score) => {

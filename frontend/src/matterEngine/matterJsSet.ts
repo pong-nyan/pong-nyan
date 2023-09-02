@@ -14,7 +14,6 @@ export const initWorld = (world: World, cw: number, ch: number, nonCollisionGrou
     ...Object.values(initPlayer('player1', cw, ch, nonCollisionGroupRef, hingeGroupRef)),
     ...Object.values(initPlayer('player2', cw, ch, nonCollisionGroupRef, hingeGroupRef))
   ]);
-  console.log(world.bodies);
   // start moving ball
   Body.setVelocity(world.bodies.find(body => body.label === 'Ball') as Body, { x: 10, y: 12 });
 };
