@@ -19,6 +19,10 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
   const hingeGroupRef = useRef<number>(0);
   let debouncingFlag = false;
 
+  if (playerNumber === 'player2') {
+    // scene 의 css transform 을 이용해 180도 회전
+    scene.current?.style.setProperty('transform', 'rotate(180deg)');
+  }
   const handleKeyDown = (engine: Engine, e: KeyboardEvent) => {
     const step = 24;
     const velocity = 1;
@@ -230,9 +234,9 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       } }
       tabIndex={0} >
       <div ref={scene} className={styles.scene}>
-        <ScoreBoard score={score} />
+        <ScoreBoard score={score}/>
       </div>
     </div>
   );
 }
-      // <Score />
+// <Score />
