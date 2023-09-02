@@ -19,10 +19,6 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
   const hingeGroupRef = useRef<number>(0);
   let debouncingFlag = false;
 
-  if (playerNumber === 'player2') {
-    // scene 의 css transform 을 이용해 180도 회전
-    scene.current?.style.setProperty('transform', 'rotate(180deg)');
-  }
   const handleKeyDown = (engine: Engine, e: KeyboardEvent, cw: number) => {
     const step = 24;
     const velocity = 1;
@@ -64,7 +60,9 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
   useEffect(() => {
     if (!scene.current) return;
 
-    // console.log('PlayerNumber: ', playerNumber);
+    // scene 의 css transform 을 이용해 180도 회전
+    if (playerNumber === 'player2') { scene.current.style.setProperty('transform', 'rotate(180deg)'); }
+
     const cw = scene.current.clientWidth;
     const ch = scene.current.clientHeight;
 
