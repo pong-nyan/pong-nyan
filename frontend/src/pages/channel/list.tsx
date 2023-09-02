@@ -3,6 +3,7 @@ import ChannelList from '@/components/chat/ChannelList';
 import ChatRoom from '@/components/chat/ChatRoom';
 import { useState } from 'react';
 import { Channel } from '@/type';
+import NavButtonWrapper from '@/components/button/NavButtonWrapper';
 
 const ChannelListPage = () => {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
@@ -16,6 +17,7 @@ const ChannelListPage = () => {
       <div style={{ flex: 1, borderRight: '1px solid gray', overflowY: 'auto' }}>
         <ChannelList onChannelSelect={setSelectedChannel} />
         <MakeChannelButton />
+        <NavButtonWrapper />
       </div>
       {selectedChannel && (
         <div style={{ flex: 2, overflowY: 'auto' }}>
