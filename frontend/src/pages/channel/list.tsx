@@ -4,6 +4,8 @@ import ChannelList from '@/components/chat/ChannelList';
 import ChatRoom from '@/components/chat/ChatRoom';
 import { useState } from 'react';
 import { Channel } from '@/type';
+import NavButtonWrapper from '@/components/button/NavButtonWrapper';
+import styles from '@/styles/Common.module.css';
 
 const ChannelListPage = () => {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
@@ -28,7 +30,12 @@ const ChannelListPage = () => {
         <div style={{ flex: 2, overflowY: 'auto' }}>
           <ChatRoom channelId={selectedChannel.id} selectedChannel={selectedChannel} onLeaveChannel={handleLeaveChannel}/>
         </div>
-      )}
+        {selectedChannel && (
+          <div style={{ flex: 2, overflowY: 'auto' }}>
+            <ChatRoom channelId={selectedChannel.id} selectedChannel={selectedChannel} onLeaveChannel={handleLeaveChannel}/>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

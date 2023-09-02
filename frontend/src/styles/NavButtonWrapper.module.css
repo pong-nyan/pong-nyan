@@ -1,0 +1,16 @@
+.navButtonWrapper {
+  display: flex;
+  width: 100%;
+  bottom: 0;
+  text-align: center;
+}
+
+.navButtonWrapper button {
+  display: flex;
+  flex: 1;
+}
+
+.navButtonWrapper button img {
+  width: 100%;
+  height: 100%;
+}
