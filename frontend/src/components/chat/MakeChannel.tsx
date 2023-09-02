@@ -1,7 +1,7 @@
 
 const MakeChannel = () => {
   return (
-    <div className="make-channel">
+    <div className="make-channel" style={{backgroundColor: 'lightblue'}}>
       <button>
         채널
       </button>
@@ -16,15 +16,15 @@ const MakeChannel = () => {
       </div>
       <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
         <span style={{ marginRight: '10px' }}>공개방</span>
-        <input type="checkbox" />
+        <input type="radio" name="channelType" />
       </div>
       <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
         <span style={{ marginRight: '10px' }}>비공개방</span>
-        <input type="checkbox" />
+        <input type="radio" name="channelType" />
       </div>
       <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
         <span style={{ marginRight: '10px' }}>초대방</span>
-        <input type="checkbox" />
+        <input type="radio" name="channelType" />
       </div>
     </div>
   );
