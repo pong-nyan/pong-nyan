@@ -119,7 +119,6 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     };
   }, [playerNumber, opponentId, setScore, countdown]);
 
-
   return (
     <div
       className={styles.sceneWrapper}
