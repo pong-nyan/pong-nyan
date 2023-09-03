@@ -106,6 +106,7 @@ export const socketOnGameScoreEvent = (engine: Engine | undefined, runner: Runne
     setTimeout(() => {
       Runner.start(runner, engine);
     }, 3000);
+
     const speed = 10;
     const degree = 30; 
     const rad = degree * Math.PI / 180;
