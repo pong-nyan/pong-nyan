@@ -42,7 +42,6 @@ export const eventOnBeforeUpdate = (engine: Engine) => {
 //   ctx.fillText(`${countdown}`, sceneSize.width / 2, sceneSize.height / 2);
 // };
 
-
 export const eventOnCollisionStart = (sceneSize: CanvasSize, engine: Engine, runner: Runner, playerNumber: PlayerNumber) => {
   Events.on(engine, 'collisionStart', (e) => {
     const pairs = e.pairs;
