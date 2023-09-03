@@ -20,17 +20,18 @@ const ChannelListPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', height: '100vh' }}>
+    <div className={styles.commonLayout}>
       <div style={{ flex: 1, borderRight: '1px solid gray', overflowY: 'auto' }}>
         <ChannelList onChannelSelect={setSelectedChannel} />
         {showMakeChannel && <MakeChannel />}
         <MakeChannelButton onClick={toggleMakeChannel} />
+        <NavButtonWrapper />
       </div>
-        {selectedChannel && (
+      {selectedChannel && (
         <div style={{ flex: 2, overflowY: 'auto' }}>
-          <ChatRoom channelId={selectedChannel.id} selectedChannel={selectedChannel} onLeaveChannel={handleLeaveChannel}/>
+          <ChatRoom channelId={selectedChannel.id} selectedChannel={selectedChannel} onLeaveChannel={handleLeaveChannel} />
         </div>
-        )}
+      )}
     </div>
   );
 };
