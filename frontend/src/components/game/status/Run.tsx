@@ -1,22 +1,25 @@
-import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react';
+import { Dispatch, SetStateAction, useEffect, useState, useRef, KeyboardEvent} from 'react';
 import { Engine, Render, World, Runner, Body } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld } from '../../../matterEngine/matterJsSet';
+import { findTarget } from '../../../matterEngine/matterJsUnit';
 import { movePlayer, movePaddle, getOwnTarget } from '@/matterEngine/player';
 import { eventOnCollisionStart, eventOnCollisionEnd, eventOnBeforeUpdate } from '@/matterEngine/matterJsGameEvent';
-import { PlayerNumber, Score } from '../../../type';
+import { PlayerNumber, Score, CanvasSize } from '@/type';
 import { ScoreBoard } from '../../../components/game/ScoreBoard';
-import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent } from '@/context/socketGameEvent';
+import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent, socketOnGameScoreEvent } from '@/context/socketGameEvent';
 
 export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore }
   : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string, score: Score, setScore: Dispatch<SetStateAction<Score>> }) {
   const scene = useRef<HTMLDivElement>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
   const engine = useRef<Engine>();
   const render = useRef<Render>();
   const runner = useRef<Runner>();
   const nonCollisionGroupRef = useRef<number>(0);
   const hingeGroupRef = useRef<number>(0);
   let debouncingFlag = false;
+  const [countdown, setCountdown] = useState<number>(0);
 
   const handleKeyDown = (engine: Engine, e: KeyboardEvent, cw: number) => {
     const step = 24;
@@ -62,8 +65,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     // scene 의 css transform 을 이용해 180도 회전
     if (playerNumber === 'player2') { scene.current.style.setProperty('transform', 'rotate(180deg)'); }
 
-    const cw = scene.current.clientWidth;
-    const ch = scene.current.clientHeight;
+    const sceneSize: CanvasSize = { width: scene.current.clientWidth, height: scene.current.clientHeight };
 
     /* create 3 matterjs instance */
     engine.current = Engine.create();
@@ -71,8 +73,8 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       element: scene.current,
       engine: engine.current,
       options: {
-        width: cw,
-        height: ch,
+        width: sceneSize.width,
+        height: sceneSize.height,
         wireframes: false,
         background: 'transparent'
       }
@@ -80,21 +82,31 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     runner.current = Runner.create();
 
     /* init matterjs(순서 정말 중요함)*/ 
-    initWorld(engine.current.world, cw, ch, nonCollisionGroupRef.current, hingeGroupRef.current);
+    initWorld(engine.current.world, sceneSize.width, sceneSize.height, nonCollisionGroupRef.current, hingeGroupRef.current);
     initEngine(engine.current);
 
     /* matterjs event on */
     eventOnBeforeUpdate(engine.current);
-    eventOnCollisionStart(engine.current, playerNumber, setScore);
+    eventOnCollisionStart(sceneSize, engine.current, runner.current, playerNumber, setScore);
     eventOnCollisionEnd(engine.current);
 
     /* socket on event */
     socketOnGameKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
     socketOnGameBallEvent(engine.current);  // 공 위치, 속도 동기화
+    socketOnGameScoreEvent(engine.current, runner.current, setScore);
 
     // run the engine
     Runner.run(runner.current, engine.current);
     Render.run(render.current);
+
+    /* Ball 의 속도와 방향을 0.5초마다 콘솔에 출력 */
+    // const ballBody = findTarget(engine.current.world, 'Ball');
+    // const timer = setInterval(() => {
+    //   if (!engine.current) return;
+    //   const speed = Math.sqrt(ballBody.velocity.x ** 2 + ballBody.velocity.y ** 2);
+    //   const direction = Math.atan2(ballBody.velocity.x, ballBody.velocity.y) * 180 / Math.PI;
+    //   console.log('speed', speed, 'degree', direction < 0 ? direction + 360 : direction);
+    // }, 500);
 
     return () => {
       // destroy Matter
@@ -105,7 +117,8 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       render.current.canvas.remove();
       render.current.textures = {};
     };
-  }, [playerNumber, opponentId, setScore]);
+  }, [playerNumber, opponentId, setScore, countdown]);
+
 
   return (
     <div

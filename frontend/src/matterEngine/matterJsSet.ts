@@ -1,5 +1,5 @@
 import Matter, { World, Body } from 'matter-js';
-import { boundary, ball, sensor } from './matterJsUnit';
+import { boundary, ball, sensor, findTarget } from './matterJsUnit';
 import { makeHinge, makePaddle, makeStopper, makeJoint } from '@/matterEngine/player';
 import { Player, PlayerNumber } from '../type';
 
@@ -15,7 +15,19 @@ export const initWorld = (world: World, cw: number, ch: number, nonCollisionGrou
     ...Object.values(initPlayer('player2', cw, ch, nonCollisionGroupRef, hingeGroupRef))
   ]);
   // start moving ball
-  Body.setVelocity(world.bodies.find(body => body.label === 'Ball') as Body, { x: 10, y: 12 });
+  setStartBall(world);
+};
+
+export const setStartBall = (world: World) => {
+  let speed = 8;
+  let degree = 30;
+  const rad = degree * Math.PI / 180;
+  const ballBody = findTarget(world, 'Ball');
+  if (!ballBody) return;
+  Body.setVelocity(ballBody, { x: speed * Math.cos(rad), y: speed * Math.sin(rad)});
+  speed = Math.sqrt(ballBody.velocity.x ** 2 + ballBody.velocity.y ** 2);
+  degree = 90 - Math.atan2(ballBody.velocity.x, ballBody.velocity.y) * 180 / Math.PI;
+  console.log('speed', speed, 'degree', degree < 0 ? degree + 360 : degree);
 };
 
 export function initPlayer(playerNumber:PlayerNumber, cw: number, ch: number, nonCollisionGroupRef: number, hingeGroupRef: number) : Player {

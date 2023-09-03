@@ -30,6 +30,19 @@ export class GameService {
         return undefined;
     }
 
+    getGameRoom(client: Socket) {
+        let roomName = '';
+        for (const value of client.rooms) {
+          if (value.startsWith('game-'))
+            {
+              roomName = value;
+              break;
+            }
+        }
+        if (roomName === '') return;
+        return roomName;
+    }
+
     reconcilateBallInfo(roomName: RoomName, ballInfo: BallInfo) : BallInfo | undefined {
         const recentBallInfo = this.recentBallInfoMap.get(roomName);
         // TODO: 적절한 acceptableDiff를 찾아야 함

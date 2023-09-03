@@ -78,6 +78,12 @@ export const sensor = (loserName: string, x: number, y: number, width: number, h
   });
 };
 
+/**
+ * label을 통해 찾아주는 함수
+ * @param world
+ * @param label
+ * @returns Body
+ */
 export const findTarget = (world: World, label: string ) => {
   return world.bodies.find(body => body.label === label) as Body;
 };

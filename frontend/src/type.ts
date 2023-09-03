@@ -47,3 +47,8 @@ export type Score = {
     p1: number,
     p2: number
 }
+
+export type CanvasSize = {
+  width: number,
+  height: number
+}

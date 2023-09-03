@@ -1,7 +1,8 @@
-import { Dispatch, SetStateAction } from 'react';
-import { Engine, Events, Body } from 'matter-js';
-import { Score } from '@/type';
-import { socketEmitGameBallEvent } from '@/context/socketGameEvent';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { Engine, Events, Body, Runner } from 'matter-js';
+import { Score, CanvasSize } from '@/type';
+import { socketEmitGameBallEvent, socketEmitGameScoreEvent } from '@/context/socketGameEvent';
+import { findTarget } from '@/matterEngine/matterJsUnit';
 
 export const eventOnBeforeUpdate = (engine: Engine) => {
   Events.on(engine, 'beforeUpdate', (e) => {
@@ -10,8 +11,9 @@ export const eventOnBeforeUpdate = (engine: Engine) => {
     bodies.forEach(body => {
       if (body.label === 'Ball') {
         const speed = Math.sqrt(body.velocity.x ** 2 + body.velocity.y ** 2);
+        
         const minVelocity = 5;
-        const maxVelocity = 10;
+        const maxVelocity = 8;
         if (speed > maxVelocity) {
           const ratio = maxVelocity / speed;
           Body.setVelocity(body, { x: body.velocity.x * ratio, y: body.velocity.y * ratio });
@@ -31,16 +33,27 @@ export const eventOnBeforeUpdate = (engine: Engine) => {
   });
 };
 
-export const eventOnCollisionStart = (engine: Engine, setScore: Dispatch<SetStateAction<Score>>) => {
+// const drawCountdown = (sceneSize: CanvasSize, ctx: CanvasRenderingContext2D | null, countdown: number) => {
+//   if (!ctx) return;
+//   ctx.clearRect(0, 0, sceneSize.width, sceneSize.height);
+//
+//   ctx.fillStyle = 'black';
+//   ctx.font = '30px Arial';
+//   ctx.fillText(`${countdown}`, sceneSize.width / 2, sceneSize.height / 2);
+// };
+
+
+export const eventOnCollisionStart = (sceneSize: CanvasSize, engine: Engine, runner: Runner, playerNumber: PlayerNumber) => {
   Events.on(engine, 'collisionStart', (e) => {
     const pairs = e.pairs;
     pairs.forEach(pair => {
       if (pair.isSensor) {
         if (pair.bodyA.label === 'Ball' || pair.bodyB.label === 'Ball') {
-          setScore((prevScore: Score) => {
-            if (pair.bodyA.label === 'player1' || pair.bodyB.label === 'player1') { return { p1: prevScore.p1 + 1, p2: prevScore.p2 }; }
-            else { return { p1: prevScore.p1, p2: prevScore.p2 + 1 }; }
-          });
+          console.log('Ball isSensor');
+          Body.setPosition(findTarget(engine.world, 'Ball'), { x: sceneSize.width / 2, y: sceneSize.height / 2});
+          Runner.stop(runner);
+          console.log(pair.bodyA.label, pair.bodyB.label);
+          socketEmitGameScoreEvent(playerNumber, pair.bodyA.label === 'Ball' ? pair.bodyB.label : pair.bodyA.label);
         }
       }
     });

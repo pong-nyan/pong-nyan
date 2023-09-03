@@ -30,12 +30,12 @@ export const ScoreBoard = ({score, playerNumber}: {score: Score, playerNumber: P
     // 텍스트 렌더링 (x, y 좌표는 텍스트의 시작점)
     ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
     if (playerNumber === 'player1') {
-      ctx.fillText(`${score.p2}`, middleX2, baseHeight2 - offsetHeight);
-      ctx.fillText(`${score.p1}`, middleX1, baseHeight1 + offsetHeight);
+      ctx.fillText(`${score.p2}`, middleX2, baseHeight1 + offsetHeight);  // Top
+      ctx.fillText(`${score.p1}`, middleX1, baseHeight2 - offsetHeight);  // Bottom
 
     } else if (playerNumber === 'player2') {
-      ctx.fillText(`${score.p1}`, middleX1, baseHeight2 - offsetHeight);
-      ctx.fillText(`${score.p2}`, middleX2, baseHeight1 + offsetHeight);
+      ctx.fillText(`${score.p1}`, middleX1, baseHeight1 + offsetHeight);  // Top
+      ctx.fillText(`${score.p2}`, middleX2, baseHeight2 - offsetHeight);  // Bottom
     }
   }, [score, playerNumber]);
   //  playerNumber 가 2 이면 canvas 의 위아래를 바꿔서 렌더링 해야함
