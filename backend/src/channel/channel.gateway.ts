@@ -46,7 +46,7 @@ export class ChannelGateway {
         return ;
       }
     }
-    console.log('if문 다 통과');
+  
     client.emit('chat-join-success');
 
     client.join(payload.channelId);
