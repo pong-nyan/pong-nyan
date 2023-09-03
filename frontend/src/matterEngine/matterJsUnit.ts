@@ -21,7 +21,7 @@ export const paddle = (x: number, y: number, width: number, height: number, labe
     isStatic: false,
     render: {
       sprite : {
-        texture : label === 'PaddelLeft' ? '/assets/flat-fish-left.png' : '/assets/flat-fish-right.png',
+        texture : label == 'PaddleLeft' ? '/assets/flat-fish-left.png' : '/assets/flat-fish-right.png',
         xScale: width / assetWidth,
         yScale: 0.1,
       }
@@ -79,7 +79,7 @@ export const sensor = (loserName: string, x: number, y: number, width: number, h
     isStatic: true, 
     isSensor: true, 
     render: { 
-      visible: true, 
+      visible: false, 
     }
   });
 };
