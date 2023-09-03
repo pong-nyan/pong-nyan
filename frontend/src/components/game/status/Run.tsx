@@ -87,7 +87,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
 
     /* matterjs event on */
     eventOnBeforeUpdate(engine.current);
-    eventOnCollisionStart(sceneSize, engine.current, runner.current, playerNumber, setScore);
+    eventOnCollisionStart(sceneSize, engine.current, runner.current, playerNumber);
     eventOnCollisionEnd(engine.current);
 
     /* socket on event */
