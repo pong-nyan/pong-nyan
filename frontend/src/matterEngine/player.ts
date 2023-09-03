@@ -1,30 +1,16 @@
 import { Constraint, Body, Engine } from 'matter-js';
 import { stopper, hinge, paddle, findTargetAll } from './matterJsUnit';
-import { Colision, CollisionEvent, GameEvent, KeyDownEvent, KeyUpEvent, Player, PlayerNumber } from '../type';
+import { CollisionEvent, KeyDownEvent, KeyUpEvent, PlayerNumber } from '../type';
 import { socket } from '@/context/socket';
 
-export function initPlayer(playerNumber:PlayerNumber, cw: number, ch: number, yScale: number, nonCollisionGroupRef: number, hingeGroupRef: number) : Player {
-  //TODO: Run 수정해야함
-  // const yScale = playerNumber === 'player1' ? 0.9 : 0.1;
-
-  const xScale = 0.333;
-  const offsetX = 70;
-  const middleX = cw / 2;
-  const [ hingeLeft, hingeRight ] = makeHinge(middleX, offsetX, yScale * ch, hingeGroupRef);
-  const [ paddleLeft, paddleRight ] = makePaddle(middleX, offsetX, yScale * ch, hingeGroupRef);
-  const [ stopperLeftBottom, stopperRightBottom, stopperLeftTop, stopperRightTop ] = makeStopper(playerNumber, middleX, yScale * ch, nonCollisionGroupRef);
-  const [ jointLeft, joinRight ] = makeJoint(hingeLeft, hingeRight, paddleLeft, paddleRight);
-  return { hingeLeft, hingeRight, paddleLeft, paddleRight, stopperLeftTop, stopperLeftBottom, stopperRightTop, stopperRightBottom, jointLeft, joinRight};
-}
-
-const makeHinge = (middleX: number, offsetX: number, baseY: number, hingeGroupRef:number) => {
+export const makeHinge = (middleX: number, offsetX: number, baseY: number, hingeGroupRef:number) => {
   const radius = 5;
   const hingeLeft = hinge(middleX - offsetX, baseY, radius, 'HingeLeft', hingeGroupRef);
   const hingeRight = hinge(middleX + offsetX, baseY, radius, 'HingeRight', hingeGroupRef);
   return [ hingeLeft, hingeRight ];
 };
 
-const makePaddle = (middleX: number, offsetX: number, baseY:number, hingeGroupRef:number) => {
+export const makePaddle = (middleX: number, offsetX: number, baseY:number, hingeGroupRef:number) => {
   // const paddleWidth = 0.15 * cw;
   const paddleWidth = 50;
   const paddleHeight = 20;
@@ -36,7 +22,7 @@ const makePaddle = (middleX: number, offsetX: number, baseY:number, hingeGroupRe
   return [ paddleLeft, paddleRight ];
 };
 
-const makeStopper = (playerNumber:PlayerNumber, middleX: number, baseY:number, nonCollisionGroupRef: number) => {
+export const makeStopper = (playerNumber:PlayerNumber, middleX: number, baseY:number, nonCollisionGroupRef: number) => {
 
   const stopperOffsetX = 90; // (기존)== cw * 0.333
   const stopperOffsetY = 65;
@@ -49,8 +35,7 @@ const makeStopper = (playerNumber:PlayerNumber, middleX: number, baseY:number, n
   return [ stopperLeftBottom, stopperRightBottom, stopperLeftTop, stopperRightTop ];
 };
 
-
-const makeJoint = (hingeLeft: Body, hingeRight: Body, paddleLeft: Body, paddleRight: Body) => {
+export const makeJoint = (hingeLeft: Body, hingeRight: Body, paddleLeft: Body, paddleRight: Body) => {
   const jointLeft = Constraint.create({
     bodyA: hingeLeft,
     bodyB: paddleLeft,
@@ -68,13 +53,12 @@ const makeJoint = (hingeLeft: Body, hingeRight: Body, paddleLeft: Body, paddleRi
     length: 0
   });
   return [ jointLeft, joinRight ];
-}
-
+};
 
 export const getOwnTarget = (engine: Engine, playerNumber:PlayerNumber, label:string) => {
   const targets = findTargetAll(engine.world, label);
   return playerNumber === 'player1' ? targets[0] : targets[1];
-}
+};
 
 export const movePlayer = (engine: Engine, playerNumber: PlayerNumber, dx: number) => {
   const paddleLeft = getOwnTarget(engine, playerNumber, 'PaddleLeft');
@@ -97,9 +81,6 @@ export const movePlayer = (engine: Engine, playerNumber: PlayerNumber, dx: numbe
   Body.translate(StopperRightBottom, { x: dx, y: 0 });
   Body.translate(hingeLeft, { x: dx, y: 0 });
   Body.translate(hingeRight, { x: dx, y: 0 });
-  // print player position
-  //
-
 };
 
 export const movePaddle = (engine: Engine, playerNumber: PlayerNumber, velocity: number) => {
