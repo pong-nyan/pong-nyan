@@ -117,7 +117,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       render.current.canvas.remove();
       render.current.textures = {};
     };
-  }, [playerNumber, opponentId, setScore, countdown]);
+  }, [playerNumber, opponentId, countdown]);
 
   return (
     <div
