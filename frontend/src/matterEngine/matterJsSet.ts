@@ -15,12 +15,19 @@ export const initWorld = (world: World, cw: number, ch: number, nonCollisionGrou
     ...Object.values(initPlayer('player2', cw, ch, nonCollisionGroupRef, hingeGroupRef))
   ]);
   // start moving ball
-  let speed = 10;
-  const ballBody = findTarget(world, 'Ball');
-  Body.setVelocity(ballBody, { x: speed * Math.cos(Math.PI / 2), y: speed * Math.sin(Math.PI / 2)});
-  speed = Math.sqrt(ballBody.velocity.x ** 2 + ballBody.velocity.y ** 2);
-  console.log(speed);
+  setStartBall(world);
+};
 
+export const setStartBall = (world: World) => {
+  let speed = 8;
+  let degree = 30;
+  const rad = degree * Math.PI / 180;
+  const ballBody = findTarget(world, 'Ball');
+  if (!ballBody) return;
+  Body.setVelocity(ballBody, { x: speed * Math.cos(rad), y: speed * Math.sin(rad)});
+  speed = Math.sqrt(ballBody.velocity.x ** 2 + ballBody.velocity.y ** 2);
+  degree = 90 - Math.atan2(ballBody.velocity.x, ballBody.velocity.y) * 180 / Math.PI;
+  console.log('speed', speed, 'degree', degree < 0 ? degree + 360 : degree);
 };
 
 export function initPlayer(playerNumber:PlayerNumber, cw: number, ch: number, nonCollisionGroupRef: number, hingeGroupRef: number) : Player {

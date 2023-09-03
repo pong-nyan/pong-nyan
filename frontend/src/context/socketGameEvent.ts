@@ -3,6 +3,7 @@ import { socket } from '@/context/socket';
 import { KeyEventMessage, PlayerNumber } from '@/type';
 import { Body, Engine, Runner } from 'matter-js';
 import { findTarget } from '@/matterEngine/matterJsUnit';
+import { setStartBall } from '@/matterEngine/matterJsSet';
 import { movePlayer, movePaddle } from '@/matterEngine/player';
 import { Score } from '@/type';
 
@@ -106,18 +107,20 @@ export const socketOnGameScoreEvent = (engine: Engine | undefined, runner: Runne
     setTimeout(() => {
       Runner.start(runner, engine);
     }, 3000);
-
-    const speed = 10;
-    const degree = 30; 
-    const rad = degree * Math.PI / 180;
-    const ballBody = findTarget(engine.world, 'Ball');
-    if (!ballBody) return;
-    Body.setVelocity(ballBody, { x: speed * Math.cos(rad), y: speed * Math.sin(rad)});
-
-    const direction = Math.atan2(ballBody.velocity.x, ballBody.velocity.y) * 180 / Math.PI;
-    console.log('speed', speed, 'degree', direction < 0 ? direction + 360 : direction);
+    setStartBall(engine.world);
+    // let speed = 10;
+    // // const degree = Math.random() * 360; 
+    // let degree = 45;
+    // const rad = degree * Math.PI / 180;
+    // const ballBody = findTarget(engine.world, 'Ball');
+    // if (!ballBody) return;
+    // Body.setVelocity(ballBody, { x: speed * Math.cos(rad), y: speed * Math.sin(rad)});
+    //
+    // speed = Math.sqrt(Math.pow(ballBody.velocity.x, 2) + Math.pow(ballBody.velocity.y, 2));
+    // degree = Math.atan2(ballBody.velocity.x, ballBody.velocity.y) * 180 / Math.PI;
+    // console.log('speed', speed, 'degree', degree < 0 ? degree + 360 : degree);
     // Body.setPosition(ball, { x: 400, y: 300 });
     // Body.setVelocity(ball, { x: 0, y: 0 });
   });
-}
+};
 
