@@ -1,8 +1,10 @@
+import { Dispatch, SetStateAction } from 'react';
 import { socket } from '@/context/socket';
 import { KeyEventMessage, PlayerNumber } from '@/type';
-import { Body, Engine } from 'matter-js';
+import { Body, Engine, Runner } from 'matter-js';
 import { findTarget } from '@/matterEngine/matterJsUnit';
 import { movePlayer, movePaddle } from '@/matterEngine/player';
+import { Score } from '@/type';
 
 /**
  * 게임 키 이벤트를 서버로 전송합니다. 
@@ -31,8 +33,6 @@ export const socketEmitGameKeyEvent = (playerNumber: PlayerNumber, opponentId: s
 export const socketOnGameKeyEvent = (engine: Engine | undefined) => {
   socket.on('game-keyEvent', ({opponentNumber, message, step, velocity}
     : {opponentNumber: PlayerNumber, message: KeyEventMessage, step: number, velocity: number}) => {
-    console.log('game-keyEvent', opponentNumber, message, step, velocity);
-    // console.log(engine);
     if (!engine) return ;
     switch (message) {
     case 'leftDown':
@@ -83,5 +83,40 @@ export const socketOnGameBallEvent = (engine: Engine | undefined) =>
  * @param loser 진 플레이어의 이름
  */
 export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, loser: string) => {
-  socket.emit('game-score', { player: playerNumber, loser});
+  socket.emit('game-score', { 
+    playerNumber: playerNumber, 
+    loser
+  });
 };
+
+/**
+ * 진 플레이어의 이름을 서버에서 받아와 스코어를 업데이트합니다. 
+ * @param engine
+ * @returns
+ */
+export const socketOnGameScoreEvent = (engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
+  socket.on('game-score', ({ loser }: { loser: PlayerNumber }) => {
+    if (!engine || !engine.world || !runner) return;
+    console.log('game-score', loser);
+    setScore((prevScore: Score) => {
+      if (loser === 'player1')  { return { p1: prevScore.p1, p2: prevScore.p2 + 1}; } 
+      else if (loser === 'player2') { return { p1: prevScore.p1 + 1, p2: prevScore.p2}; }
+      else { return prevScore; }
+    });
+    setTimeout(() => {
+      Runner.start(runner, engine);
+    }, 3000);
+    const speed = 10;
+    const degree = 30; 
+    const rad = degree * Math.PI / 180;
+    const ballBody = findTarget(engine.world, 'Ball');
+    if (!ballBody) return;
+    Body.setVelocity(ballBody, { x: speed * Math.cos(rad), y: speed * Math.sin(rad)});
+
+    const direction = Math.atan2(ballBody.velocity.x, ballBody.velocity.y) * 180 / Math.PI;
+    console.log('speed', speed, 'degree', direction < 0 ? direction + 360 : direction);
+    // Body.setPosition(ball, { x: 400, y: 300 });
+    // Body.setVelocity(ball, { x: 0, y: 0 });
+  });
+}
+
