@@ -5,7 +5,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
-import { BallInfo } from '../type/game';
+import { BallInfo, PlayerNumber } from '../type/game';
 // import { UserService } from "../user.service;
 
 @WebSocketGateway({
@@ -14,6 +14,8 @@ import { BallInfo } from '../type/game';
 })
 export class GameGateway {
   constructor(private readonly gameService: GameService) {}
+
+  waitLength: number = 0;
 
   @WebSocketServer()
   server: Server;
@@ -50,11 +52,16 @@ export class GameGateway {
 
   // TODO: sensor에 닿을 시 score 변경
   @SubscribeMessage('game-score')
-  handleScore(client: Socket, data: string[]) {
-    const roomName = data[0];
-    const playerNumber = data[1];
-    const score = data[2];
-    this.server.to(roomName).emit('game-score', {playerNumber, score});
+  handleScore(client: Socket, data: {playerNumber: PlayerNumber, loser: PlayerNumber}) {
+    console.log('game-score', data);
+    const roomName = this.gameService.getGameRoom(client);
+    console.log('roomName', roomName);
+
+    console.log('waitLength', this.waitLength);
+    if (++this.waitLength === 2) {
+      this.waitLength = 0;
+      this.server.to(roomName).emit('game-score', { loser: data.loser, });
+    }
     // const roomName = client.rooms.forEach((room) => {
     //   if (room.startsWith('game-')) {
     //     console.log('forEach', room);
