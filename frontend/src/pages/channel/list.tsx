@@ -26,16 +26,11 @@ const ChannelListPage = () => {
         {showMakeChannel && <MakeChannel />}
         <MakeChannelButton onClick={toggleMakeChannel} />
       </div>
-      {selectedChannel && (
+        {selectedChannel && (
         <div style={{ flex: 2, overflowY: 'auto' }}>
           <ChatRoom channelId={selectedChannel.id} selectedChannel={selectedChannel} onLeaveChannel={handleLeaveChannel}/>
         </div>
-        {selectedChannel && (
-          <div style={{ flex: 2, overflowY: 'auto' }}>
-            <ChatRoom channelId={selectedChannel.id} selectedChannel={selectedChannel} onLeaveChannel={handleLeaveChannel}/>
-          </div>
         )}
-      </div>
     </div>
   );
 };
