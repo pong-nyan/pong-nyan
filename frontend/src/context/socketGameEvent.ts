@@ -107,7 +107,7 @@ export const socketOnGameScoreEvent = (engine: Engine | undefined, runner: Runne
     setTimeout(() => {
       Runner.start(runner, engine);
     }, 3000);
-    setStartBall(engine.world);
+    setStartBall(engine.world, loser);
   });
 };
 
