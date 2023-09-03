@@ -4,14 +4,14 @@ export type Channel = ChannelInfo & {
     owner: string,
     administrator: string[],
     userList: string[]
+    invitedUsers: string[]
 }
 
 export type ChannelInfo = {
     title: string,
-    password: string,
-    private: boolean,
-    maxUser: number,
-    inviteOnly: boolean,
+    password?: string,
+    channelType: 'public' | 'private' | 'protected',
+    maxUsers: number,
 }
 
 export type UserInfo = {
