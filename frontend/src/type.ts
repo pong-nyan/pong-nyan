@@ -10,6 +10,7 @@ export type ChannelInfo = {
     password: string,
     private: boolean,
     maxUser: number,
+    inviteOnly: boolean,
 }
 
 export type KeyEventMessage = 'leftDown' | 'rightDown' | 'leftUp' | 'rightUp' | 'spaceDown' | 'spaceUp';

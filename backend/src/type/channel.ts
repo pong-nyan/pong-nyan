@@ -11,6 +11,7 @@ export type ChannelInfo = {
     password: string,
     private: boolean,
     maxUser: number,
+    inviteOnly: boolean,
 }
 
 export type UserInfo = {
