@@ -1,4 +1,5 @@
 
+// 채널 생성 컴포넌트
 const MakeChannel = () => {
   return (
     <div className="make-channel" style={{backgroundColor: 'lightblue'}}>
@@ -25,6 +26,12 @@ const MakeChannel = () => {
       <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
         <span style={{ marginRight: '10px' }}>초대방</span>
         <input type="radio" name="channelType" />
+      </div>
+      <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
+        <input type="text" placeholder="비밀번호를 입력해주세요" />
+      </div>
+      <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
+        <input type="button" value="채널생성" />
       </div>
     </div>
   );

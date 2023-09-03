@@ -11,7 +11,6 @@ const ChannelList = ({ onChannelSelect }) => {
     const currentChannel = channelList.find(ch => ch.id === channel.id);
     if (!currentChannel) return;
 
-    // console.log('handleChannelSelect 채널제목눌림 222', currentChannel);
     setSelectedChannel(currentChannel);
     // 백엔드에 채널 입장 이벤트 전송
     socket.emit('chat-join-channel', currentChannel.id);
