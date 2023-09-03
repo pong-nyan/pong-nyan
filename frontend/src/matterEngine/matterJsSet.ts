@@ -19,8 +19,8 @@ export const initWorld = (world: World, cw: number, ch: number, nonCollisionGrou
 };
 
 export const setStartBall = (world: World, loser: PlayerNumber) => {
-  let speed = 8;
-  let degree = loser === 'player1' ? 42 : 222;
+  let speed = 5;
+  let degree = loser === 'player1' ? 30 : 210;
   const rad = degree * Math.PI / 180;
   const ballBody = findTarget(world, 'Ball');
   if (!ballBody) return;
