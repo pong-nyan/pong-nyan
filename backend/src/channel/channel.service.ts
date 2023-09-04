@@ -11,7 +11,7 @@ export class ChannelService {
   addChannel(channelInfo: ChannelInfo, client: Socket) {
     console.log('service addChannel, channelInfo', channelInfo);
     const channelId = uuidv4();
-    const newChannel = {id: channelId, owner: client.id, administrator: [client.id], userList: [client.id], ...channelInfo };
+    const newChannel = {id: channelId, owner: client.id, administrator: [client.id], userList: [client.id], invitedUsers: [client.id], ...channelInfo };
     client.join(channelId);
     this.channelMap.set(channelId, newChannel);
     const allChannels = Array.from(this.channelMap.values());

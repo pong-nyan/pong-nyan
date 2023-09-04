@@ -14,11 +14,18 @@ export const hinge = (x: number, y: number, radius: number, label: string, group
 };
 
 export const paddle = (x: number, y: number, width: number, height: number, label: string, group: number) : Body => {
+  const assetWidth = 1731 / 2;
+  // const assetHeight = 587;
   return Bodies.rectangle(x, y, width, height, {
     label,
     isStatic: false,
+    density: 2,
     render: {
-      visible: true
+      sprite : {
+        texture : label == 'PaddleLeft' ? '/assets/flat-fish-left.png' : '/assets/flat-fish-right.png',
+        xScale: width / assetWidth,
+        yScale: 0.1,
+      }
     },
     restitution: 0,
     collisionFilter: {
@@ -73,7 +80,7 @@ export const sensor = (loserName: string, x: number, y: number, width: number, h
     isStatic: true, 
     isSensor: true, 
     render: { 
-      visible: true, 
+      visible: false, 
     }
   });
 };

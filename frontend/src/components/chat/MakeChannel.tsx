@@ -1,30 +1,96 @@
+import React, { useState } from 'react';
+import { socket } from '@/context/socket';
 
+
+// 채널 생성 컴포넌트
 const MakeChannel = () => {
+  const [channelTitle, setChannelTitle] = useState('');
+  const [channelPassword, setChannelPassword] = useState('');
+  const [maxUsers, setMaxUser] = useState('');
+  const [channelType, setChannelType] = useState<'public' | 'private' | 'protected'>('public');
+
+  const handleCreateChannel = () => {
+    const channelInfo = {
+      title: channelTitle,
+      password: channelType === 'protected' ? channelPassword : '',
+      channelType,
+      maxUsers: parseInt(maxUsers, 10),
+    };
+    console.log('handleCreateChannel', channelInfo);
+    socket.emit('chat-channel-make', channelInfo);
+  }
+
   return (
-    <div className="make-channel" style={{backgroundColor: 'lightblue'}}>
-      <button>
-        채널
-      </button>
-      <button>
-        DM
-      </button>
+    <div style={{backgroundColor: 'lightblue'}}>
+      <div className="make-channel" style={{ display: 'flex', alignItems: 'center' }}>
+        <button>
+          채널
+        </button>
+        <button>
+          DM
+        </button>
+      </div>
       <div>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <p style={{ margin: 0, marginRight: '10px' }}>방 제목 : </p>
-          <input type="text" placeholder="channel제목을 입력해주세요." />
+          <input 
+            type="text" 
+            placeholder="channel제목을 입력해주세요." 
+            value={channelTitle}
+            onChange={e => setChannelTitle(e.target.value)}
+          />
         </div>
       </div>
       <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
         <span style={{ marginRight: '10px' }}>공개방</span>
-        <input type="radio" name="channelType" />
+        <input 
+          type="radio" 
+          name="channelType" 
+          checked={channelType === 'public'} 
+          onChange={() => setChannelType('public')} 
+        />
       </div>
       <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
         <span style={{ marginRight: '10px' }}>비공개방</span>
-        <input type="radio" name="channelType" />
+        <input 
+          type="radio" 
+          name="channelType" 
+          checked={channelType === 'private'} 
+          onChange={() => setChannelType('private')} 
+        />
       </div>
       <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
-        <span style={{ marginRight: '10px' }}>초대방</span>
-        <input type="radio" name="channelType" />
+        <span style={{ marginRight: '10px' }}>비밀번호방</span>
+        <input 
+          type="radio" 
+          name="channelType" 
+          checked={channelType === 'protected'} 
+          onChange={() => setChannelType('protected')} 
+        />
+      </div>
+      <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
+        <input 
+          type="text" 
+          placeholder="방 최대 인원수" 
+          value={maxUsers} 
+          onChange={e => setMaxUser(e.target.value)} 
+        />
+      </div>
+      {/* TODO: 비밀번호는 공개방,비공개방을 눌렀을때 입력받기? 평소에는 hidden?? 그렇게 하는게 좋을까? */}
+      <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
+        <input 
+          type="text" 
+          placeholder="방 비밀번호를 입력해주세요" 
+          value={channelPassword}
+          onChange={e => setChannelPassword(e.target.value)}
+        />
+      </div>
+      <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
+        <input 
+          type="button" 
+          value="채널생성"
+          onClick={handleCreateChannel} 
+        />
       </div>
     </div>
   );

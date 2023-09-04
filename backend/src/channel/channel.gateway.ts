@@ -21,18 +21,41 @@ export class ChannelGateway {
     this.channelService.addChannel(channelInfo, client);
     const updatedChannelList = Array.from(this.channelService.getChannelMap().values());
     this.server.emit('chat-update-channel-list', updatedChannelList);
-    // console.log('chat-ch-make, updatedChList', updatedChannelList);
+    console.log('chat-ch-make, updatedChList', updatedChannelList);
   }
 
   @SubscribeMessage('chat-join-channel')
-  handleJoinChannel(client: Socket, channelId: string) {
-    client.join(channelId);
-    this.channelService.joinChannel(channelId, client.id);
-    const users = this.channelService.getChannelUsers(channelId);
-    console.log('chat-join-channel, channelId, users', channelId, users);
+  handleJoinChannel(client: Socket, payload: { channelId: string, password?: string }) {
+    const channel = this.channelService.getChannel(payload.channelId);
+    console.log('chat-join-channel, payload', payload);
+    console.log('chat-join-channel, channel', channel);
+    if (!channel) {
+      client.emit('chat-join-error', '채널이 존재하지 않습니다.');
+      return ;
+    }
+    if (channel.channelType === 'private') {
+      // 초대 목록에 존재하는지 확인
+      if (!channel.invitedUsers.includes(client.id)) {
+        client.emit('chat-join-error', '이 채널에는 초대받지 않은 사용자는 접속할 수 없습니다.');
+        return;
+      }
+    } else if (channel.channelType === 'protected') {
+      if (channel.password !== payload.password) {
+        console.log('비번 일치안함');
+        client.emit('chat-join-error', '비밀번호가 잘못되었습니다.');
+        return ;
+      }
+    }
+  
+    client.emit('chat-join-success');
+
+    client.join(payload.channelId);
+    this.channelService.joinChannel(payload.channelId, client.id);
+    const users = this.channelService.getChannelUsers(payload.channelId);
+    console.log('chat-join-channel, channelId, users', payload.channelId, users);
 
     // 해당 채널의 유저 목록 업데이트
-    this.server.to(channelId).emit('chat-update-users', users);
+    this.server.to(payload.channelId).emit('chat-update-users', users);
 
     // 전체 채널 목록 업데이트
     const updatedChannelList = Array.from(this.channelService.getChannelMap().values());

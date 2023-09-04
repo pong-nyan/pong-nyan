@@ -15,12 +15,12 @@ export const initWorld = (world: World, cw: number, ch: number, nonCollisionGrou
     ...Object.values(initPlayer('player2', cw, ch, nonCollisionGroupRef, hingeGroupRef))
   ]);
   // start moving ball
-  setStartBall(world);
+  setStartBall(world, 'player1');
 };
 
-export const setStartBall = (world: World) => {
-  let speed = 8;
-  let degree = 30;
+export const setStartBall = (world: World, loser: PlayerNumber) => {
+  let speed = 5;
+  let degree = loser === 'player1' ? 30 : 210;
   const rad = degree * Math.PI / 180;
   const ballBody = findTarget(world, 'Ball');
   if (!ballBody) return;

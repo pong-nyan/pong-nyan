@@ -2,14 +2,15 @@ export type Channel = ChannelInfo & {
     id: string,
     owner: string,
     administrator: string[],
-    userList: string[]
+    userList: string[],
+    invitedUsers: string[]
 }
 
 export type ChannelInfo = {
     title: string,
-    password: string,
-    private: boolean,
-    maxUser: number,
+    password?: string,
+    channelType: 'public' | 'private' | 'protected',
+    maxUsers: number,
 }
 
 export type KeyEventMessage = 'leftDown' | 'rightDown' | 'leftUp' | 'rightUp' | 'spaceDown' | 'spaceUp';
