@@ -19,6 +19,7 @@ export const paddle = (x: number, y: number, width: number, height: number, labe
   return Bodies.rectangle(x, y, width, height, {
     label,
     isStatic: false,
+    density: 2,
     render: {
       sprite : {
         texture : label == 'PaddleLeft' ? '/assets/flat-fish-left.png' : '/assets/flat-fish-right.png',
