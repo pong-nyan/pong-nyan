@@ -27,7 +27,6 @@ export const setStartBall = (world: World) => {
   Body.setVelocity(ballBody, { x: speed * Math.cos(rad), y: speed * Math.sin(rad)});
   speed = Math.sqrt(ballBody.velocity.x ** 2 + ballBody.velocity.y ** 2);
   degree = 90 - Math.atan2(ballBody.velocity.x, ballBody.velocity.y) * 180 / Math.PI;
-  console.log('speed', speed, 'degree', degree < 0 ? degree + 360 : degree);
 };
 
 export function initPlayer(playerNumber:PlayerNumber, cw: number, ch: number, nonCollisionGroupRef: number, hingeGroupRef: number) : Player {
