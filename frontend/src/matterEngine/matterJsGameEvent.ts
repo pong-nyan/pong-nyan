@@ -50,7 +50,7 @@ export const eventOnCollisionStart = (sceneSize: CanvasSize, engine: Engine, run
       if (pair.isSensor) {
         if (pair.bodyA.label === 'Ball' || pair.bodyB.label === 'Ball') {
           Body.setPosition(findTarget(engine.world, 'Ball'), { x: sceneSize.width / 2, y: sceneSize.height / 2});
-          Runner.stop(runner);
+          Body.setStatic(findTarget(engine.world, 'Ball'), true);
           socketEmitGameScoreEvent(playerNumber, pair.bodyA.label === 'Ball' ? pair.bodyB.label : pair.bodyA.label);
         }
       }

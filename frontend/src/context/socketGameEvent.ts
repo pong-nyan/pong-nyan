@@ -95,7 +95,7 @@ export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, loser: stri
  * @param engine
  * @returns
  */
-export const socketOnGameScoreEvent = (engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
+export const socketOnGameScoreEvent = (engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>, setCountDownStart: Dispatch<SetStateAction<boolean>>) => {
   socket.on('game-score', ({ loser }: { loser: PlayerNumber }) => {
     if (!engine || !engine.world || !runner) return;
     console.log('game-score', loser);
@@ -105,7 +105,8 @@ export const socketOnGameScoreEvent = (engine: Engine | undefined, runner: Runne
       else { return prevScore; }
     });
     setTimeout(() => {
-      Runner.start(runner, engine);
+      setCountDownStart(true);
+      Body.setStatic(findTarget(engine.world, 'Ball'), false);
     }, 3000);
     setStartBall(engine.world);
   });
