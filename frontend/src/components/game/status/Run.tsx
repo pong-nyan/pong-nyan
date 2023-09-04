@@ -9,8 +9,8 @@ import { PlayerNumber, Score, CanvasSize } from '@/type';
 import { ScoreBoard } from '../../../components/game/ScoreBoard';
 import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent, socketOnGameScoreEvent } from '@/context/socketGameEvent';
 
-export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore }
-  : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string, score: Score, setScore: Dispatch<SetStateAction<Score>> }) {
+export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore, setCountDownStart }
+  : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string, score: Score, setScore: Dispatch<SetStateAction<Score>>}) {
   const scene = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const engine = useRef<Engine>();
@@ -19,7 +19,6 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
   const nonCollisionGroupRef = useRef<number>(0);
   const hingeGroupRef = useRef<number>(0);
   let debouncingFlag = false;
-  const [countdown, setCountdown] = useState<number>(0);
 
   const handleKeyDown = (engine: Engine, e: KeyboardEvent, cw: number) => {
     const step = 24;
@@ -117,7 +116,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       render.current.canvas.remove();
       render.current.textures = {};
     };
-  }, [playerNumber, opponentId, countdown]);
+  }, [playerNumber, opponentId, setScore]);
 
   return (
     <div
