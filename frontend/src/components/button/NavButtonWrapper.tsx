@@ -1,20 +1,26 @@
 import styles from '@/styles/NavButtonWrapper.module.css';
+import Image from 'next/image';
+import Link from 'next/link';
 
 // home button
 type HomeButtonProps = {
   onClickFunction: () => void;
 };
 
-const HomeButton = ({ onClickFunction}: HomeButtonProps) => {
+const HomeButton = ({ onClickFunction }: HomeButtonProps) => {
   return (
     <button>
-      <img src="/assets/home-button.png" alt="home-button" onClick={onClickFunction} />
+      <Link href="/" style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <Image src="/assets/home-button.png" alt="home-button" onClick={onClickFunction} fill style={{ objectFit: 'contain',}} />
+      </Link>
     </button>
   );
 };
 
 HomeButton.defaultProps = {
-  onClickFunction: () => { console.error('onClickFunction is not defined');},
+  onClickFunction: () => {
+    console.error('onClickFunction is not defined');
+  },
 };
 
 // list button
@@ -22,33 +28,39 @@ type ListButtonProps = {
   onClickFunction: () => void;
 };
 
-const ListButton = ({ onClickFunction}: ListButtonProps) => {
+//TODO: mikim3에게 묻고 수정-> list와 message-channel-list의 차이점
+const ListButton = ({ onClickFunction }: ListButtonProps) => {
   return (
     <button>
-      <img src="/assets/list-button.png" alt="list-button" onClick={onClickFunction} />
+      <Link href="/channel/list" style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <Image src="/assets/list-button.png" alt="list-button" onClick={onClickFunction}  fill style={{ objectFit: 'contain',}} />
+      </Link>
     </button>
   );
 };
 
 ListButton.defaultProps = {
-  onClickFunction: () => { console.error('onClickFunction is not defined');},
+  onClickFunction: () => { console.error('onClickFunction is not defined'); },
 };
 
 // publicRomm button
-type PublicRoomButtonProps = {
+type PublicChannelListButtonProps = {
   onClickFunction: () => void;
 };
 
-const PublicRoomButton = ({ onClickFunction }: PublicRoomButtonProps) => {
+//TODO: mikim3에게 링크 묻고 수정 -> list와 message-channel-list의 차이점
+const PublicChannelListButton = ({ onClickFunction }: PublicChannelListButtonProps) => {
   return (
     <button>
-      <img src="/assets/public-room-button.png" alt="public-room-button" onClick={onClickFunction}  />
+      <Link href="/channel/public-channel-list" style={{position: 'relative', width: '100%', height: '100%'}}>
+        <Image src="/assets/public-room-button.png" alt="public-room-button" onClick={onClickFunction} fill style={{objectFit:'contain'}} />
+      </Link>
     </button>
   );
 };
 
-PublicRoomButton.defaultProps = {
-  onClickFunction: () => { console.error('onClickFunction is not defined');},
+PublicChannelListButton.defaultProps = {
+  onClickFunction: () => { console.error('onClickFunction is not defined'); }
 };
 
 // game button
@@ -56,24 +68,26 @@ type GameButtonProps = {
   onClickFunction: () => void;
 };
 
-const GameButton = ({ onClickFunction}: GameButtonProps) => {
+const GameButton = ({ onClickFunction }: GameButtonProps) => {
   return (
     <button>
-      <img src="/assets/game-button.png" alt="game-button" onClick={onClickFunction} />
+      <Link href="/game" style={{position: 'relative', width: '100%', height: '100%'}}>
+        <Image src="/assets/game-button.png" alt="game-button" onClick={onClickFunction} fill style={{objectFit:'contain'}} />
+      </Link>
     </button>
   );
 };
 
 GameButton.defaultProps = {
-  onClickFunction: () => { console.error('onClickFunction is not defined');},
+  onClickFunction: () => { console.error('onClickFunction is not defined'); },
 };
 
-const NavButtonWrapper= () => {
+const NavButtonWrapper = () => {
   return (
     <nav className={styles.navButtonWrapper}>{/* 하단 네비게이션 최상위 태그 */}
       <HomeButton />
       <ListButton />
-      <PublicRoomButton />
+      <PublicChannelListButton />
       <GameButton />
     </nav>
   );
