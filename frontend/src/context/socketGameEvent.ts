@@ -95,9 +95,9 @@ export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, loser: stri
  * @param engine
  * @returns
  */
-export const socketOnGameScoreEvent = (engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
+export const socketOnGameScoreEvent = (engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
   socket.on('game-score', ({ loser }: { loser: PlayerNumber }) => {
-    if (!engine || !engine.world || !runner) return;
+    if (!engine || !engine.world) return;
     setScore((prevScore: Score) => {
       if (loser === 'player1')  { return { p1: prevScore.p1, p2: prevScore.p2 + 1}; } 
       else if (loser === 'player2') { return { p1: prevScore.p1 + 1, p2: prevScore.p2}; }

@@ -1,18 +1,16 @@
 import { Dispatch, SetStateAction, useEffect, useState, useRef, KeyboardEvent} from 'react';
-import { Engine, Render, World, Runner, Body } from 'matter-js';
+import { Engine, Render, World, Runner } from 'matter-js';
 import styles from '../../../styles/Run.module.css';
 import { initEngine, initWorld } from '../../../matterEngine/matterJsSet';
-import { findTarget } from '../../../matterEngine/matterJsUnit';
 import { movePlayer, movePaddle, getOwnTarget } from '@/matterEngine/player';
 import { eventOnCollisionStart, eventOnCollisionEnd, eventOnBeforeUpdate } from '@/matterEngine/matterJsGameEvent';
 import { PlayerNumber, Score, CanvasSize } from '@/type';
 import { ScoreBoard } from '../../../components/game/ScoreBoard';
 import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent, socketOnGameScoreEvent } from '@/context/socketGameEvent';
 
-export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore, setCountDownStart }
+export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore }
   : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string, score: Score, setScore: Dispatch<SetStateAction<Score>>}) {
   const scene = useRef<HTMLDivElement>(null);
-  const canvas = useRef<HTMLCanvasElement>(null);
   const engine = useRef<Engine>();
   const render = useRef<Render>();
   const runner = useRef<Runner>();
@@ -92,7 +90,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     /* socket on event */
     socketOnGameKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
     socketOnGameBallEvent(engine.current);  // 공 위치, 속도 동기화
-    socketOnGameScoreEvent(engine.current, runner.current, setScore);
+    socketOnGameScoreEvent(engine.current, setScore);
 
     // run the engine
     Runner.run(runner.current, engine.current);
