@@ -11,15 +11,16 @@ const ChannelList = ({ onChannelSelect }) => {
     const currentChannel = channelList.find(ch => ch.id === channel.id);
     if (!currentChannel) return;
 
-    // console.log('handleChannelSelect 채널제목눌림 222', currentChannel);
-    setSelectedChannel(currentChannel);
-    // 백엔드에 채널 입장 이벤트 전송
-    socket.emit('chat-join-channel', currentChannel.id);
+    let password;
+    if (currentChannel.password) {
+      password = prompt("이 채널은 비밀번호로 보호되어 있습니다. 비밀번호를 입력하세요.");
+    }
+    socket.emit('chat-join-channel', { channelId: currentChannel.id, password });
 
-    // 부모 컴포넌트로 선택된 채널 전달
-    onChannelSelect(currentChannel);
-    
-    console.log('handleChannelSelect 채널제목눌림 222', currentChannel);
+    socket.once('chat-join-success', () => {
+      onChannelSelect(currentChannel);
+      console.log('handleChannelSelect 채널제목눌림 222', currentChannel);
+    });
   };
 
   useEffect(() => {
@@ -27,8 +28,13 @@ const ChannelList = ({ onChannelSelect }) => {
       console.log('chat-update-ch-list', updatedList);
       setChannelList(updatedList);
     });
+
+    socket.on('chat-join-error', (errorMessage) => {
+      alert(errorMessage);  // 간단하게 alert를 사용하여 사용자에게 알림을 제공
+    });
   
     return () => {
+      socket.off('chat-join-error');
       socket.off('chat-update-channel-list');
     };
   }, []);
