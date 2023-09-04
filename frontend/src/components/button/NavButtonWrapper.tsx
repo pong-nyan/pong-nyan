@@ -32,8 +32,8 @@ type ListButtonProps = {
 const ListButton = ({ onClickFunction }: ListButtonProps) => {
   return (
     <button>
-      <Link href="/channel/list">
-        <img src="/assets/list-button.png" alt="list-button" onClick={onClickFunction} />
+      <Link href="/channel/list" style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <Image src="/assets/list-button.png" alt="list-button" onClick={onClickFunction}  fill style={{ objectFit: 'contain',}} />
       </Link>
     </button>
   );
@@ -52,8 +52,8 @@ type PublicChannelListButtonProps = {
 const PublicChannelListButton = ({ onClickFunction }: PublicChannelListButtonProps) => {
   return (
     <button>
-      <Link href="/channel/public-channel-list">
-        <img src="/assets/public-room-button.png" alt="public-room-button" onClick={onClickFunction} />
+      <Link href="/channel/public-channel-list" style={{position: 'relative', width: '100%', height: '100%'}}>
+        <Image src="/assets/public-room-button.png" alt="public-room-button" onClick={onClickFunction} fill style={{objectFit:'contain'}} />
       </Link>
     </button>
   );
@@ -71,8 +71,8 @@ type GameButtonProps = {
 const GameButton = ({ onClickFunction }: GameButtonProps) => {
   return (
     <button>
-      <Link href="/game">
-        <img src="/assets/game-button.png" alt="game-button" onClick={onClickFunction} />
+      <Link href="/game" style={{position: 'relative', width: '100%', height: '100%'}}>
+        <Image src="/assets/game-button.png" alt="game-button" onClick={onClickFunction} fill style={{objectFit:'contain'}} />
       </Link>
     </button>
   );
