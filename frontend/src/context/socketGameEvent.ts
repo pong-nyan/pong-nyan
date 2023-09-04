@@ -3,8 +3,8 @@ import { socket } from '@/context/socket';
 import { KeyEventMessage, PlayerNumber } from '@/type';
 import { Body, Engine, Runner } from 'matter-js';
 import { findTarget } from '@/matterEngine/matterJsUnit';
-import { setStartBall } from '@/matterEngine/matterJsSet';
 import { movePlayer, movePaddle } from '@/matterEngine/player';
+import { resumeGame } from '@/components/game/logic/resumeGame';
 import { Score } from '@/type';
 
 /**
@@ -103,11 +103,7 @@ export const socketOnGameScoreEvent = (engine: Engine | undefined, runner: Runne
       else if (loser === 'player2') { return { p1: prevScore.p1 + 1, p2: prevScore.p2}; }
       else { return prevScore; }
     });
-    // 미리 공을 세팅해놓고 3초 뒤에 공을 움직이게 함. 순서 바꾸면 벽이 뚫리는 버그 발생
-    setStartBall(engine.world);
-    setTimeout(() => {
-      Body.setStatic(findTarget(engine.world, 'Ball'), false);
-    }, 3000);
+    resumeGame(engine);
   });
 };
 
