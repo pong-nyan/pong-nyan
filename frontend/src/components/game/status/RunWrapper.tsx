@@ -1,6 +1,6 @@
 import Run from '@/components/game/status/Run';
 import { PlayerNumber, Score } from '@/type';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import CountDown from '../CountDown';
 
 const RunWrapper = ({ setGameStatus, playerNumber, opponentId, score, setScore}
