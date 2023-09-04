@@ -8,7 +8,7 @@ const RunWrapper = ({ setGameStatus, playerNumber, opponentId, score, setScore}
   return (
     <div style={{ position: 'relative' }}>
       <Run setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} />
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1}}>
         <CountDown />
       </div>
     </div>
