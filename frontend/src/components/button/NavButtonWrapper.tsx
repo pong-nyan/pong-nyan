@@ -1,4 +1,5 @@
 import styles from '@/styles/NavButtonWrapper.module.css';
+import Image from 'next/image';
 import Link from 'next/link';
 
 // home button
@@ -9,8 +10,8 @@ type HomeButtonProps = {
 const HomeButton = ({ onClickFunction }: HomeButtonProps) => {
   return (
     <button>
-      <Link href="/">
-        <img src="/assets/home-button.png" alt="home-button" onClick={onClickFunction} />
+      <Link href="/" style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <Image src="/assets/home-button.png" alt="home-button" onClick={onClickFunction} fill style={{ objectFit: 'contain',}} />
       </Link>
     </button>
   );
