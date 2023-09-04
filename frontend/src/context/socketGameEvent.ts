@@ -95,20 +95,19 @@ export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, loser: stri
  * @param engine
  * @returns
  */
-export const socketOnGameScoreEvent = (engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>, setCountDownStart: Dispatch<SetStateAction<boolean>>) => {
+export const socketOnGameScoreEvent = (engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
   socket.on('game-score', ({ loser }: { loser: PlayerNumber }) => {
     if (!engine || !engine.world || !runner) return;
-    console.log('game-score', loser);
     setScore((prevScore: Score) => {
       if (loser === 'player1')  { return { p1: prevScore.p1, p2: prevScore.p2 + 1}; } 
       else if (loser === 'player2') { return { p1: prevScore.p1 + 1, p2: prevScore.p2}; }
       else { return prevScore; }
     });
+    // 미리 공을 세팅해놓고 3초 뒤에 공을 움직이게 함. 순서 바꾸면 벽이 뚫리는 버그 발생
+    setStartBall(engine.world);
     setTimeout(() => {
-      setCountDownStart(true);
       Body.setStatic(findTarget(engine.world, 'Ball'), false);
     }, 3000);
-    setStartBall(engine.world);
   });
 };
 
