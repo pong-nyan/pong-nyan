@@ -1,8 +1,21 @@
 import styles from '@/styles/Profile.module.css';
 import Image from 'next/image';
-import { ProfileProps } from '@/type';
 
-const Profile = ({ nickname, profileImage, laderBoardScore, recentPerformance, achievement }: ProfileProps) => {
+//TODO: nickname, laderBoardScore, recentPerformance, achievement
+const Profile = (userId: string) => {
+  if (userId === 'userId') {
+    return (
+      <h1> 존재하지 않는 사용자입니다. </h1>
+    );
+  }
+
+  //여기서 유저 정보를 받아와서 띄워줘야 함
+  const profileImage = '/pongNyan.png';
+  const nickname = 'nickname';
+  const laderBoardScore = 0;
+  const recentPerformance = 'empty';
+  const achievement = 'empty';
+
   return (
     <div className={styles.profile}>
       <Image src={profileImage} alt={nickname} width={100} height={100} />
@@ -15,14 +28,6 @@ const Profile = ({ nickname, profileImage, laderBoardScore, recentPerformance, a
       <p>{achievement}</p>
     </div>
   );
-};
-
-Profile.defaultProps = {
-  profileImage: '/pongNyan.png',
-  nickname: 'nickname',
-  laderBoardScore: 0,
-  recentPerformance: 'empty',
-  achievement: 'empty',
 };
 
 export default Profile;

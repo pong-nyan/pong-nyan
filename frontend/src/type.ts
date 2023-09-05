@@ -74,12 +74,3 @@ export type PublicChannelListButtonProps = {
 export type GameButtonProps = {
     onClickFunction: () => void;
 };
-
-// profile button
-export type ProfileProps = {
-  nickname: string;
-  profileImage: string;
-  laderBoardScore: number;
-  recentPerformance: string;
-  achievement: string;
-};
