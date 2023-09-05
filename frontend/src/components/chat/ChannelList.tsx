@@ -13,7 +13,7 @@ const ChannelList = ({ onChannelSelect }) => {
 
     let password;
     if (currentChannel.password) {
-      password = prompt("이 채널은 비밀번호로 보호되어 있습니다. 비밀번호를 입력하세요.");
+      password = prompt('이 채널은 비밀번호로 보호되어 있습니다. 비밀번호를 입력하세요.');
     }
     socket.emit('chat-join-channel', { channelId: currentChannel.id, password });
 
@@ -24,6 +24,8 @@ const ChannelList = ({ onChannelSelect }) => {
   };
 
   useEffect(() => {
+    socket.emit('chat-request-channel-list');
+
     socket.on('chat-update-channel-list', (updatedList) => {
       console.log('chat-update-ch-list', updatedList);
       setChannelList(updatedList);
@@ -32,7 +34,7 @@ const ChannelList = ({ onChannelSelect }) => {
     socket.on('chat-join-error', (errorMessage) => {
       alert(errorMessage);  // 간단하게 alert를 사용하여 사용자에게 알림을 제공
     });
-  
+
     return () => {
       socket.off('chat-join-error');
       socket.off('chat-update-channel-list');
