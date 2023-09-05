@@ -5,11 +5,13 @@ export class User {
     @PrimaryGeneratedColumn()
     id : number;
 
+    // 42 intra id
     @Column()
-    winner: string;
+    winner: number;
 
+    // 42 intra id
     @Column()
-    loser: string;
+    loser: number;
 
     // Game mode, 0: normal, 1: ranked
     @Column()
