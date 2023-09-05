@@ -14,7 +14,7 @@ export class GameService {
     recentBallInfoMap = new Map<RoomName, BallInfo>();
     gameMap = new Map<RoomName, GameInfo>();
 
-    constructor(@InjectRepository(Game) private readonly gameRepository: Repository) { }
+    constructor(@InjectRepository(Game) private readonly gameRepository: Repository<Game>) { }
     match(client: Socket) {
         this.matchingQueue.push(client);
 
@@ -71,12 +71,12 @@ export class GameService {
     }
 
     async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
-        await this.historyRepository.insert({ winner, loser, gameMode, rankScore, gameInfo });
+        await this.gameRepository.insert({ winner, loser, gameMode, rankScore, gameInfo });
     }
 
     async getMyGameInfo(intraId: number) {
         if (!intraId) return null;
-        return await this.historyRepository.find({ where: [{ winner: intraId }, { loser: intraId }] });
+        return await this.gameRepository.find({ where: [{ winner: intraId }, { loser: intraId }] });
     }
 }
 
