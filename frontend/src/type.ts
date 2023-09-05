@@ -76,6 +76,10 @@ export type GameButtonProps = {
 };
 
 // profile button
-export type ProfileButtonProps = {
-    onClickFunction: () => void;
+export type ProfileProps = {
+  nickname: string;
+  profileImage: string;
+  laderBoardScore: number;
+  recentPerformance: string;
+  achievement: string;
 };
