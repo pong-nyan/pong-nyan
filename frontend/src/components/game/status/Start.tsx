@@ -9,14 +9,14 @@ export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
   const socket = useContext(SocketContext);
   const [ loading, setLoading ] = useState(false);
 
-  socket.on('game-randomStart', ({p1, p2}: {p1: string, p2: string}) => {
-    if (socket.id === p1) { 
+  socket.on('game-randomStart', ({player1Id, player2Id}: {player1Id: string, player2Id: string}) => {
+    if (socket.id === player1Id) { 
       setPlayerNumber('player1');
-      setOpponentId(p2);
+      setOpponentId(player2Id);
     }
-    else if (socket.id == p2){
+    else if (socket.id == player2Id){
       setPlayerNumber('player2');
-      setOpponentId(p1);
+      setOpponentId(player1Id);
     }
     setGameStatus(1);
   });
