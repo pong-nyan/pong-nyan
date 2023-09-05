@@ -3,8 +3,8 @@ import { socket } from '@/context/socket';
 import { KeyEventMessage, PlayerNumber } from '@/type';
 import { Body, Engine, Runner } from 'matter-js';
 import { findTarget } from '@/matterEngine/matterJsUnit';
-import { setStartBall } from '@/matterEngine/matterJsSet';
 import { movePlayer, movePaddle } from '@/matterEngine/player';
+import { resumeGame } from '@/components/game/logic/resumeGame';
 import { Score } from '@/type';
 
 /**
@@ -95,19 +95,15 @@ export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, loser: stri
  * @param engine
  * @returns
  */
-export const socketOnGameScoreEvent = (engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
+export const socketOnGameScoreEvent = (engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
   socket.on('game-score', ({ loser }: { loser: PlayerNumber }) => {
-    if (!engine || !engine.world || !runner) return;
-    console.log('game-score', loser);
+    if (!engine || !engine.world) return;
     setScore((prevScore: Score) => {
       if (loser === 'player1')  { return { p1: prevScore.p1, p2: prevScore.p2 + 1}; } 
       else if (loser === 'player2') { return { p1: prevScore.p1 + 1, p2: prevScore.p2}; }
       else { return prevScore; }
     });
-    setTimeout(() => {
-      Runner.start(runner, engine);
-    }, 3000);
-    setStartBall(engine.world, loser);
+    resumeGame(engine);
   });
 };
 

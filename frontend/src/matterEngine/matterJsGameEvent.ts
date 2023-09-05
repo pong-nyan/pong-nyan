@@ -3,6 +3,7 @@ import { Engine, Events, Body, Runner } from 'matter-js';
 import { Score, CanvasSize } from '@/type';
 import { socketEmitGameBallEvent, socketEmitGameScoreEvent } from '@/context/socketGameEvent';
 import { findTarget } from '@/matterEngine/matterJsUnit';
+import { PlayerNumber } from '@/type';
 
 export const eventOnBeforeUpdate = (engine: Engine) => {
   Events.on(engine, 'beforeUpdate', (e) => {
@@ -48,10 +49,8 @@ export const eventOnCollisionStart = (sceneSize: CanvasSize, engine: Engine, run
     pairs.forEach(pair => {
       if (pair.isSensor) {
         if (pair.bodyA.label === 'Ball' || pair.bodyB.label === 'Ball') {
-          console.log('Ball isSensor');
           Body.setPosition(findTarget(engine.world, 'Ball'), { x: sceneSize.width / 2, y: sceneSize.height / 2});
-          Runner.stop(runner);
-          console.log(pair.bodyA.label, pair.bodyB.label);
+          Body.setStatic(findTarget(engine.world, 'Ball'), true);
           socketEmitGameScoreEvent(playerNumber, pair.bodyA.label === 'Ball' ? pair.bodyB.label : pair.bodyA.label);
         }
       }
