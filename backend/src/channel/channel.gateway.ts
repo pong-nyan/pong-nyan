@@ -46,7 +46,7 @@ export class ChannelGateway {
         return ;
       }
     }
-  
+
     client.emit('chat-join-success');
 
     client.join(payload.channelId);
@@ -77,6 +77,12 @@ export class ChannelGateway {
       this.channelService.leaveChannel(channelId, client.id);
       const users = this.channelService.getChannelUsers(channelId);
       this.server.to(channelId).emit('chat-update-users', users);
+  }
+
+  @SubscribeMessage('chat-request-channel-list')
+  handleRequestChannelList(client: Socket) {
+    const updatedChannelList = Array.from(this.channelService.getChannelMap().values());
+    client.emit('chat-update-channel-list', updatedChannelList);
   }
 
   // TODO: Socket이 userId를 담고 있지 않아서 오류가 생김
