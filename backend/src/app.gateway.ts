@@ -6,13 +6,12 @@ import {
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { GameService } from './game/game.service';
-
-import { UserService } from "./user.service";
+import { UserService } from './user.service';
 import { Channel, UserInfo, ChannelInfo } from "./type/channel";
 
 @WebSocketGateway({
   cors: { origin: "*" },
-  path: "/socket/",
+  path: '/socket/',
   cookie: true,
 })
 
