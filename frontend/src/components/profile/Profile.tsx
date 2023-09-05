@@ -1,9 +1,10 @@
+import styles from '@/styles/Profile.module.css';
 import Image from 'next/image';
 import { ProfileProps } from '@/type';
 
 const Profile = ({ nickname, profileImage, laderBoardScore, recentPerformance, achievement }: ProfileProps) => {
   return (
-    <div>
+    <div className={styles.profile}>
       <Image src={profileImage} alt={nickname} width={100} height={100} />
       <h2>{nickname}</h2>
       <h3>래더 스코어</h3>
