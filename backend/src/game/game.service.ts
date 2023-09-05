@@ -1,4 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { Game } from 'src/entity/Game';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Socket } from 'socket.io';
 import { BallInfo, GameInfo, RoomName } from 'src/type/game';
 
@@ -11,7 +14,7 @@ export class GameService {
     recentBallInfoMap = new Map<RoomName, BallInfo>();
     gameMap = new Map<RoomName, GameInfo>();
 
-
+    constructor(@InjectRepository(Game) private readonly gameRepository: Repository) { }
     match(client: Socket) {
         this.matchingQueue.push(client);
 
@@ -65,6 +68,15 @@ export class GameService {
     removeMatchingClient(client: Socket) {
         this.matchingQueue = this.matchingQueue.filter(item => item !== client);
         console.log(this.matchingQueue.length);
+    }
+
+    async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
+        await this.historyRepository.insert({ winner, loser, gameMode, rankScore, gameInfo });
+    }
+
+    async getMyGameInfo(intraId: number) {
+        if (!intraId) return null;
+        return await this.historyRepository.find({ where: [{ winner: intraId }, { loser: intraId }] });
     }
 }
 
