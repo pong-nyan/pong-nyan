@@ -50,6 +50,32 @@ export type Score = {
 }
 
 export type CanvasSize = {
-  width: number,
-  height: number
+    width: number,
+    height: number
 }
+
+//nav button types
+// home button
+export type HomeButtonProps = {
+    onClickFunction: () => void;
+};
+
+// list button
+export type ListButtonProps = {
+    onClickFunction: () => void;
+};
+
+// publicRomm button
+export type PublicChannelListButtonProps = {
+    onClickFunction: () => void;
+};
+
+// game button
+export type GameButtonProps = {
+    onClickFunction: () => void;
+};
+
+// profile button
+export type ProfileButtonProps = {
+    onClickFunction: () => void;
+};
