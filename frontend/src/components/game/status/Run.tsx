@@ -96,15 +96,6 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     Runner.run(runner.current, engine.current);
     Render.run(render.current);
 
-    /* Ball 의 속도와 방향을 0.5초마다 콘솔에 출력 */
-    // const ballBody = findTarget(engine.current.world, 'Ball');
-    // const timer = setInterval(() => {
-    //   if (!engine.current) return;
-    //   const speed = Math.sqrt(ballBody.velocity.x ** 2 + ballBody.velocity.y ** 2);
-    //   const direction = Math.atan2(ballBody.velocity.x, ballBody.velocity.y) * 180 / Math.PI;
-    //   console.log('speed', speed, 'degree', direction < 0 ? direction + 360 : direction);
-    // }, 500);
-
     return () => {
       // destroy Matter
       if (!engine.current || !render.current) return;
