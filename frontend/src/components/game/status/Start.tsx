@@ -28,7 +28,7 @@ export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
     loading ?
       'Loading' :
       <div className={styles.buttonWrapper} onClick={() => {
-        socket.emit('game-randomStart', { message: 'start' });
+        socket.emit('game-randomStart');
       }} tabIndex={0}>
         <button className={styles.startButton}>Start</button>
       </div> 

@@ -36,7 +36,7 @@ export class GameGateway {
 
 
   @SubscribeMessage('game-randomStart')
-  handleStartGame(client: Socket, data: any) {
+  handleStartGame(client: Socket) {
     const pnJwt = parse(client.handshake.headers.cookie)['pn-jwt'];
     const decodedJwt = JSON.parse(JSON.stringify(this.jwtService.decode(pnJwt)));
     const [ roomName, player1Id, player2Id ] = this.gameService.match(client, decodedJwt.nickname);
