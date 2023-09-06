@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../entity/User';
+import { User } from 'src/entity/User';
+import { Game } from 'src/entity/Game';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { User } from '../entity/User';
       database: process.env.POSTGRES_DB,
       synchronize: true,
       logging: true,
-      entities: [User],
+      entities: [ User, Game ],
     }),
   ],
 })
