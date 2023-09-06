@@ -6,15 +6,19 @@ import {
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { BallInfo, PlayerNumber } from '../type/game';
+import { parse } from 'cookie';
+import { JwtService } from '@nestjs/jwt';
 // import { UserService } from "../user.service;
 
 @WebSocketGateway({
   cors: { origin: '*' },
   path: '/socket/',
+  cookie: true,
 })
 export class GameGateway {
-  constructor(private readonly gameService: GameService) {}
-
+  constructor(private readonly gameService: GameService,
+              private readonly jwtService: JwtService) {}
+              // private readonly authService: AuthService
   waitLength: number = 0;
 
   @WebSocketServer()
@@ -30,18 +34,21 @@ export class GameGateway {
     this.gameService.removeMatchingClient(client);
   }
 
+
   @SubscribeMessage('game-randomStart')
-  handleStartGame(client: Socket, data: any) {
-    const ret = this.gameService.match(client);
-    const roomName = ret?.roomName;
-    const p1 = ret?.p1;
-    const p2 = ret?.p2;
+  handleStartGame(client: Socket) {
+    const pnJwt = parse(client.handshake.headers.cookie)['pn-jwt'];
+    const decodedJwt = JSON.parse(JSON.stringify(this.jwtService.decode(pnJwt)));
+    const [ roomName, player1Id, player2Id ] = this.gameService.match(client, decodedJwt.nickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
-    this.server.to(roomName).emit('game-randomStart', {p1, p2});
+    if (!player1Id || !player2Id) return;
+    this.server.to(roomName).emit('game-randomStart', {player1Id, player2Id});
   }
 
   @SubscribeMessage('game-keyEvent')
   handleGameKeyEvent(client: Socket, data: any) {
+    const roomName = this.gameService.getGameRoom(client);
+    console.log('roomName', roomName);
     this.server.to(data.opponentId).emit('game-keyEvent', {
       opponentNumber: data.playerNumber,
       message: data.message,
