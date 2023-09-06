@@ -9,9 +9,8 @@ export class ChannelController {
   constructor(private readonly channelService: ChannelService) {
   }
 
-  @Get('public')
+  @Get('public-list')
   getPublicChannels(): Channel[] {
-
     return this.channelService.getPublicChannels();
   }
 

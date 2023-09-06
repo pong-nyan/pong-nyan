@@ -6,7 +6,7 @@ const PublicChannelListPage = () => {
   const [publicChannels, setPublicChannels] = useState<Channel[]>([]);
 
   const fetchChannels = () => {
-    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/channel/public`)
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/channel/public-list`)
       .then(response => {
         setPublicChannels(response.data);
       })
