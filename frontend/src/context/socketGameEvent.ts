@@ -23,7 +23,6 @@ export const socketEmitGameKeyEvent = (playerNumber: PlayerNumber, opponentId: s
     step,
     velocity,
   });
-
 /**
  * 게임 Key 이벤트를 서버에서 받아와 업데이트합니다.
  * @param engine
@@ -95,9 +94,10 @@ export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, score: Scor
  * @returns
  */
 export const socketOnGameScoreEvent = (engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
-  socket.on('game-score', ( realScore : { score : Score }) => {
+  socket.on('game-score', ( { realScore } : { realScore: Score }) => {
     if (!engine || !engine.world) return;
-    setScore(realScore.score);
+    setScore(realScore);
     resumeGame(engine, 'player1');
   });
 };
+

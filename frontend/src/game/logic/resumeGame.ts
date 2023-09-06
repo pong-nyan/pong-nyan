@@ -5,9 +5,6 @@ import { PlayerNumber } from '@/game/gameType';
 const resumeGame = (engine: Engine, loser: PlayerNumber) => {
   // 미리 공을 세팅해놓고 3초 뒤에 공을 움직이게 함. 순서 바꾸면 벽이 뚫리는 버그 발생
   setStartBall(engine.world, loser);
-  setTimeout(() => {
-    Body.setStatic(findTarget(engine.world, 'Ball'), false);
-  }, 3000);
   const countdown = document.getElementById('countdown');
   if (!countdown) return;
 
@@ -20,6 +17,9 @@ const resumeGame = (engine: Engine, loser: PlayerNumber) => {
   }, 2000);
   setTimeout(() => {
     countdown.innerText = '';
+    const ball = findTarget(engine.world, 'Ball');
+    if (!ball) return;
+    Body?.setStatic(ball, false);
   }, 3000);
 };
 

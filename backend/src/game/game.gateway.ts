@@ -58,17 +58,17 @@ export class GameGateway {
   // TODO: sensor에 닿을 시 score 변경
   @SubscribeMessage('game-score')
   handleScore(client: Socket, data: {playerNumber: PlayerNumber, score: Score}) {
-    console.log('game-score', data);
     const gameInfo = this.gameService.getGameInfo(client);
     if (!gameInfo) return false;
-    console.log('myGameInfo', gameInfo);
+    console.log('score', data.score);
 
     if (this.gameService.isReadyScoreCheck(gameInfo, data.playerNumber, data.score)) {
+      console.log('INFO: 점수 체크 준비 완료', gameInfo.waitList);
       if ((gameInfo.waitList[0].score.p1 === gameInfo.waitList[1].score.p1)
           && (gameInfo.waitList[0].score.p2 === gameInfo.waitList[1].score.p2)) {
         console.log('INFO: 두 클라이언트의 점수가 같음');
         gameInfo.score = gameInfo.waitList[0].score;
-        this.server.to(gameInfo.roomName).emit('game-score', { score: data.score });
+        this.server.to(gameInfo.roomName).emit('game-score', { realScore: gameInfo.score });
       } else {
         //TODO: 두 클라이언트의 점수가 다를 경우
         console.log('PROBLEM: 두 클라이언트의 점수가 다름');

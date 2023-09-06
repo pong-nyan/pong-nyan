@@ -91,10 +91,10 @@ export const sensor = (loserName: string, x: number, y: number, width: number, h
  * @param label
  * @returns Body
  */
-export const findTarget = (world: World, label: string ) => {
+export const findTarget = (world: World, label: string ) : Body => {
   return world.bodies.find(body => body.label === label) as Body;
 };
 
-export const findTargetAll = (world: World, label: string ) => {
+export const findTargetAll = (world: World, label: string ) : Body[] => {
   return world.bodies.filter(body => body.label === label) as Body[];
 };

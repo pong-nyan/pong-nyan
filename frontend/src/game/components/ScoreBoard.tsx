@@ -1,10 +1,11 @@
 import{ useEffect, useRef } from 'react';
 import { Score, PlayerNumber } from '@/game/gameType';
 
-export const ScoreBoard = ({score, playerNumber}: {score: Score, playerNumber: PlayerNumber})  => {
+export const ScoreBoard = ({score, playerNumber}: {score: Score, playerNumber: PlayerNumber | undefined})  => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    if (!playerNumber) return;
     const canvas = canvasRef.current;
     if (!canvas) return; // Element가 없으면 종료
 

@@ -37,16 +37,19 @@ export const eventOnBeforeUpdate = (engine: Engine) => {
 export const eventOnCollisionStart = (sceneSize: CanvasSize, engine: Engine, runner: Runner, playerNumber: PlayerNumber, score: Score, setScore: Dispatch<SetStateAction<Score>>) => {
   Events.on(engine, 'collisionStart', (e) => {
     const pairs = e.pairs;
-    pairs.forEach((pair: any) => {
+    pairs.forEach((pair) => {
       if (pair.isSensor) {
         if (pair.bodyA.label === 'Ball' || pair.bodyB.label === 'Ball') {
-          Body.setPosition(findTarget(engine.world, 'Ball'), { x: sceneSize.width / 2, y: sceneSize.height / 2});
-          Body.setStatic(findTarget(engine.world, 'Ball'), true);
+          const ball = findTarget(engine.world, 'Ball');
+          Body.setPosition(ball, { x: sceneSize.width / 2, y: sceneSize.height / 2});
+          Body.setStatic(ball, true);
+          
           if (pair.bodyA.label === 'player1' || pair.bodyB.label === 'player1') {
-            setScore((prevScore: Score) => {return { p1: prevScore.p1, p2: prevScore.p2 + 1}});
+            setScore((prevScore: Score) => { return { p1: prevScore.p1, p2: prevScore.p2 + 1}; });
           } else if (pair.bodyA.label === 'player2' || pair.bodyB.label === 'player2') {
-            setScore((prevScore: Score) => {return { p1: prevScore.p1 + 1, p2: prevScore.p2 }});
+            setScore((prevScore: Score) => { return { p1: prevScore.p1 + 1, p2: prevScore.p2 }; });
           }
+          runner.enabled = false;
           socketEmitGameScoreEvent(playerNumber, score);
         }
       }
@@ -63,7 +66,7 @@ export const eventOnCollisionStart = (sceneSize: CanvasSize, engine: Engine, run
 export const eventOnCollisionEnd = (engine: Engine) => {
   Events.on(engine, 'collisionEnd', (e) => {
     const pairs = e.pairs;
-    pairs.forEach((pair: any) => {
+    pairs.forEach((pair) => {
       // BottomStopper 와 Paddle 충돌 시 Paddle 의 Velocity, AngularVelocity 0으로 설정하는 이벤트
       if (pair.bodyA.label.match(/^Paddle/) && pair.bodyB.label.match(/^Stopper(.)*Bottom$/)) {
         Body.setVelocity(pair.bodyA, { x: 0, y: 0 });
