@@ -1,5 +1,10 @@
+import ParticipatingChannelList from '@/components/chat/ParticipatingChannelList';
+import React, { useState } from 'react';
 
+// TODO: 유저가 참여한 방목록을 보여줄 유저의 구별이 구현되어 있지 않음 유저를 받을수 있게 되면 다시 만들어야함
 const MessageChannelListPage = () => {
+  const [showJoinedChannels, setShowJoinedChannels] = useState(false);
+  const [showDMs, setShowDMs] = useState(false);
 
   return (
     <div>
@@ -7,18 +12,28 @@ const MessageChannelListPage = () => {
         <h1>대화방 목록</h1>
       </div>
       <div>
-        <h3>참여방 목록</h3>
+        <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => setShowJoinedChannels(!showJoinedChannels)}>
+          <h3 style={{ margin: '0' }}>참여방 목록</h3>
+          <button style={{ marginLeft: '10px' }}>참여방보기</button>
+        </div>
+        <>
+          {showJoinedChannels && (
+            <>
+              <ParticipatingChannelList />
+            </>
+          )}
+        </>
       </div>
       <div>
-        {/* 유저가 참여한 방 목록 보여주기 */}
-        <p>실제 목록</p>
-      </div>
-      <div>
-        <h3>DM 목록</h3>
-      </div>
-      <div>
-        {/* 유저의 DM 목록 보여주기 */}
-        <p>실제 목록</p>
+        <div style={{ display: 'flex', alignItems: 'center' }} onClick={() => setShowDMs(!showDMs)}>
+          <h3 style={{ margin: '0' }}>DM 목록</h3>
+          <button style={{ marginLeft: '10px' }}>참여방보기</button>
+        </div>
+        {showDMs && (
+          <>
+            <ParticipatingChannelList />
+          </>
+        )}
       </div>
     </div>
   );
