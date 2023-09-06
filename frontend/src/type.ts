@@ -9,9 +9,11 @@ export type Channel = ChannelInfo & {
 export type ChannelInfo = {
     title: string,
     password?: string,
-    channelType: 'public' | 'private' | 'protected',
+    channelType: ChannelType,
     maxUsers: number,
 }
+
+export type ChannelType = 'public' | 'private' | 'protected';
 
 export type KeyEventMessage = 'leftDown' | 'rightDown' | 'leftUp' | 'rightUp' | 'spaceDown' | 'spaceUp';
 

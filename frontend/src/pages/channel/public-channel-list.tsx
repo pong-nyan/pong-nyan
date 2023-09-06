@@ -32,9 +32,9 @@ const PublicChannelListPage = () => {
             <li key={channel.id}>
               {channel.title} | {channel.userList.length} / {channel.maxUsers}명 |
               <img
-                src={channel.channelType==='protected' ? '/assets/lock.png' : '/assets/unlock.png'}
-                alt={channel.password ? '잠김' : '공개'}
-                style={{ width: '16px', height: '16px' }}
+                src = {channel.channelType === 'protected' ? '/assets/lock.png' : '/assets/unlock.png'}
+                alt = {channel.password ? '잠김' : '공개'}
+                style = {{ width: '16px', height: '16px' }}
               />
             </li>
           ))}

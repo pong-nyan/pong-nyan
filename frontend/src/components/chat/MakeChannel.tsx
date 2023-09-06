@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 import { socket } from '@/context/socket';
+import { ChannelType } from '@/types';
 
 // 채널 생성 컴포넌트
 const MakeChannel = () => {
   const [channelTitle, setChannelTitle] = useState('');
   const [channelPassword, setChannelPassword] = useState('');
   const [maxUsers, setMaxUser] = useState('');
-  const [channelType, setChannelType] = useState<'public' | 'private' | 'protected'>('public');
+  const [channelType, setChannelType] = useState<ChannelType>('public');
 
   const handleCreateChannel = () => {
     if (isNaN(Number(maxUsers))) {
       alert('최대 인원수는 숫자만 입력 가능합니다.');
       return ;
     }
-
     const channelMaxUsers = maxUsers ? parseInt(maxUsers, 10) : 21;
+    if (channelMaxUsers > 25) {
+      alert('최대 인원수는 25명을 초과할 수 없습니다.');
+      return;
+    }
 
     const channelInfo = {
       title: channelTitle,
