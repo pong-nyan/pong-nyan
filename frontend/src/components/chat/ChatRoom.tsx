@@ -3,6 +3,7 @@ import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import SendMessageButton from './SendMessageButton';
 import { socket } from '@/context/socket';
+import Profile from '../profile/Profile';
 
 function ChatRoom({ channelId, selectedChannel, onLeaveChannel }) {
   const [messages, setMessages] = useState<string[]>([]);
@@ -44,8 +45,8 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }) {
   };
 
   return (
-    <div style={{display: 'flex', justifyContent: 'center'}}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory'}}>
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
           <strong>Current Channel:</strong> {selectedChannel.title}
           <button onClick={handleLeaveChannel}>Leave Channel</button>
@@ -60,7 +61,7 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }) {
         </div>
         <MessageList messages={messages} />
         <div style={{ display: 'flex', marginTop: 'auto' }}>
-          <MessageInput value={inputMessage} onChange={(e : React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)} />
+          <MessageInput value={inputMessage} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)} />
           <SendMessageButton onClick={handleSendMessage} />
         </div>
       </div>

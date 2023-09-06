@@ -9,9 +9,11 @@ export type Channel = ChannelInfo & {
 export type ChannelInfo = {
     title: string,
     password?: string,
-    channelType: 'public' | 'private' | 'protected',
+    channelType: ChannelType,
     maxUsers: number,
 }
+
+export type ChannelType = 'public' | 'private' | 'protected';
 
 export type KeyEventMessage = 'leftDown' | 'rightDown' | 'leftUp' | 'rightUp' | 'spaceDown' | 'spaceUp';
 
@@ -50,6 +52,27 @@ export type Score = {
 }
 
 export type CanvasSize = {
-  width: number,
-  height: number
+    width: number,
+    height: number
 }
+
+//nav button types
+// home button
+export type HomeButtonProps = {
+    onClickFunction: () => void;
+};
+
+// list button
+export type ListButtonProps = {
+    onClickFunction: () => void;
+};
+
+// publicRomm button
+export type PublicChannelListButtonProps = {
+    onClickFunction: () => void;
+};
+
+// game button
+export type GameButtonProps = {
+    onClickFunction: () => void;
+};

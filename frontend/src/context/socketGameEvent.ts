@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import { socket } from '@/context/socket';
 import { KeyEventMessage, PlayerNumber } from '@/type';
-import { Body, Engine, Runner } from 'matter-js';
+import { Body, Engine } from 'matter-js';
 import { findTarget } from '@/matterEngine/matterJsUnit';
 import { movePlayer, movePaddle } from '@/matterEngine/player';
 import { resumeGame } from '@/components/game/logic/resumeGame';
@@ -103,7 +103,7 @@ export const socketOnGameScoreEvent = (engine: Engine | undefined, setScore: Dis
       else if (loser === 'player2') { return { p1: prevScore.p1 + 1, p2: prevScore.p2}; }
       else { return prevScore; }
     });
-    resumeGame(engine);
+    resumeGame(engine, loser);
   });
 };
 
