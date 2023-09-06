@@ -57,6 +57,10 @@ export class ChannelService {
     return this.channelMap;
   }
 
+  getPublicChannels() {
+    return Array.from(this.channelMap.values()).filter(channel => channel.channelType === 'public' || channel.channelType === 'protected');
+  }
+
   getChannel(title: string) {
     return this.channelMap.get(title);
   }
