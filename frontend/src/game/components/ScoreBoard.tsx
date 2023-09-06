@@ -1,5 +1,5 @@
 import{ useEffect, useRef } from 'react';
-import { Score, PlayerNumber } from '../../type';
+import { Score, PlayerNumber } from '@/game/gameType';
 
 export const ScoreBoard = ({score, playerNumber}: {score: Score, playerNumber: PlayerNumber})  => {
   const canvasRef = useRef<HTMLCanvasElement>(null);

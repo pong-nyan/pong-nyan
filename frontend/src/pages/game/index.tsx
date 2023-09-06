@@ -1,6 +1,6 @@
-import Start from '@/game/conponents/Start';
-import RunWrapper from '@/game/conponents/RunWrapper';
-import End from '@/game/conponents/End';
+import Start from '@/game/components/Start';
+import RunWrapper from '@/game/components/RunWrapper';
+import End from '@/game/components/End';
 import { PlayerNumber, Score } from '@/game/gameType';
 import { useState } from 'react';
 

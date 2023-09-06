@@ -1,7 +1,7 @@
 import Matter, { World, Body } from 'matter-js';
 import { boundary, ball, sensor, findTarget } from './matterJsUnit';
 import { makeHinge, makePaddle, makeStopper, makeJoint } from '@/game/matterEngine/player';
-import { Player, PlayerNumber } from '../../type';
+import { Player, PlayerNumber } from '@/game/gameType';
 
 export const initWorld = (world: World, cw: number, ch: number, nonCollisionGroupRef: number, hingeGroupRef:number) => {
   nonCollisionGroupRef = Body.nextGroup(true);

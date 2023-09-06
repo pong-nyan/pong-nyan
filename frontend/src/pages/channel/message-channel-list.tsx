@@ -1,4 +1,4 @@
-import ParticipatingChannelList from '@/components/chat/ParticipatingChannelList';
+import ParticipatingChannelList from '@/chat/components/ParticipatingChannelList';
 import React, { useState } from 'react';
 
 // TODO: 유저가 참여한 방목록을 보여줄 유저의 구별이 구현되어 있지 않음 유저를 받을수 있게 되면 다시 만들어야함

@@ -1,4 +1,4 @@
-import ChatRoom from '../../components/chat/ChatRoom';
+import ChatRoom from '@/chat/components/ChatRoom';
 
 const ChatPage = () => {
   return (

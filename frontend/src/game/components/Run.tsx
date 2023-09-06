@@ -4,12 +4,12 @@ import { initEngine, initWorld } from '@/game/matterEngine/matterJsSet';
 import { movePlayer, movePaddle, getOwnTarget } from '@/game/matterEngine/player';
 import { eventOnCollisionStart, eventOnCollisionEnd, eventOnBeforeUpdate } from '@/game/matterEngine/matterJsGameEvent';
 import { PlayerNumber, Score, CanvasSize } from '@/game/gameType';
-import { ScoreBoard } from '@/game/conponents/ScoreBoard';
+import { ScoreBoard } from '@/game/components/ScoreBoard';
 import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent, socketOnGameScoreEvent } from '@/context/socketGameEvent';
 import styles from '@/game/styles/Run.module.css';
 
 export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore }
-  : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string, score: Score, setScore: Dispatch<SetStateAction<Score>>}) {
+  : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber | undefined, opponentId: string | undefined, score: Score, setScore: Dispatch<SetStateAction<Score>>}) {
   const scene = useRef<HTMLDivElement>(null);
   const engine = useRef<Engine>();
   const render = useRef<Render>();
