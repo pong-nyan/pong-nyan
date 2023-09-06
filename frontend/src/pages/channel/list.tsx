@@ -24,7 +24,7 @@ const ChannelListPage = () => {
       <div style={{ flex: 1, borderRight: '1px solid gray', overflowY: 'auto' }}>
         <ChannelList onChannelSelect={setSelectedChannel} />
         {showMakeChannel && <MakeChannel />}
-        <MakeChannelButton onClick={toggleMakeChannel} />
+        <MakeChannelButton onMakeChannel={toggleMakeChannel} />
         <NavButtonWrapper />
       </div>
       {selectedChannel && (
