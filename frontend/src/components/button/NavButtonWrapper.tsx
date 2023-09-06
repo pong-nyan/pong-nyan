@@ -24,7 +24,7 @@ const ListButton = ({ onClickFunction }: ListButtonProps) => {
   return (
     <button>
       <Link href="/channel/list" style={{ position: 'relative', width: '100%', height: '100%' }}>
-        <Image src="/assets/list-button.png" alt="list-button" onClick={onClickFunction} fill style={{ objectFit: 'contain', }} />
+        <Image src="/assets/list-button.png" alt="list-button" onClick={onClickFunction} fill style={{ objectFit: 'contain' }} />
       </Link>
     </button>
   );
