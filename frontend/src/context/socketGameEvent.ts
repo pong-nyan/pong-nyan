@@ -80,12 +80,12 @@ export const socketOnGameBallEvent = (engine: Engine | undefined) =>
 /**
  * 진 플레이어의 이름을 서버로 전송합니다.
  * @param playerNumber 전송하는 플레이어의 번호
- * @param loser 진 플레이어의 이름
+ * @param 업데이트 된 score
  */
-export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, loser: string) => {
+export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, score: Score) => {
   socket.emit('game-score', { 
-    playerNumber: playerNumber, 
-    loser
+    playerNumber,
+    score,
   });
 };
 
@@ -95,14 +95,9 @@ export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, loser: stri
  * @returns
  */
 export const socketOnGameScoreEvent = (engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
-  socket.on('game-score', ({ loser }: { loser: PlayerNumber }) => {
+  socket.on('game-score', ( realScore : { score : Score }) => {
     if (!engine || !engine.world) return;
-    setScore((prevScore: Score) => {
-      if (loser === 'player1')  { return { p1: prevScore.p1, p2: prevScore.p2 + 1}; } 
-      else if (loser === 'player2') { return { p1: prevScore.p1 + 1, p2: prevScore.p2}; }
-      else { return prevScore; }
-    });
-    resumeGame(engine, loser);
+    setScore(realScore.score);
+    resumeGame(engine, 'player1');
   });
 };
-
