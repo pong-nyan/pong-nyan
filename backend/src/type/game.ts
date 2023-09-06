@@ -3,19 +3,8 @@ import { Socket } from 'socket.io';
 export type PlayerNumber = 'player1' | 'player2';
 
 export type BallInfo = {
-  position: {
-    x: number;
-    y: number;
-  };
-  velocity: {
-    x: number;
-    y: number;
-  };
-}
-
-export type ScoreInfo = {
-  playerNumber: PlayerNumber;
-  loser: PlayerNumber;
+  position: { x: number, y: number };
+  velocity: { x: number, y: number };
 }
 
 export type QueueInfo = {
@@ -23,16 +12,11 @@ export type QueueInfo = {
   nickname: string;
 }
 
-export type GameInfo = {
-  roomName: string;
-  player1: {
-    nickname: string;
-    score: number;
-  }
-  player2: {
-    nickname: string;
-    score: number;
-  }
+export type RoomName = string;
+
+export type Nickname = {
+  p1: string;
+  p2: string;
 }
 
 export type Score = {
@@ -40,4 +24,11 @@ export type Score = {
   p2: number;
 }
 
-export type RoomName = string;
+export type GameInfo = {
+  roomName: RoomName;
+  score: Score;
+  nickname: Nickname;
+  waitList: { playerNumber: PlayerNumber, score: Score }[];
+  ballInfo: BallInfo;
+}
+

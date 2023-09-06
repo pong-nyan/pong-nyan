@@ -19,8 +19,6 @@ export class GameGateway {
   constructor(private readonly gameService: GameService,
               private readonly jwtService: JwtService) {}
               // private readonly authService: AuthService
-  waitLength: 0;
-
   @WebSocketServer()
   server: Server;
   fps = 1000 / 60;
@@ -61,43 +59,29 @@ export class GameGateway {
   @SubscribeMessage('game-score')
   handleScore(client: Socket, data: {playerNumber: PlayerNumber, score: Score}) {
     console.log('game-score', data);
-    const roomName = this.gameService.getGameRoom(client);
-    console.log('roomName', roomName);
+    const gameInfo = this.gameService.getGameInfo(client);
+    if (!gameInfo) return false;
+    console.log('myGameInfo', gameInfo);
 
-    // TODO: gameMap 에서 score 변경
-    console.log('waitLength', this.waitLength);
-    if (++this.waitLength === 2) {
-      this.waitLength = 0;
-      // TODO: gameMap score 가져와야 함
-      this.server.to(roomName).emit('game-score', { score: data.score });
+    if (this.gameService.isReadyScoreCheck(gameInfo, data.playerNumber, data.score)) {
+      if ((gameInfo.waitList[0].score.p1 === gameInfo.waitList[1].score.p1)
+          && (gameInfo.waitList[0].score.p2 === gameInfo.waitList[1].score.p2)) {
+        console.log('INFO: 두 클라이언트의 점수가 같음');
+        gameInfo.score = gameInfo.waitList[0].score;
+        this.server.to(gameInfo.roomName).emit('game-score', { score: data.score });
+      } else {
+        //TODO: 두 클라이언트의 점수가 다를 경우
+        console.log('PROBLEM: 두 클라이언트의 점수가 다름');
+      }
+      gameInfo.waitList = [];
     }
-    // const roomName = client.rooms.forEach((room) => {
-    //   if (room.startsWith('game-')) {
-    //     console.log('forEach', room);
-    //     return room;
-    //   }
-    // });
   }
 
   @SubscribeMessage('game-ball')
   handleBall(client: Socket, ball: BallInfo) {
-    // get game-roomName
-    // TODO : refactoring
-    // const roomName = Array.from(client.rooms).find(room => room.startsWith('game-'));
-    // if (!roomName) return;
-
-    let roomName = '';
-    for (const value of client.rooms) {
-       if (value.startsWith('game-'))
-          {
-            roomName = value;
-            break;
-          }
-    }
-    if (roomName === '') return;
-
-    const updatedBallInfo = this.gameService.reconcilateBallInfo(roomName, ball);
+    const gameInfo = this.gameService.getGameInfo(client);
+    const updatedBallInfo = this.gameService.reconcilateBallInfo(gameInfo.roomName, ball);
     if (!updatedBallInfo) return;
-    this.server.to(roomName).emit('game-ball', updatedBallInfo);
+    this.server.to(gameInfo.roomName).emit('game-ball', updatedBallInfo);
   }
 }

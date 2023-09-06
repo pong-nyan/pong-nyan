@@ -3,7 +3,7 @@ import { Game } from 'src/entity/Game';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Socket } from 'socket.io';
-import { BallInfo, GameInfo, QueueInfo, RoomName } from 'src/type/game';
+import { BallInfo, GameInfo, QueueInfo, RoomName, PlayerNumber, Score } from 'src/type/game';
 
 @Injectable()
 export class GameService {
@@ -28,15 +28,19 @@ export class GameService {
       const player2Id = player2.client.id;
       this.gameMap.set(roomName, {
         roomName,
-        player1: {
-          nickname: player1.nickname,
-          score: 0
+        score: {
+          p1: 0,
+          p2: 0
         },
-        player2: {
-          nickname: player2.nickname,
-          score: 0
-    
-        }
+        nickname: {
+          p1: player1.nickname,
+          p2: player2.nickname
+        },
+        waitList: [],
+        ballInfo: {
+          position: { x: 0, y: 0 },
+          velocity: { x: 0, y: 0 },
+        },
       });
       return [ roomName, player1Id, player2Id ];
     }
@@ -54,6 +58,20 @@ export class GameService {
     }
     if (roomName === '') return;
     return roomName;
+  }
+
+  getGameInfo(client: Socket) : GameInfo | undefined {
+    const roomName = this.getGameRoom(client);
+    if (!roomName) return undefined;
+    return this.gameMap.get(roomName);
+  }
+
+  isReadyScoreCheck(gameInfo: GameInfo, playerNumber: PlayerNumber, score: Score): boolean {
+    if (!gameInfo.waitList.some(item => item.playerNumber === playerNumber)) {
+      gameInfo.waitList.push({playerNumber, score});
+    }
+    if (gameInfo.waitList.length != 2) return false;
+    return true;
   }
 
   reconcilateBallInfo(roomName: RoomName, ballInfo: BallInfo) : BallInfo | undefined {
