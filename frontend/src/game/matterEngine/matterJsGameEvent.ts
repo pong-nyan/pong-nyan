@@ -34,15 +34,6 @@ export const eventOnBeforeUpdate = (engine: Engine) => {
   });
 };
 
-// const drawCountdown = (sceneSize: CanvasSize, ctx: CanvasRenderingContext2D | null, countdown: number) => {
-//   if (!ctx) return;
-//   ctx.clearRect(0, 0, sceneSize.width, sceneSize.height);
-//
-//   ctx.fillStyle = 'black';
-//   ctx.font = '30px Arial';
-//   ctx.fillText(`${countdown}`, sceneSize.width / 2, sceneSize.height / 2);
-// };
-//
 export const eventOnCollisionStart = (sceneSize: CanvasSize, engine: Engine, runner: Runner, playerNumber: PlayerNumber, score: Score, setScore: Dispatch<SetStateAction<Score>>) => {
   Events.on(engine, 'collisionStart', (e) => {
     const pairs = e.pairs;
