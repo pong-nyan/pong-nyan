@@ -1,11 +1,10 @@
 import { Dispatch, SetStateAction } from 'react';
 import { socket } from '@/context/socket';
-import { KeyEventMessage, PlayerNumber } from '@/type';
+import { KeyEventMessage, PlayerNumber, Score } from '@/game/gameType';
 import { Body, Engine } from 'matter-js';
-import { findTarget } from '@/matterEngine/matterJsUnit';
-import { movePlayer, movePaddle } from '@/matterEngine/player';
-import { resumeGame } from '@/components/game/logic/resumeGame';
-import { Score } from '@/type';
+import { findTarget } from '@/game/matterEngine/matterJsUnit';
+import { movePlayer, movePaddle } from '@/game/matterEngine/player';
+import { resumeGame } from '@/game/logic/resumeGame';
 
 /**
  * 게임 키 이벤트를 서버로 전송합니다. 

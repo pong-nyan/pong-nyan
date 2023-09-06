@@ -1,6 +1,6 @@
 import { Constraint, Body, Engine } from 'matter-js';
 import { stopper, hinge, paddle, findTargetAll } from './matterJsUnit';
-import { CollisionEvent, KeyDownEvent, KeyUpEvent, PlayerNumber } from '../type';
+import { CollisionEvent, KeyDownEvent, KeyUpEvent, PlayerNumber } from '@/game/gameType';
 import { socket } from '@/context/socket';
 
 export const makeHinge = (middleX: number, offsetX: number, baseY: number, hingeGroupRef:number) => {

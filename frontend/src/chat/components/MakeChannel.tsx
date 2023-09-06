@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { socket } from '@/context/socket';
-import { ChannelType } from '@/types';
+import { ChannelType } from '@/chat/chatType';
 
 // 채널 생성 컴포넌트
 const MakeChannel = () => {
