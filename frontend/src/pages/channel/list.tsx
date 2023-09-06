@@ -1,11 +1,10 @@
-import MakeChannelButton from '@/components/button/MakeChannelButton';
-import MakeChannel from '@/components/chat/MakeChannel';
-import ChannelList from '@/components/chat/ChannelList';
-import ChatRoom from '@/components/chat/ChatRoom';
+import MakeChannelButton from '@/chat/components/MakeChannelButton';
+import MakeChannel from '@/chat/components/MakeChannel';
+import ChannelList from '@/chat/components/ChannelList';
+import ChatRoom from '@/chat/components/ChatRoom';
 import { useState } from 'react';
-import { Channel } from '@/type';
-import NavButtonWrapper from '@/components/button/NavButtonWrapper';
-import styles from '@/styles/Common.module.css';
+import { Channel } from '@/chat/chatType';
+import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
 
 const ChannelListPage = () => {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
@@ -20,7 +19,7 @@ const ChannelListPage = () => {
   };
 
   return (
-    <div className={styles.commonLayout}>
+    <div className="commonLayout" >
       <div style={{ flex: 1, borderRight: '1px solid gray', overflowY: 'auto' }}>
         <ChannelList onChannelSelect={setSelectedChannel} />
         {showMakeChannel && <MakeChannel />}

@@ -1,11 +1,10 @@
-/* eslint-disable react/react-in-jsx-scope */
 import { Dispatch, SetStateAction, useContext, useState } from 'react';
-import { SocketContext } from '../../../context/socket';
-import styles from '../../../styles/Start.module.css';
-import { PlayerNumber } from '../../../type';
+import { SocketContext } from '@/context/socket';
+import { PlayerNumber } from '@/game/gameType';
+import styles from '@/game/styles/Start.module.css';
 
 export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
-  : { setGameStatus: Dispatch<SetStateAction<number>>, setPlayerNumber: Dispatch<SetStateAction<PlayerNumber>>, setOpponentId: Dispatch<SetStateAction<string>>}) {
+  : { setGameStatus: Dispatch<SetStateAction<number>>, setPlayerNumber: Dispatch<SetStateAction<PlayerNumber | undefined>>, setOpponentId: Dispatch<SetStateAction<string | undefined>>}) {
   const socket = useContext(SocketContext);
   const [ loading, setLoading ] = useState(false);
 

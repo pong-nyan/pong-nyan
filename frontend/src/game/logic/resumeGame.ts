@@ -1,7 +1,7 @@
-import { setStartBall } from '@/matterEngine/matterJsSet';
+import { setStartBall } from '@/game/matterEngine/matterJsSet';
 import { Engine, Body } from 'matter-js';
-import { findTarget } from '@/matterEngine/matterJsUnit';
-import { PlayerNumber } from '@/type';
+import { findTarget } from '@/game/matterEngine/matterJsUnit';
+import { PlayerNumber } from '@/game/gameType';
 const resumeGame = (engine: Engine, loser: PlayerNumber) => {
   // 미리 공을 세팅해놓고 3초 뒤에 공을 움직이게 함. 순서 바꾸면 벽이 뚫리는 버그 발생
   setStartBall(engine.world, loser);

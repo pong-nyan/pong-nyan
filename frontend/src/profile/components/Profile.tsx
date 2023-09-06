@@ -1,4 +1,4 @@
-import styles from '@/styles/Profile.module.css';
+import styles from '@/profile/styles/Profile.module.css';
 import Image from 'next/image';
 
 //TODO: nickname, laderBoardScore, recentPerformance, achievement
