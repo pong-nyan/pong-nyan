@@ -1,7 +1,7 @@
-import Start from '../../components/game/status/Start';
-import RunWrapper from '@/components/game/status/RunWrapper';
-import End from '../../components/game/status/End';
-import { PlayerNumber, Score } from '../../type';
+import Start from '@/game/conponents/Start';
+import RunWrapper from '@/game/conponents/RunWrapper';
+import End from '@/game/conponents/End';
+import { PlayerNumber, Score } from '@/game/gameType';
 import { useState } from 'react';
 
 enum GameStatus {

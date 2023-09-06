@@ -3,9 +3,8 @@ import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import SendMessageButton from './SendMessageButton';
 import { socket } from '@/context/socket';
-import Profile from '../profile/Profile';
 
-function ChatRoom({ channelId, selectedChannel, onLeaveChannel }) {
+function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: string, selectedChannel: { title: string }, onLeaveChannel: () => void }) {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [channelUsers, setChannelUsers] = useState<string[]>([]);

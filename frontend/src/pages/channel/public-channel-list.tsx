@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Channel } from '@/types';
+import { Channel } from '@/chat/chatType';
 import axios from 'axios';
 
 const PublicChannelListPage = () => {

@@ -1,7 +1,7 @@
-import Run from '@/components/game/status/Run';
-import { PlayerNumber, Score } from '@/type';
+import Run from './Run';
+import { PlayerNumber, Score } from '@/game/gameType';
 import { Dispatch, SetStateAction } from 'react';
-import CountDown from '../CountDown';
+import CountDown from './CountDown';
 
 const RunWrapper = ({ setGameStatus, playerNumber, opponentId, score, setScore}
     : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string, score: Score, setScore: Dispatch<SetStateAction<Score>> } ) => {

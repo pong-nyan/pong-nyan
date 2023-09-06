@@ -1,6 +1,6 @@
-import FortyTwoIntraSignInButton from '../../components/button/FortyTwoIntraSignInButton';
-import MyPageButton from '@/components/button/MyPageButton';
-import styles from '../../styles/Login.module.css';
+import FortyTwoIntraSignInButton from '../../auth/components/FortyTwoIntraSignInButton';
+import MyPageButton from '@/chat/components/MyPageButton';
+import styles from './styles/Login.module.css';
 
 export default function Login() {
   return (

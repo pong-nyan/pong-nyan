@@ -69,3 +69,11 @@ a {
     color-scheme: dark;
   }
 }
+
+.commonLayout {
+  height: 100vh;
+  position: absolute;
+  right: 20%;
+  left: 20%;
+}
+

@@ -1,12 +1,12 @@
-import { Dispatch, SetStateAction, useEffect, useState, useRef, KeyboardEvent} from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react';
 import { Engine, Render, World, Runner } from 'matter-js';
-import styles from '../../../styles/Run.module.css';
-import { initEngine, initWorld } from '../../../matterEngine/matterJsSet';
-import { movePlayer, movePaddle, getOwnTarget } from '@/matterEngine/player';
-import { eventOnCollisionStart, eventOnCollisionEnd, eventOnBeforeUpdate } from '@/matterEngine/matterJsGameEvent';
-import { PlayerNumber, Score, CanvasSize } from '@/type';
-import { ScoreBoard } from '../../../components/game/ScoreBoard';
+import { initEngine, initWorld } from '@/game/matterEngine/matterJsSet';
+import { movePlayer, movePaddle, getOwnTarget } from '@/game/matterEngine/player';
+import { eventOnCollisionStart, eventOnCollisionEnd, eventOnBeforeUpdate } from '@/game/matterEngine/matterJsGameEvent';
+import { PlayerNumber, Score, CanvasSize } from '@/game/gameType';
+import { ScoreBoard } from '@/game/conponents/ScoreBoard';
 import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent, socketOnGameScoreEvent } from '@/context/socketGameEvent';
+import styles from '@/game/styles/Run.module.css';
 
 export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore }
   : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber, opponentId: string, score: Score, setScore: Dispatch<SetStateAction<Score>>}) {

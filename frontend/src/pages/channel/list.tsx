@@ -1,10 +1,10 @@
-import MakeChannelButton from '@/components/button/MakeChannelButton';
-import MakeChannel from '@/components/chat/MakeChannel';
-import ChannelList from '@/components/chat/ChannelList';
-import ChatRoom from '@/components/chat/ChatRoom';
+import MakeChannelButton from '@/chat/components/MakeChannelButton';
+import MakeChannel from '../../chat/components/MakeChannel';
+import ChannelList from '../../chat/components/ChannelList';
+import ChatRoom from '../../chat/components/ChatRoom';
 import { useState } from 'react';
-import { Channel } from '@/type';
-import NavButtonWrapper from '@/components/button/NavButtonWrapper';
+import { Channel } from '@/chat/chatType';
+import NavButtonWrapper from '../../chat/components/NavButtonWrapper';
 import styles from '@/styles/Common.module.css';
 
 const ChannelListPage = () => {
