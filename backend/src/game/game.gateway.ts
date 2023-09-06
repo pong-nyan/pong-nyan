@@ -5,7 +5,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
-import { BallInfo, PlayerNumber } from '../type/game';
+import { BallInfo, PlayerNumber, Score } from 'src/type/game';
 import { parse } from 'cookie';
 import { JwtService } from '@nestjs/jwt';
 // import { UserService } from "../user.service;
@@ -19,7 +19,7 @@ export class GameGateway {
   constructor(private readonly gameService: GameService,
               private readonly jwtService: JwtService) {}
               // private readonly authService: AuthService
-  waitLength: number = 0;
+  waitLength: 0;
 
   @WebSocketServer()
   server: Server;
@@ -59,15 +59,17 @@ export class GameGateway {
 
   // TODO: sensor에 닿을 시 score 변경
   @SubscribeMessage('game-score')
-  handleScore(client: Socket, data: {playerNumber: PlayerNumber, loser: PlayerNumber}) {
+  handleScore(client: Socket, data: {playerNumber: PlayerNumber, score: Score}) {
     console.log('game-score', data);
     const roomName = this.gameService.getGameRoom(client);
     console.log('roomName', roomName);
 
+    // TODO: gameMap 에서 score 변경
     console.log('waitLength', this.waitLength);
     if (++this.waitLength === 2) {
       this.waitLength = 0;
-      this.server.to(roomName).emit('game-score', { loser: data.loser, });
+      // TODO: gameMap score 가져와야 함
+      this.server.to(roomName).emit('game-score', { score: data.score });
     }
     // const roomName = client.rooms.forEach((room) => {
     //   if (room.startsWith('game-')) {

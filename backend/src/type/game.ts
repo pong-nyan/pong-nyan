@@ -35,4 +35,9 @@ export type GameInfo = {
   }
 }
 
+export type Score = {
+  p1: number;
+  p2: number;
+}
+
 export type RoomName = string;
