@@ -12,7 +12,7 @@ import { parse } from 'cookie';
 import { JwtService } from '@nestjs/jwt';
 import { UseGuards } from '@nestjs/common';
 import { GameGuard } from './game.guard';
-// import { UserService } from "../user.service;
+import { PnJwtPayload, PnPayloadDto } from './game.dto';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -21,8 +21,7 @@ import { GameGuard } from './game.guard';
 })
 @UseGuards(GameGuard)
 export class GameGateway {
-  constructor(private readonly gameService: GameService,
-              private readonly jwtService: JwtService) {}
+  constructor(private readonly gameService: GameService) {}
               // private readonly authService: AuthService
   waitLength: 0;
 
@@ -31,26 +30,25 @@ export class GameGateway {
   fps = 1000 / 60;
 
   async handleConnection(client: Socket) {
-    console.log('GameGateway Connection', client.id);
+    console.log('handleConnection', client.id);
   }
 
   async handleDisconnect(client: Socket) {
-    console.log('GameGateway Disconnection', client.id);
+    console.log('handleDisconnect', client.id);
     this.gameService.removeMatchingClient(client);
   }
 
   @SubscribeMessage('game-randomStart')
-  handleStartGame(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-    const pnJwt = parse(client.handshake.headers.cookie)['pn-jwt'];
-    const decodedJwt = JSON.parse(JSON.stringify(this.jwtService.decode(pnJwt)));
-    const [ roomName, player1Id, player2Id ] = this.gameService.match(client, decodedJwt.nickname);
+  handleStartGame(@MessageBody() data: any, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+    const nickname = payload.intraNickname;
+    const [ roomName, player1Id, player2Id ] = this.gameService.match(client, nickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;
     this.server.to(roomName).emit('game-randomStart', {player1Id, player2Id});
   }
 
   @SubscribeMessage('game-keyEvent')
-  handleGameKeyEvent(client: Socket, data: any) {
+  handleGameKeyEvent(@MessageBody() data: any, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
     const roomName = this.gameService.getGameRoom(client);
     console.log('roomName', roomName);
     this.server.to(data.opponentId).emit('game-keyEvent', {
@@ -63,7 +61,7 @@ export class GameGateway {
 
   // TODO: sensor에 닿을 시 score 변경
   @SubscribeMessage('game-score')
-  handleScore(client: Socket, data: {playerNumber: PlayerNumber, loser: PlayerNumber}) {
+  handleScore(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto, data: {playerNumber: PlayerNumber, loser: PlayerNumber}) {
     console.log('game-score', data);
     const roomName = this.gameService.getGameRoom(client);
     console.log('roomName', roomName);
@@ -82,7 +80,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage('game-ball')
-  handleBall(client: Socket, ball: BallInfo) {
+  handleBall(@MessageBody() ball: BallInfo, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
     // get game-roomName
     // TODO : refactoring
     // const roomName = Array.from(client.rooms).find(room => room.startsWith('game-'));
