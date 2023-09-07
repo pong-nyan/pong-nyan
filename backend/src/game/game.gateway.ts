@@ -2,12 +2,16 @@ import {
   WebSocketGateway,
   WebSocketServer,
   SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { BallInfo, PlayerNumber } from '../type/game';
 import { parse } from 'cookie';
 import { JwtService } from '@nestjs/jwt';
+import { UseGuards } from '@nestjs/common';
+import { GameGuard } from './game.guard';
 // import { UserService } from "../user.service;
 
 @WebSocketGateway({
@@ -15,11 +19,12 @@ import { JwtService } from '@nestjs/jwt';
   path: '/socket/',
   cookie: true,
 })
+@UseGuards(GameGuard)
 export class GameGateway {
   constructor(private readonly gameService: GameService,
               private readonly jwtService: JwtService) {}
               // private readonly authService: AuthService
-  waitLength: number = 0;
+  waitLength: 0;
 
   @WebSocketServer()
   server: Server;
@@ -34,9 +39,8 @@ export class GameGateway {
     this.gameService.removeMatchingClient(client);
   }
 
-
   @SubscribeMessage('game-randomStart')
-  handleStartGame(client: Socket) {
+  handleStartGame(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
     const pnJwt = parse(client.handshake.headers.cookie)['pn-jwt'];
     const decodedJwt = JSON.parse(JSON.stringify(this.jwtService.decode(pnJwt)));
     const [ roomName, player1Id, player2Id ] = this.gameService.match(client, decodedJwt.nickname);
@@ -99,3 +103,4 @@ export class GameGateway {
     this.server.to(roomName).emit('game-ball', updatedBallInfo);
   }
 }
+
