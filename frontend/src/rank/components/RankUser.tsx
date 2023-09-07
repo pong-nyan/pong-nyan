@@ -1,12 +1,12 @@
 import { RankUserProps } from '../rankType';
+import styles from '@/rank/styles/Rank.module.css';
 
 const RankUser = ({ rankUser }: RankUserProps) => {
   return (
-    <div>
-      <h1>Rank User</h1>
-      <p>nickname: {rankUser.nickname}</p>
-      <p>rankScore: {rankUser.rankScore}</p>
-      <p>rank: {rankUser.rank}</p>
+    <div className={styles.rankUser}>
+      <p>{rankUser.rank}</p>
+      <p>{rankUser.rankScore}</p>
+      <p>{rankUser.nickname}</p>
     </div>
   );
 };
