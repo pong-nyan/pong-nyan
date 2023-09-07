@@ -41,15 +41,13 @@ export const eventOnCollisionStart = (sceneSize: CanvasSize, engine: Engine, run
       if (pair.isSensor) {
         if (pair.bodyA.label === 'Ball' || pair.bodyB.label === 'Ball') {
           const ball = findTarget(engine.world, 'Ball');
+          if (!ball) return;
           Body.setPosition(ball, { x: sceneSize.width / 2, y: sceneSize.height / 2});
-          Body.setStatic(ball, true);
-          
           if (pair.bodyA.label === 'player1' || pair.bodyB.label === 'player1') {
             setScore((prevScore: Score) => { return { p1: prevScore.p1, p2: prevScore.p2 + 1}; });
           } else if (pair.bodyA.label === 'player2' || pair.bodyB.label === 'player2') {
             setScore((prevScore: Score) => { return { p1: prevScore.p1 + 1, p2: prevScore.p2 }; });
           }
-          runner.enabled = false;
           socketEmitGameScoreEvent(playerNumber, score);
         }
       }

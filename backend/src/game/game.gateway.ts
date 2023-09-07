@@ -18,9 +18,8 @@ import { JwtService } from '@nestjs/jwt';
 export class GameGateway {
   constructor(private readonly gameService: GameService,
               private readonly jwtService: JwtService) {}
-              // private readonly authService: AuthService
-  @WebSocketServer()
-  server: Server;
+
+  @WebSocketServer() server: Server;
   fps = 1000 / 60;
 
   async handleConnection(client: Socket) {
@@ -45,8 +44,7 @@ export class GameGateway {
 
   @SubscribeMessage('game-keyEvent')
   handleGameKeyEvent(client: Socket, data: any) {
-    const roomName = this.gameService.getGameRoom(client);
-    console.log('roomName', roomName);
+    console.log('INFO: game-keyEvent', data.message);
     this.server.to(data.opponentId).emit('game-keyEvent', {
       opponentNumber: data.playerNumber,
       message: data.message,
@@ -58,30 +56,26 @@ export class GameGateway {
   // TODO: sensor에 닿을 시 score 변경
   @SubscribeMessage('game-score')
   handleScore(client: Socket, data: {playerNumber: PlayerNumber, score: Score}) {
-    const gameInfo = this.gameService.getGameInfo(client);
-    if (!gameInfo) return false;
-    console.log('score', data.score);
+    console.log('INFO: game-score', data);
+    const roomName = this.gameService.getGameRoom(client);
+    const gameInfo = this.gameService.getGameInfo(roomName);
+    if (!gameInfo) return ;
 
     if (this.gameService.isReadyScoreCheck(gameInfo, data.playerNumber, data.score)) {
-      console.log('INFO: 점수 체크 준비 완료', gameInfo.waitList);
-      if ((gameInfo.waitList[0].score.p1 === gameInfo.waitList[1].score.p1)
-          && (gameInfo.waitList[0].score.p2 === gameInfo.waitList[1].score.p2)) {
-        console.log('INFO: 두 클라이언트의 점수가 같음');
-        gameInfo.score = gameInfo.waitList[0].score;
-        this.server.to(gameInfo.roomName).emit('game-score', { realScore: gameInfo.score });
-      } else {
-        //TODO: 두 클라이언트의 점수가 다를 경우
-        console.log('PROBLEM: 두 클라이언트의 점수가 다름');
-      }
+      const winnerNickname = this.gameService.checkCorrectScoreWhoWinner(gameInfo)
+      console.log('INFO: 승자 발견', winnerNickname);
+      gameInfo.score = winnerNickname === '' ? gameInfo.score : gameInfo.waitList[0].score;
+      this.server.to(roomName).emit('game-score', { realScore: gameInfo.score, winnerNickname });
       gameInfo.waitList = [];
     }
   }
 
   @SubscribeMessage('game-ball')
   handleBall(client: Socket, ball: BallInfo) {
-    const gameInfo = this.gameService.getGameInfo(client);
-    const updatedBallInfo = this.gameService.reconcilateBallInfo(gameInfo.roomName, ball);
+    const roomName = this.gameService.getGameRoom(client);
+    // const gameInfo = this.gameService.getGameInfo(roomName);
+    const updatedBallInfo = this.gameService.reconcilateBallInfo(roomName, ball);
     if (!updatedBallInfo) return;
-    this.server.to(gameInfo.roomName).emit('game-ball', updatedBallInfo);
+    this.server.to(roomName).emit('game-ball', updatedBallInfo);
   }
 }

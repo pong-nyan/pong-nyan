@@ -12,6 +12,7 @@ export type QueueInfo = {
   nickname: string;
 }
 
+// game-<nickname1>:<nickname2>
 export type RoomName = string;
 
 export type Nickname = {
@@ -25,7 +26,6 @@ export type Score = {
 }
 
 export type GameInfo = {
-  roomName: RoomName;
   score: Score;
   nickname: Nickname;
   waitList: { playerNumber: PlayerNumber, score: Score }[];
