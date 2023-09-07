@@ -1,4 +1,4 @@
-import styles from './styles/Login.module.css';
+import styles from '@/auth/styles/Login.module.css';
 import { useRouter } from 'next/router';
 
 const FortyTwoIntraSignInButton = () => {
