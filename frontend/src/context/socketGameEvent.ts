@@ -97,8 +97,8 @@ export const socketOnGameScoreEvent = (engine: Engine | undefined, setScore: Dis
   socket.on('game-score', ( { realScore, winnerNickname } : { realScore: Score, winnerNickname: string }) => {
     if (!engine || !engine.world) return;
     if (winnerNickname === '') {
-      console.log('INFO: 승자 점수 반영', realScore);
-      // setScore({ p1: realScore.p1, p2: realScore.p2 });
+      console.log('INFO: 이전 점수 조정', realScore);
+      setScore({ p1: realScore.p1, p2: realScore.p2 });
     }
     resumeGame(engine, winnerNickname);
   });
