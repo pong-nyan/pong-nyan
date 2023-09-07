@@ -90,14 +90,16 @@ const MakeChannel = () => {
         />
       </div>
       {/* TODO: 비밀번호는 공개방,비공개방을 눌렀을때 입력받기? 평소에는 hidden?? 그렇게 하는게 좋을까? */}
-      <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
-        <input
-          type="text"
-          placeholder="방 비밀번호를 입력해주세요"
-          value={channelPassword}
-          onChange={e => setChannelPassword(e.target.value)}
-        />
-      </div>
+      {channelType === 'protected' && (
+        <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="방 비밀번호를 입력해주세요"
+            value={channelPassword}
+            onChange={e => setChannelPassword(e.target.value)}
+          />
+        </div>
+      )}
       <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
         <input
           type="button"
