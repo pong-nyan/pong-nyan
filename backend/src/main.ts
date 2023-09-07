@@ -5,6 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import * as fs from 'fs';
 import * as express from 'express';
 import { setupSwagger } from './config/swagger';
+import { urlencoded, json } from 'body-parser';
 
 async function bootstrap() {
   // const httpsOptions = {
@@ -25,6 +26,8 @@ async function bootstrap() {
     }
   );
   app.use(cookieParser());
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ limit: '50mb', extended: true }));
   app.useGlobalPipes(new ValidationPipe());
   setupSwagger(app);
   app.use(server);
