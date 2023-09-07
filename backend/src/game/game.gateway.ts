@@ -10,6 +10,8 @@ import { GameService } from './game.service';
 import { BallInfo, PlayerNumber } from '../type/game';
 import { parse } from 'cookie';
 import { JwtService } from '@nestjs/jwt';
+import { UseGuards } from '@nestjs/common';
+import { GameGuard } from './game.guard';
 // import { UserService } from "../user.service;
 
 @WebSocketGateway({
@@ -17,6 +19,7 @@ import { JwtService } from '@nestjs/jwt';
   path: '/socket/',
   cookie: true,
 })
+@UseGuards(GameGuard)
 export class GameGateway {
   constructor(private readonly gameService: GameService,
               private readonly jwtService: JwtService) {}
@@ -99,8 +102,5 @@ export class GameGateway {
     if (!updatedBallInfo) return;
     this.server.to(roomName).emit('game-ball', updatedBallInfo);
   }
-}
-function ConnectionSocket(): (target: GameGateway, propertyKey: 'handleStartGame', parameterIndex: 1) => void {
-  throw new Error('Function not implemented.');
 }
 

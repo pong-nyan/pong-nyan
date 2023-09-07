@@ -13,14 +13,9 @@ export class GameGuard implements CanActivate {
     const client = context.switchToWs().getClient();
     const token = client.handshake.query['pn-jwt'];
 
-    if (!token) {
-      client.emit('redirect', { redirectUrl: '/auth/signin' });
-    }
-
+    if (!token) return false;
     try {
       const decoded = this.jwtService.verify(token);
-
-
       return true;
     } catch (err) {
       return false;
