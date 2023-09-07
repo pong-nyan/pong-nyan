@@ -10,11 +10,14 @@ const MakeChannel = () => {
   const [channelType, setChannelType] = useState<ChannelType>('public');
 
   const handleCreateChannel = () => {
-    if (isNaN(Number(maxUsers))) {
+    let channelMaxUsers = 21;
+
+    if (!maxUsers.trim() || !maxUsers || isNaN(Number(maxUsers))) {
       alert('최대 인원수는 숫자만 입력 가능합니다.');
-      return ;
+      return;
     }
-    const channelMaxUsers = maxUsers ? parseInt(maxUsers, 10) : 21;
+
+    channelMaxUsers = parseInt(maxUsers, 10);
     if (channelMaxUsers > 25) {
       alert('최대 인원수는 25명을 초과할 수 없습니다.');
       return;
