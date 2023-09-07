@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Game } from './Game';
 
 @Entity()
 export class User {
@@ -28,6 +29,12 @@ export class User {
 
     @Column({ default: false })
     google2faEnable: boolean;
+
+    @OneToMany(() => Game, game => game.winner)
+    winnerGames: Game[];
+
+    @OneToMany(() => Game, game => game.loser)
+    loserGames: Game[];
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     createdAt: Date;

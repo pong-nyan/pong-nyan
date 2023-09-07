@@ -1,13 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { Game } from 'src/entity/Game';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { Socket } from 'socket.io';
 import { BallInfo, GameInfo, QueueInfo, RoomName } from 'src/type/game';
+import { User } from 'src/entity/User';
 
 @Injectable()
 export class GameService {
-  constructor(@InjectRepository(Game) private readonly gameRepository: Repository<Game>) { }
+  constructor(
+    @InjectRepository(Game)
+    private readonly gameRepository: Repository<Game>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
+  ) { }
 
   // TODO: matchingQueue 확인해야함
   matchingQueue: QueueInfo[] = [];
@@ -35,7 +41,7 @@ export class GameService {
         player2: {
           nickname: player2.nickname,
           score: 0
-    
+
         }
       });
       return [ roomName, player1Id, player2Id ];
@@ -79,14 +85,27 @@ export class GameService {
     this.matchingQueue = this.matchingQueue.filter(item => item.client.id !== client.id);
     console.log(this.matchingQueue.length);
   }
-    async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
-        await this.gameRepository.insert({ winner, loser, gameMode, rankScore, gameInfo });
+
+  async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
+    if (!winner || !loser) return;
+    const winnerUser = await this.userRepository.findOne( { where: { intraId: winner } });
+    const loserUser = await this.userRepository.findOne({ where: { intraId: loser } });
+    if (!winnerUser || !loserUser) return;
+    winnerUser.rankScore += rankScore;
+    loserUser.rankScore -= rankScore;
+    await this.userRepository.save(winnerUser);
+    await this.userRepository.save(loserUser);
+    await this.gameRepository.save({ winner: winnerUser, loser: loserUser, gameMode, rankScore, gameInfo });
+  }
+
+  async getMyGameInfo(intraId: number) {
+      if (!intraId) return null;
+      const user = await this.userRepository.findOne( { where: { intraId }, relations: ['winnerGames', 'loserGames'] } );
+      if (!user) return null;
+      const winnerGames = user.winnerGames;
+      const loserGames = user.loserGames;
+      return { winnerGames, loserGames };
     }
 
-    async getMyGameInfo(intraId: number) {
-        if (!intraId) return null;
-        return await this.gameRepository.find({ where: [{ winner: intraId }, { loser: intraId }] });
-    }
 }
-
 

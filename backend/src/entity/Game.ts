@@ -1,17 +1,16 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { User } from './User';
 
 @Entity()
 export class Game {
     @PrimaryGeneratedColumn()
     id : number;
 
-    // 42 intra id
-    @Column()
-    winner: number;
+    @ManyToOne(() => User)
+    winner: User;
 
-    // 42 intra id
-    @Column()
-    loser: number;
+    @ManyToOne(() => User)
+    loser: User;
 
     // Game mode, 0: normal, 1: ranked
     @Column()
