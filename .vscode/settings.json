@@ -6,7 +6,8 @@
     "game",
     "login",
     "2FA",
-    "chat"
+    "chat",
+    "rank",
   ],
   "editor.formatOnSave": true,
   "eslint.codeActionsOnSave.rules": {
