@@ -10,11 +10,14 @@ const MakeChannel = () => {
   const [channelType, setChannelType] = useState<ChannelType>('public');
 
   const handleCreateChannel = () => {
-    if (isNaN(Number(maxUsers))) {
+    let channelMaxUsers = 21;
+
+    if (!maxUsers.trim() || !maxUsers || isNaN(Number(maxUsers))) {
       alert('최대 인원수는 숫자만 입력 가능합니다.');
-      return ;
+      return;
     }
-    const channelMaxUsers = maxUsers ? parseInt(maxUsers, 10) : 21;
+
+    channelMaxUsers = parseInt(maxUsers, 10);
     if (channelMaxUsers > 25) {
       alert('최대 인원수는 25명을 초과할 수 없습니다.');
       return;
@@ -87,14 +90,16 @@ const MakeChannel = () => {
         />
       </div>
       {/* TODO: 비밀번호는 공개방,비공개방을 눌렀을때 입력받기? 평소에는 hidden?? 그렇게 하는게 좋을까? */}
-      <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
-        <input
-          type="text"
-          placeholder="방 비밀번호를 입력해주세요"
-          value={channelPassword}
-          onChange={e => setChannelPassword(e.target.value)}
-        />
-      </div>
+      {channelType === 'protected' && (
+        <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="방 비밀번호를 입력해주세요"
+            value={channelPassword}
+            onChange={e => setChannelPassword(e.target.value)}
+          />
+        </div>
+      )}
       <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
         <input
           type="button"
