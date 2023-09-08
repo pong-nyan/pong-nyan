@@ -24,10 +24,10 @@ async function bootstrap() {
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ limit: '50mb', extended: true }));
   app.useGlobalPipes(new ValidationPipe());
-  setupSwagger(app);
   app.use(server);
 
   app.setGlobalPrefix('api');
+  setupSwagger(app);
   await app.listen(4242);
 
   console.log(`🚀 Server ready at: ${ await app.getUrl()}`);
