@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { socket } from '@/context/socket';
-import { KeyEventMessage, PlayerNumber, Score } from '@/game/gameType';
+import { KeyEventMessage, PlayerNumber, Score, GameInfo, CanvasSize } from '@/game/gameType';
 import { Body, Engine } from 'matter-js';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
 import { movePlayer, movePaddle } from '@/game/matterEngine/player';
@@ -23,6 +23,7 @@ export const socketEmitGameKeyEvent = (playerNumber: PlayerNumber, opponentId: s
     step,
     velocity,
   });
+
 /**
  * 게임 Key 이벤트를 서버에서 받아와 업데이트합니다.
  * @param engine
@@ -93,17 +94,25 @@ export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, score: Scor
  * @param engine
  * @returns
  */
-export const socketOnGameScoreEvent = (engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
+export const socketOnGameScoreEvent = (sceneSize: CanvasSize, engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
   socket.on('game-score', ( { realScore, winnerNickname } : { realScore: Score, winnerNickname: string }) => {
     if (!engine || !engine.world) return;
-    console.log('INFO: socketOnGameScoreEvent', realScore);
     if (realScore.p1 === 0 && realScore.p2 === 0) {
-      resumeGame(engine, '게임 시작!');
+      resumeGame(sceneSize, engine, 5, '게임 시작!');
     } else if (winnerNickname === '') {
       setScore({ p1: realScore.p1, p2: realScore.p2 });
-      resumeGame(engine, '리매치!');
+      resumeGame(sceneSize, engine, 3, '리매치!');
     } else {
-      resumeGame(engine, `${winnerNickname} 승리!`);
+      resumeGame(sceneSize, engine, 3, `${winnerNickname} 승리!`);
     }
+  });
+};
+
+export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
+  socket.on('game-disconnect', ( { disconnectNickname, gameInfo } : { disconnectNickname: string, gameInfo: GameInfo } ) => {
+    if (!engine || !engine.world) return;
+    console.log('game-disconnect', disconnectNickname, gameInfo);
+    setScore({ p1: gameInfo.score.p1, p2: gameInfo.score.p2 });
+    resumeGame(sceneSize, engine, 5, `${disconnectNickname}이(가) 나갔습니다.`);
   });
 };

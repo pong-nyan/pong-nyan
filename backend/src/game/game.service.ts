@@ -99,6 +99,7 @@ export class GameService {
     this.matchingQueue = this.matchingQueue.filter(item => item.client.id !== client.id);
     console.log(this.matchingQueue.length);
   }
+
     async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
         await this.gameRepository.insert({ winner, loser, gameMode, rankScore, gameInfo });
     }
