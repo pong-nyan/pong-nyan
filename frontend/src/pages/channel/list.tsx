@@ -8,22 +8,26 @@ import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
 
 const ChannelListPage = () => {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
-  const [showMakeChannel, setShowMakeChannel] = useState(false);
+  const [isMakeChannelOpen, setMakeChannelOpen] = useState(false);
 
   const handleLeaveChannel = () => {
     setSelectedChannel(null);
   };
 
-  const toggleMakeChannel = () => {
-    setShowMakeChannel(prevState => !prevState);
+  const handleOpenMakeChannel = () => {
+    setMakeChannelOpen(true);
+  };
+
+  const handleCloseMakeChannel = () => {
+    setMakeChannelOpen(false);
   };
 
   return (
     <div className="commonLayout" >
       <div style={{ flex: 1, border: '2px solid gray', overflowY: 'auto', height: '100%' }}>
         <ChannelList onChannelSelect={setSelectedChannel} />
-        {showMakeChannel && <MakeChannel />}
-        <MakeChannelButton onMakeChannel={toggleMakeChannel} />
+        <MakeChannel isOpen={isMakeChannelOpen} onClose={handleCloseMakeChannel} />
+        <MakeChannelButton onMakeChannel={handleOpenMakeChannel} />
         <NavButtonWrapper />
       </div>
       {selectedChannel && (
