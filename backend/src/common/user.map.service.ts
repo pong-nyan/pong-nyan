@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { UserInfo } from './type/channel';
+import { UserInfo } from '../type/channel';
 
 @Injectable()
-export class UserService {
+export class UserMapService {
     userMap = new Map<number, UserInfo>();
-    
+
     addUser(userInfo: UserInfo) {
         this.userMap.set(userInfo.intraId, userInfo);
     }
