@@ -22,11 +22,11 @@ export const setStartBall = (world: World, loser: PlayerNumber) => {
   let speed = 5;
   let degree = loser === 'player1' ? 30 : 210;
   const rad = degree * Math.PI / 180;
-  const ballBody = findTarget(world, 'Ball');
-  if (!ballBody) return;
-  Body.setVelocity(ballBody, { x: speed * Math.cos(rad), y: speed * Math.sin(rad)});
-  speed = Math.sqrt(ballBody.velocity.x ** 2 + ballBody.velocity.y ** 2);
-  degree = 90 - Math.atan2(ballBody.velocity.x, ballBody.velocity.y) * 180 / Math.PI;
+  const ball = findTarget(world, 'Ball');
+  if (!ball) return;
+  Body.setVelocity(ball, { x: speed * Math.cos(rad), y: speed * Math.sin(rad)});
+  speed = Math.sqrt(ball.velocity.x ** 2 + ball.velocity.y ** 2);
+  degree = 90 - Math.atan2(ball.velocity.x, ball.velocity.y) * 180 / Math.PI;
 };
 
 export function initPlayer(playerNumber:PlayerNumber, cw: number, ch: number, nonCollisionGroupRef: number, hingeGroupRef: number) : Player {
