@@ -6,11 +6,9 @@ import axios from 'axios';
 const RankPage = () => {
   const [rankUsers, setRankUsers] = useState<RankUserType[]>([]);
 
-  // dummy data
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/rank`, { withCredentials: true })
       .then(response => {
-        console.log(response.data.rankUsers);
         setRankUsers(response.data.rankUsers);
       })
       .catch(error => {
