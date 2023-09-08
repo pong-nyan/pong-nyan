@@ -19,6 +19,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
   let debouncingFlag = false;
 
   const handleKeyDown = (engine: Engine, e: KeyboardEvent, cw: number) => {
+    if (!playerNumber || !opponentId) return ;
     const step = 24;
     const velocity = 1;
 
@@ -45,6 +46,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
   };
 
   const handleKeyUp = (engine: Engine, e: KeyboardEvent) => {
+    if (!playerNumber || !opponentId) return ;
     const velocity = 1;
 
     switch (e.key) {
@@ -57,7 +59,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
   };
 
   useEffect(() => {
-    if (!scene.current) return;
+    if (!scene.current || !playerNumber) return;
 
     // scene 의 css transform 을 이용해 180도 회전
     if (playerNumber === 'player2') { scene.current.style.setProperty('transform', 'rotate(180deg)'); }
@@ -84,13 +86,14 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
 
     /* matterjs event on */
     eventOnBeforeUpdate(engine.current);
-    eventOnCollisionStart(sceneSize, engine.current, runner.current, playerNumber);
+    eventOnCollisionStart(sceneSize, engine.current, runner.current, playerNumber, score, setScore);
     eventOnCollisionEnd(engine.current);
 
     /* socket on event */
     socketOnGameKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
     socketOnGameBallEvent(engine.current);  // 공 위치, 속도 동기화
     socketOnGameScoreEvent(engine.current, setScore);
+    // socketOnGameEndEvent(engine.current, setGameStatus);
 
     // run the engine
     Runner.run(runner.current, engine.current);
@@ -105,7 +108,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       render.current.canvas.remove();
       render.current.textures = {};
     };
-  }, [playerNumber, opponentId, setScore]);
+  }, [playerNumber, opponentId, score, setScore]);
 
   return (
     <div
