@@ -1,17 +1,9 @@
 import Start from '@/game/components/Start';
 import RunWrapper from '@/game/components/RunWrapper';
 import End from '@/game/components/End';
-import { PlayerNumber, Score } from '@/game/gameType';
+import { PlayerNumber, Score, GameStatus } from '@/game/gameType';
 import { useState } from 'react';
 
-enum GameStatus {
-	Start,
-	RankPnRun,
-  NormalPnRun,
-  RankOriginRun,
-  NormalOriginRun,
-	End
-}
 
 export default function Game(): JSX.Element {
   // TODO: start game button
