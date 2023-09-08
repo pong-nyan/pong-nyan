@@ -34,7 +34,7 @@ export const eventOnBeforeUpdate = (engine: Engine) => {
   });
 };
 
-export const eventOnCollisionStart = (sceneSize: CanvasSize, engine: Engine, runner: Runner, playerNumber: PlayerNumber, score: Score, setScore: Dispatch<SetStateAction<Score>>) => {
+export const eventOnCollisionStart = (sceneSize: CanvasSize, engine: Engine, runner: Runner, playerNumber: PlayerNumber, setScore: Dispatch<SetStateAction<Score>>) => {
   Events.on(engine, 'collisionStart', (e) => {
     const pairs = e.pairs;
     pairs.forEach((pair) => {
@@ -48,10 +48,10 @@ export const eventOnCollisionStart = (sceneSize: CanvasSize, engine: Engine, run
           } else if (pair.bodyA.label === 'player2' || pair.bodyB.label === 'player2') {
             setScore((prevScore: Score) => { return { p1: prevScore.p1 + 1, p2: prevScore.p2 }; });
           }
-          socketEmitGameScoreEvent(playerNumber, score);
         }
       }
     });
+
     const bodies = e.source.world.bodies;
     bodies.forEach((body: Body)  => {
       if (body.label === 'Ball') {
