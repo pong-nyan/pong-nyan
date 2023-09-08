@@ -15,7 +15,7 @@ export class RankService {
             take: 10
         });
         return {
-            data: rankUser,
+            rankUsers: rankUser,
             meta: {
                 total,
                 page,

@@ -7,7 +7,7 @@ const RankUserList = ({ rankUserList } : RankUserListProps) => {
     <div className={styles.rankUserList}>
       <RankUserColumn />
       {rankUserList.map((rankUser) => (
-        <RankUser key={rankUser.nickname} rankUser={rankUser} />
+        <RankUser key={rankUser.intraNickname} rankUser={rankUser} />
       ))}
     </div>
   );

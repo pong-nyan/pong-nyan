@@ -1,5 +1,5 @@
 export type RankUserType = {
-    nickname: string;
+    intraNickname: string;
     rankScore: number;
     rank: number;
 };
