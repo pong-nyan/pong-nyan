@@ -70,7 +70,7 @@ export class GameService {
   checkCorrectScoreWhoWinner(gameInfo: GameInfo) {
     console.log('INFO: 점수 체크 준비 완료', gameInfo.waitList);
     if ((gameInfo.waitList[0].score.p1 !== gameInfo.waitList[1].score.p1)
-        && (gameInfo.waitList[0].score.p2 !== gameInfo.waitList[1].score.p2)) { return ''; }
+        || (gameInfo.waitList[0].score.p2 !== gameInfo.waitList[1].score.p2)) { return ''; }
     return gameInfo.waitList[0].score.p1 - gameInfo.score.p1 === 1 ? gameInfo.nickname.p1
       : gameInfo.waitList[0].score.p2 - gameInfo.score.p2 === 1 ? gameInfo.nickname.p2 : '';
   }

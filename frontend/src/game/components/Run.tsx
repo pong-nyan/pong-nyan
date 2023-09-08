@@ -5,7 +5,7 @@ import { movePlayer, movePaddle, getOwnTarget } from '@/game/matterEngine/player
 import { eventOnCollisionStart, eventOnCollisionEnd, eventOnBeforeUpdate } from '@/game/matterEngine/matterJsGameEvent';
 import { PlayerNumber, Score, CanvasSize } from '@/game/gameType';
 import { ScoreBoard } from '@/game/components/ScoreBoard';
-import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent, socketOnGameScoreEvent } from '@/context/socketGameEvent';
+import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent, socketOnGameScoreEvent, socketEmitGameScoreEvent } from '@/context/socketGameEvent';
 import styles from '@/game/styles/Run.module.css';
 
 export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore }
@@ -86,14 +86,13 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
 
     /* matterjs event on */
     eventOnBeforeUpdate(engine.current);
-    eventOnCollisionStart(sceneSize, engine.current, runner.current, playerNumber, score, setScore);
+    eventOnCollisionStart(sceneSize, engine.current, runner.current, playerNumber, setScore);
     eventOnCollisionEnd(engine.current);
 
     /* socket on event */
     socketOnGameKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
     socketOnGameBallEvent(engine.current);  // 공 위치, 속도 동기화
     socketOnGameScoreEvent(engine.current, setScore);
-    // socketOnGameEndEvent(engine.current, setGameStatus);
 
     // run the engine
     Runner.run(runner.current, engine.current);
@@ -108,7 +107,13 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       render.current.canvas.remove();
       render.current.textures = {};
     };
-  }, [playerNumber, opponentId, score, setScore]);
+  }, [playerNumber, opponentId, setScore]);
+
+  useEffect(() => {
+    if (!playerNumber) return;
+    console.log('INFO: game-score', score);
+    socketEmitGameScoreEvent(playerNumber, score);
+  }, [playerNumber, score]);
 
   return (
     <div

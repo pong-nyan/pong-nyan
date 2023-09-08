@@ -59,9 +59,8 @@ export class GameGateway {
 
   // TODO: sensor에 닿을 시 score 변경
   @SubscribeMessage('game-score')
-  handleScore(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto, data: {playerNumber: PlayerNumber, score: Score}) {
+  handleScore(@MessageBody() data: {playerNumber: PlayerNumber, score: Score}, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
     console.log('INFO: game-score', data);
-
     const roomName = this.gameService.getGameRoom(client);
     const gameInfo = this.gameService.getGameInfo(roomName);
     if (!gameInfo) return ;
