@@ -96,10 +96,14 @@ export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, score: Scor
 export const socketOnGameScoreEvent = (engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
   socket.on('game-score', ( { realScore, winnerNickname } : { realScore: Score, winnerNickname: string }) => {
     if (!engine || !engine.world) return;
-    if (winnerNickname === '') {
-      console.log('INFO: 이전 점수 조정', realScore);
+    console.log('INFO: socketOnGameScoreEvent', realScore);
+    if (realScore.p1 === 0 && realScore.p2 === 0) {
+      resumeGame(engine, '게임 시작!');
+    } else if (winnerNickname === '') {
       setScore({ p1: realScore.p1, p2: realScore.p2 });
+      resumeGame(engine, '리매치!');
+    } else {
+      resumeGame(engine, `${winnerNickname} 승리!`);
     }
-    resumeGame(engine, winnerNickname);
   });
 };
