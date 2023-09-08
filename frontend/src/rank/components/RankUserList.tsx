@@ -6,8 +6,8 @@ const RankUserList = ({ rankUserList } : RankUserListProps) => {
   return (
     <div className={styles.rankUserList}>
       <RankUserColumn />
-      {rankUserList.map((rankUser) => (
-        <RankUser key={rankUser.intraNickname} rankUser={rankUser} />
+      {rankUserList.map((rankUser, index) => (
+        <RankUser key={rankUser.intraNickname} rankUser={rankUser} rank={index + 1} />
       ))}
     </div>
   );

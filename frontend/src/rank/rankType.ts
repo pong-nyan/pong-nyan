@@ -10,4 +10,5 @@ export type RankUserListProps = {
  
 export type RankUserProps = {
     rankUser: RankUserType;
+    rank: number;
 };
