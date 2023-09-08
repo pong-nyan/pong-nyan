@@ -1,0 +1,34 @@
+.rankUserList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.rankUser {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.rankUser:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.rankUser:nth-child(even) {
+    background-color: #ffffff;
+}
+
+.rankUser:nth-child(1) {
+    background-color: #3b62ff;
+}
+
+.rankUser>p {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+}

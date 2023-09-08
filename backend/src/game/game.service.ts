@@ -33,16 +33,13 @@ export class GameService {
       const player1Id = player1.client.id;
       const player2Id = player2.client.id;
       this.gameMap.set(roomName, {
-        roomName,
-        player1: {
-          nickname: player1.nickname,
-          score: 0
+        score: { p1: 0, p2: 0 },
+        nickname: { p1: player1.nickname, p2: player2.nickname },
+        waitList: [],
+        ballInfo: {
+          position: { x: 0, y: 0 },
+          velocity: { x: 0, y: 0 },
         },
-        player2: {
-          nickname: player2.nickname,
-          score: 0
-
-        }
       });
       return [ roomName, player1Id, player2Id ];
     }
@@ -50,6 +47,7 @@ export class GameService {
   }
 
   getGameRoom(client: Socket) {
+    //refactor: for문을 사용하지 않고 찾는 방법
     let roomName = '';
     for (const value of client.rooms) {
       if (value.startsWith('game-'))
@@ -61,6 +59,28 @@ export class GameService {
     if (roomName === '') return;
     return roomName;
   }
+
+  getGameInfo(roomName: RoomName) {
+    return this.gameMap.get(roomName);
+  }
+
+  isReadyScoreCheck(gameInfo: GameInfo, playerNumber: PlayerNumber, score: Score): boolean {
+    if (!gameInfo.waitList.some(item => item.playerNumber === playerNumber)) {
+      console.log('INFO: 점수 체크 준비', playerNumber, score);
+      gameInfo.waitList.push({playerNumber, score: score});
+    }
+    if (gameInfo.waitList.length != 2) return false;
+    return true;
+  }
+
+  checkCorrectScoreWhoWinner(gameInfo: GameInfo) {
+    console.log('INFO: 점수 체크 준비 완료', gameInfo.waitList);
+    if ((gameInfo.waitList[0].score.p1 !== gameInfo.waitList[1].score.p1)
+        && (gameInfo.waitList[0].score.p2 !== gameInfo.waitList[1].score.p2)) { return ''; }
+    return gameInfo.waitList[0].score.p1 - gameInfo.score.p1 === 1 ? gameInfo.nickname.p1
+      : gameInfo.waitList[0].score.p2 - gameInfo.score.p2 === 1 ? gameInfo.nickname.p2 : '';
+  }
+
 
   reconcilateBallInfo(roomName: RoomName, ballInfo: BallInfo) : BallInfo | undefined {
     const recentBallInfo = this.recentBallInfoMap.get(roomName);

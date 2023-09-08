@@ -2,25 +2,27 @@ import { setStartBall } from '@/game/matterEngine/matterJsSet';
 import { Engine, Body } from 'matter-js';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
 import { PlayerNumber } from '@/game/gameType';
-const resumeGame = (engine: Engine, loser: PlayerNumber) => {
+
+export const resumeGame = (engine: Engine, winnerNickname: string) => {
   // 미리 공을 세팅해놓고 3초 뒤에 공을 움직이게 함. 순서 바꾸면 벽이 뚫리는 버그 발생
-  setStartBall(engine.world, loser);
-  setTimeout(() => {
-    Body.setStatic(findTarget(engine.world, 'Ball'), false);
-  }, 3000);
+  const ball = findTarget(engine.world, 'Ball');
+  if (!ball) return;
+  Body.setStatic(ball, true);
+  setStartBall(engine.world, 'player1');
   const countdown = document.getElementById('countdown');
   if (!countdown) return;
 
-  countdown.innerText = '3';
-  setTimeout(() => {
-    countdown.innerText = '2';
-  }, 1000);
-  setTimeout(() => {
-    countdown.innerText = '1';
-  }, 2000);
-  setTimeout(() => {
-    countdown.innerText = '';
-  }, 3000);
+  let counter = 4;  // 시작 카운트
+  countdown.innerText = winnerNickname === '' ? '리매치!' : `${winnerNickname} 승리!`; 
+  const countdownInterval = setInterval(() => {  // 간격 설정
+    if (--counter >= 1 && counter <= 3) {
+      countdown.innerText = counter.toString();  // 카운트 다운 표시
+    } else if (counter === 0) {
+      countdown.innerText = '시작!!!';  // 카운트 다운 초기화
+      Body.setStatic(ball, false);  // 볼 상태 변경
+    } else {
+      countdown.innerText = '';  // 카운트 다운 초기화
+      clearInterval(countdownInterval);  // 간격 중지
+    }
+  }, 1000);  // 1초 간격
 };
-
-export { resumeGame };

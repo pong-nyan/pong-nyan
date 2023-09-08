@@ -31,3 +31,7 @@
   z-index: 1;
 }
 
+.countdown {
+  color: #f7f5dd;
+  font-family: 'Digital-7', monospace;
+}
