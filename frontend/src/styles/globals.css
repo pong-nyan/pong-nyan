@@ -70,10 +70,19 @@ a {
   }
 }
 
-.commonLayout {
-  height: 100vh;
-  position: absolute;
-  right: 20%;
-  left: 20%;
+@media (min-width: 700px) {
+  .commonLayout {
+    height: 100vh;
+    position: absolute;
+    right: 20%;
+    left: 20%;
+  }
 }
 
+@media (max-width: 700px) {
+  .commonLayout {
+    height: 100vh;
+    right: 0%;
+    left: 0%;
+  }
+}

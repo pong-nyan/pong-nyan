@@ -1,4 +1,4 @@
-import Google2FA from '@/components/auth/Google2FA';
+import Google2FA from '@/auth/components/Google2FA';
 
 const Google2FAVerify = () => {
   return (

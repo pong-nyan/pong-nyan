@@ -20,7 +20,7 @@ const ChannelListPage = () => {
 
   return (
     <div className="commonLayout" >
-      <div style={{ flex: 1, borderRight: '1px solid gray', overflowY: 'auto' }}>
+      <div style={{ flex: 1, border: '2px solid gray', overflowY: 'auto', height: '100%' }}>
         <ChannelList onChannelSelect={setSelectedChannel} />
         {showMakeChannel && <MakeChannel />}
         <MakeChannelButton onMakeChannel={toggleMakeChannel} />
