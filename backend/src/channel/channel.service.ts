@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
-import { Channel, ChannelInfo } from '../type/channel';
+import { Channel, ChannelInfo } from 'src/type/chatType';
 
 @Injectable()
 export class ChannelService {

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Game } from 'src/entity/Game';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Socket } from 'socket.io';
-import { BallInfo, GameInfo, QueueInfo, RoomName, PlayerNumber, Score } from 'src/type/game';
+import { Socket, RoomName } from 'src/type/socketType';
+import { BallInfo, GameInfo, QueueInfo, PlayerNumber, Score } from 'src/type/gameType';
 
 @Injectable()
 export class GameService {
@@ -16,6 +16,7 @@ export class GameService {
   recentBallInfoMap = new Map<RoomName, BallInfo>();
   gameMap = new Map<RoomName, GameInfo>();
 
+
   match(client: Socket, nickname: string) {
     this.matchingQueue.push({client, nickname});
     if (this.matchingQueue.length > 1) {
@@ -27,6 +28,8 @@ export class GameService {
       const player1Id = player1.client.id;
       const player2Id = player2.client.id;
       this.gameMap.set(roomName, {
+        roomName,
+        clientId: { p1: player1.client.id, p2: player2.client.id },
         score: { p1: 0, p2: 0 },
         nickname: { p1: player1.nickname, p2: player2.nickname },
         waitList: [],
@@ -39,6 +42,7 @@ export class GameService {
     }
     return [ undefined, undefined, undefined ];
   }
+
 
   getGameRoom(client: Socket) {
     //refactor: for문을 사용하지 않고 찾는 방법

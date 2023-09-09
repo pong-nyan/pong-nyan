@@ -1,6 +1,6 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { ChannelService } from './channel.service';
-import { ChannelInfo } from '../type/channel';
+import { ChannelInfo } from 'src/type/chatType';
 import { v4 as uuidv4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
 
