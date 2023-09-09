@@ -1,6 +1,6 @@
 import RankUserList from '@/rank/components/RankUserList';
 import { useState, useEffect } from 'react';
-import { RankUserType } from '@/rank/rankType';
+import { RankUserType } from '@/type/rankType';
 import axios from 'axios';
 import Pagination from '@/rank/components/Pagination';
 

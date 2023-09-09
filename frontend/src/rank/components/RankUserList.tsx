@@ -1,5 +1,5 @@
 import RankUser from './RankUser';
-import { RankUserListProps } from '../rankType';
+import { RankUserListProps } from '../../type/rankType';
 import styles from '@/rank/styles/Rank.module.css';
 
 const RankUserList = ({ rankUserList } : RankUserListProps) => {

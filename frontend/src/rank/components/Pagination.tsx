@@ -1,4 +1,4 @@
-import { PaginationProps } from '../rankType';
+import { PaginationProps } from '../../type/rankType';
 
 const Pagination = ({ currentPage, handleCurrentPage}: PaginationProps) => {
   return (
