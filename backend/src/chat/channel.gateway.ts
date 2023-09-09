@@ -4,7 +4,7 @@ import { ChannelInfo } from 'src/type/chatType';
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
 import { ChannelGuard } from './channel.guard';
-import { PnJwtPayload } from 'src/game/game.dto';
+import { PnJwtPayload } from 'src/chat/channel.dto';
 import { PnPayloadDto } from './channel.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as cookie from 'cookie';
