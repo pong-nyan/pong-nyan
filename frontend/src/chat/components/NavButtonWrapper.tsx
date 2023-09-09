@@ -38,7 +38,7 @@ const GameButton = () => {
   return (
     <button style={{ position: 'relative', width: '100%', height: '100%' }}>
       <Link href="/game">
-        <Image src="/assets/game-button.png" alt="game-button" fill style={{ objectFit: 'contain', zIndex: 10}} />
+        <Image src="/assets/game-button.png" alt="game-button" fill style={{ objectFit: 'contain' }} />
       </Link>
     </button>
   );
