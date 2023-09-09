@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { socket } from '@/context/socket';
-import { KeyEventMessage, PlayerNumber, Score, GameInfo, CanvasSize } from '@/game/gameType';
+import { KeyEventMessage, PlayerNumber, Score, GameInfo, CanvasSize } from '@/type/gameType';
 import { Body, Engine } from 'matter-js';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
 import { movePlayer, movePaddle } from '@/game/matterEngine/player';

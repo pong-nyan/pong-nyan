@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { socket } from '@/context/socket';
-import { Channel } from '@/chat/chatType';
+import { Channel } from '@/type/chatType';
 
 const ChannelList = ({ onChannelSelect }) => {
   const [channelList, setChannelList] = useState<Channel[]>([]);

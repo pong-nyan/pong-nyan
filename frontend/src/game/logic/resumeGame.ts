@@ -1,7 +1,7 @@
 import { setStartBall } from '@/game/matterEngine/matterJsSet';
 import { Engine, Body } from 'matter-js';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
-import { CanvasSize } from '@/game/gameType';
+import { CanvasSize } from '@/type/gameType';
 
 export const resumeGame = (sceneSize: CanvasSize, engine: Engine, timer: number, infoText: string) => {
   // 미리 공을 세팅해놓고 3초 뒤에 공을 움직이게 함. 순서 바꾸면 벽이 뚫리는 버그 발생

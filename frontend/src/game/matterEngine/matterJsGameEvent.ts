@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Engine, Events, Body, Runner } from 'matter-js';
-import { CanvasSize, PlayerNumber } from '@/game/gameType';
+import { CanvasSize, PlayerNumber } from '@/type/gameType';
 import { socketEmitGameBallEvent, socketEmitGameScoreEvent } from '@/context/socketGameEvent';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
-import { Score } from '@/game/gameType';
+import { Score } from '@/type/gameType';
 
 export const eventOnBeforeUpdate = (engine: Engine) => {
   Events.on(engine, 'beforeUpdate', (e) => {

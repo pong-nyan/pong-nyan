@@ -1,7 +1,7 @@
 import Start from '@/game/components/Start';
 import RunWrapper from '@/game/components/RunWrapper';
 import End from '@/game/components/End';
-import { PlayerNumber, Score, GameStatus } from '@/game/gameType';
+import { PlayerNumber, Score, GameStatus } from '@/type/gameType';
 import { useState } from 'react';
 
 

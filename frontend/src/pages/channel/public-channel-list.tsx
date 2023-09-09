@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Channel } from '@/chat/chatType';
+import { Channel } from '@/type/chatType;
 import axios from 'axios';
 import useAuth from '@/context/useAuth';
 

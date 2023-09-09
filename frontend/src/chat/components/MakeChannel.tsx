@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { socket } from '@/context/socket';
-import { ChannelType } from '@/chat/chatType';
+import { ChannelType } from '@/type/chatType';
 import Modal from '@/chat/components/Modal';
-import { channel } from 'diagnostics_channel';
 
 // 채널 생성 컴포넌트
 const MakeChannel = ({ isOpen, onClose }) => {

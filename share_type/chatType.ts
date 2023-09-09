@@ -6,6 +6,8 @@ declare module 'socket.io' {
 
 /* ------------------------------ */
 
+export type ChannelType = 'public' | 'private' | 'protected';
+
 export type Channel = ChannelInfo & {
   id: string,
   owner: string,
@@ -20,3 +22,4 @@ export type ChannelInfo = {
   channelType: 'public' | 'private' | 'protected',
   maxUsers: number,
 }
+

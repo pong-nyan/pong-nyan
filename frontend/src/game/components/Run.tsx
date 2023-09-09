@@ -3,7 +3,7 @@ import { Engine, Render, World, Runner, Body } from 'matter-js';
 import { initEngine, initWorld } from '@/game/matterEngine/matterJsSet';
 import { movePlayer, movePaddle, getOwnTarget } from '@/game/matterEngine/player';
 import { eventOnCollisionStart, eventOnCollisionEnd, eventOnBeforeUpdate } from '@/game/matterEngine/matterJsGameEvent';
-import { PlayerNumber, Score, CanvasSize } from '@/game/gameType';
+import { PlayerNumber, Score, CanvasSize } from '@/type/gameType';
 import { ScoreBoard } from '@/game/components/ScoreBoard';
 import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent, socketOnGameScoreEvent, socketEmitGameScoreEvent, socketOnGameDisconnectEvent } from '@/context/socketGameEvent';
     

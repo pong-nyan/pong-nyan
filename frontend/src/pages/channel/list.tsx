@@ -3,7 +3,7 @@ import MakeChannel from '@/chat/components/MakeChannel';
 import ChannelList from '@/chat/components/ChannelList';
 import ChatRoom from '@/chat/components/ChatRoom';
 import { useState } from 'react';
-import { Channel } from '@/chat/chatType';
+import { Channel } from '@/type/chatType';
 import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
 import useAuth from '@/context/useAuth';
 

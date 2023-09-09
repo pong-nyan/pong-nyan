@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { SocketContext } from '@/context/socket';
-import { PlayerNumber, GameStatus } from '@/game/gameType';
+import { PlayerNumber, GameStatus } from '@/type/gameType';
 import GameStartWrapper from './GameStartWrapper';
 
 export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
