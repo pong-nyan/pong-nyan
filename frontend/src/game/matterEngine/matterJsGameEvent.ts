@@ -34,15 +34,12 @@ export const eventOnBeforeUpdate = (engine: Engine) => {
   });
 };
 
-export const eventOnCollisionStart = (sceneSize: CanvasSize, engine: Engine, runner: Runner, playerNumber: PlayerNumber, setScore: Dispatch<SetStateAction<Score>>) => {
+export const eventOnCollisionStart = (engine: Engine, runner: Runner, playerNumber: PlayerNumber, setScore: Dispatch<SetStateAction<Score>>) => {
   Events.on(engine, 'collisionStart', (e) => {
     const pairs = e.pairs;
     pairs.forEach((pair) => {
       if (pair.isSensor) {
         if (pair.bodyA.label === 'Ball' || pair.bodyB.label === 'Ball') {
-          const ball = findTarget(engine.world, 'Ball');
-          if (!ball) return;
-          Body.setPosition(ball, { x: sceneSize.width / 2, y: sceneSize.height / 2});
           if (pair.bodyA.label === 'player1' || pair.bodyB.label === 'player1') {
             setScore((prevScore: Score) => { return { p1: prevScore.p1, p2: prevScore.p2 + 1}; });
           } else if (pair.bodyA.label === 'player2' || pair.bodyB.label === 'player2') {

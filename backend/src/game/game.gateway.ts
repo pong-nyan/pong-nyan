@@ -4,49 +4,72 @@ import {
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
-import { BallInfo, PlayerNumber, Score } from 'src/type/game';
-import { parse } from 'cookie';
-import { JwtService } from '@nestjs/jwt';
+import { BallInfo, PlayerNumber, Score } from 'src/type/gameType';
 import { UseGuards } from '@nestjs/common';
 import { GameGuard } from './game.guard';
+import { UserService } from 'src/user.service';
 import { PnJwtPayload, PnPayloadDto } from './game.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @WebSocketGateway({
   cors: { origin: '*' },
   path: '/socket/',
   cookie: true,
 })
-@UseGuards(GameGuard)
-export class GameGateway {
-  constructor(private readonly gameService: GameService) {}
-
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(private readonly gameService: GameService,
+              private readonly userService: UserService) {}
 
   @WebSocketServer() server: Server;
   fps = 1000 / 60;
 
-  async handleConnection(client: Socket) {
-    console.log('handleConnection', client.id);
+  async handleConnection(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+    console.log('[gameGateway] handleConnection', client.id);
+    // const userInfo = this.userService.getUser(payload.intraId);
+    // if (!userInfo) return ;
+    // if (userInfo.gameRoom) {
+    //   console.log('[INFO] 이전 게임 방 접속합니다.');
+    //   client.join(userInfo.gameRoom);
+    // }
   }
 
-  async handleDisconnect(client: Socket) {
-    console.log('handleDisconnect', client.id);
-    this.gameService.removeMatchingClient(client);
-  }
 
+  async handleDisconnect(@ConnectedSocket() client: Socket) {
+    console.log('[INFO] handleDisconnect :', );
+    //
+    // const intraId = this.userService.getIntraId(client.id);
+    // const userInfo = this.userService.getUser(intraId);
+    // if (!userInfo.gameRoom) {
+    //   console.log('[INFO] 게임 방이 없습니다.');
+    //   this.gameService.removeMatchingClient(client);
+    //   return ;
+    // }
+    // const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
+    // if (!gameInfo) {
+    //   console.log('[INFO] 게임 정보가 없습니다.');
+    //   client.leave(userInfo.gameRoom);
+    //   return ;
+    // }
+    // this.server.to(roomName).emit('game-disconnect', { disconnectNickname: payload.nickname, gameInfo } );
+  }
+ 
   @SubscribeMessage('game-randomStart-rank-pn')
   handleStartGame(@MessageBody() data: any, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
-    const nickname = payload.intraNickname;
-    const [ roomName, player1Id, player2Id ] = this.gameService.match(client, nickname);
+    const userInfo = this.userService.getUser(payload.intraId);
+    if (!userInfo) return ;
+    const [ roomName, player1Id, player2Id ] = this.gameService.match(client, payload.nickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;
     this.server.to(roomName).emit('game-randomStart-rank-pn', {player1Id, player2Id});
   }
 
   @SubscribeMessage('game-keyEvent')
-  handleGameKeyEvent(@MessageBody() data: any, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+  handleGameKeyEvent(@ConnectedSocket() client: Socket, @MessageBody() data: any, @PnJwtPayload() payload: PnPayloadDto) {
     const roomName = this.gameService.getGameRoom(client);
     console.log('roomName', roomName);
     this.server.to(data.opponentId).emit('game-keyEvent', {
@@ -59,14 +82,13 @@ export class GameGateway {
 
   // TODO: sensor에 닿을 시 score 변경
   @SubscribeMessage('game-score')
-  handleScore(@MessageBody() data: {playerNumber: PlayerNumber, score: Score}, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
-    console.log('INFO: game-score', data);
+  handleScore(@ConnectedSocket() client: Socket, @MessageBody() data: {playerNumber: PlayerNumber, score: Score}, @PnJwtPayload() payload: PnPayloadDto) {
     const roomName = this.gameService.getGameRoom(client);
     const gameInfo = this.gameService.getGameInfo(roomName);
     if (!gameInfo) return ;
 
     if (this.gameService.isReadyScoreCheck(gameInfo, data.playerNumber, data.score)) {
-      const winnerNickname = this.gameService.checkCorrectScoreWhoWinner(gameInfo)
+      const winnerNickname = this.gameService.checkCorrectScoreWhoWinner(gameInfo);
       console.log('INFO: 승자 발견', winnerNickname);
       gameInfo.score = winnerNickname === '' ? gameInfo.score : gameInfo.waitList[0].score;
       this.server.to(roomName).emit('game-score', { realScore: gameInfo.score, winnerNickname });
@@ -75,7 +97,7 @@ export class GameGateway {
   }
 
   @SubscribeMessage('game-ball')
-  handleBall(@MessageBody() ball: BallInfo, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+  handleBall(@ConnectedSocket() client: Socket, @MessageBody() ball: BallInfo) {
     const roomName = this.gameService.getGameRoom(client);
     const updatedBallInfo = this.gameService.reconcilateBallInfo(roomName, ball);
     if (!updatedBallInfo) return;
@@ -83,3 +105,7 @@ export class GameGateway {
   }
 }
 
+  // @SubscribeMessage('game-disconnect')
+  // handleDisconnect(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+  //
+  // }

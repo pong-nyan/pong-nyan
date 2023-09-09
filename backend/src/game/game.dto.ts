@@ -3,7 +3,7 @@ import { IsNumber, IsNotEmpty, IsString } from 'class-validator';
 export class PnPayloadDto {
     @IsNotEmpty()
     @IsString()
-    intraId: string;
+    intraId: number;
     @IsNotEmpty()
     @IsString()
     nickname: string;

@@ -19,6 +19,11 @@ export type Player = {
   joinRight: Matter.Constraint;
 };
 
+export type Nickname = {
+  p1: string;
+  p2: string;
+}
+
 export type PlayerNumber = 'player1' | 'player2';
 
 export type CollisionEvent = {
@@ -44,6 +49,11 @@ export type CanvasSize = {
   width: number;
   height: number;
 };
+
+export type GameInfo = {
+  score: Score;
+  nickname: Nickname;
+}
 
 export enum GameStatus {
 	Start,

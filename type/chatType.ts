@@ -4,6 +4,8 @@ declare module 'socket.io' {
   }
 }
 
+/* ------------------------------ */
+
 export type Channel = ChannelInfo & {
   id: string,
   owner: string,
@@ -17,11 +19,4 @@ export type ChannelInfo = {
   password?: string,
   channelType: 'public' | 'private' | 'protected',
   maxUsers: number,
-}
-
-export type UserInfo = {
-  intraId: number,
-  nickname: string,
-  online: boolean,
-  roomList: string[]
 }
