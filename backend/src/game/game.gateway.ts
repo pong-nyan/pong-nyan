@@ -14,13 +14,13 @@ import { UseGuards } from '@nestjs/common';
 import { GameGuard } from './game.guard';
 import { UserService } from 'src/user.service';
 import { PnJwtPayload, PnPayloadDto } from './game.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @WebSocketGateway({
   cors: { origin: '*' },
   path: '/socket/',
   cookie: true,
 })
-@UseGuards(GameGuard)
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly gameService: GameService,
               private readonly userService: UserService) {}
@@ -29,35 +29,34 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   fps = 1000 / 60;
 
   async handleConnection(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
-    console.log('handleConnection', client.id);
-    const userInfo = this.userService.getUser(payload.intraId);
-    if (!userInfo) return ;
-    if (userInfo.gameRoom) {
-      console.log('[INFO] 이전 게임 방 접속합니다.');
-      client.join(userInfo.gameRoom);
-    }
+    console.log('[gameGateway] handleConnection', client.id);
+    // const userInfo = this.userService.getUser(payload.intraId);
+    // if (!userInfo) return ;
+    // if (userInfo.gameRoom) {
+    //   console.log('[INFO] 이전 게임 방 접속합니다.');
+    //   client.join(userInfo.gameRoom);
+    // }
   }
 
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     console.log('[INFO] handleDisconnect :', );
-
-    const intraId = this.userService.getIntraId(client.id);
-    const userInfo = this.userService.getUser(intraId);
-    if (!userInfo.gameRoom) {
-      console.log('[INFO] 게임 방이 없습니다.');
-      this.gameService.removeMatchingClient(client);
-      return ;
-    }
-    const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
-    if (!gameInfo) {
-      console.log('[INFO] 게임 정보가 없습니다.');
-      client.leave(userInfo.gameRoom);
-      return ;
-    }
+    //
+    // const intraId = this.userService.getIntraId(client.id);
+    // const userInfo = this.userService.getUser(intraId);
+    // if (!userInfo.gameRoom) {
+    //   console.log('[INFO] 게임 방이 없습니다.');
+    //   this.gameService.removeMatchingClient(client);
+    //   return ;
+    // }
+    // const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
+    // if (!gameInfo) {
+    //   console.log('[INFO] 게임 정보가 없습니다.');
+    //   client.leave(userInfo.gameRoom);
+    //   return ;
+    // }
     // this.server.to(roomName).emit('game-disconnect', { disconnectNickname: payload.nickname, gameInfo } );
   }
-
 
   @SubscribeMessage('game-randomStart')
   handleStartGame(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {

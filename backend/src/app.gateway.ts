@@ -7,7 +7,10 @@ import {
 import { Socket } from 'socket.io';
 import { PnJwtPayload, PnPayloadDto } from 'src/game/game.dto';
 import { UserService } from './user.service';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from './auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @WebSocketGateway({
   cors: { origin: '*' },
   path: '/socket/',
@@ -18,6 +21,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 
   async handleConnection(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+    
     console.log('AppGateway Connection', client.id);
     // this.userService.addUser(client.id, payload.intraId);
   }

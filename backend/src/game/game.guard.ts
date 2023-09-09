@@ -16,6 +16,7 @@ export class GameGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
+    console.log('GameGuard');
     const client = context.switchToWs().getClient();
     const cookies = client.handshake.headers.cookie;
     const pnJwtCookie = cookie.parse(cookies)['pn-jwt'];
