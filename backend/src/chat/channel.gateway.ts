@@ -108,3 +108,6 @@ export class ChannelGateway {
 
   }
 }
+
+// TODO : setUserInfoChatRoomList 만들기
+    // chatRoomList: RoomName[],

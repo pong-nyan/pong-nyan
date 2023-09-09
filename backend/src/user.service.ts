@@ -42,9 +42,12 @@ export class UserService {
       return true;
     }
 
-    addUser(userInfo: UserInfo, clientId: SocketId) {
-      this.userMap.set(userInfo.intraId, userInfo);
-      this.idMap.set(clientId, userInfo.intraId);
+    setUserMap(intraId : IntraId, userInfo: UserInfo) {
+      this.userMap.set(intraId, userInfo);
+    }
+
+    setIdMap(clientId: SocketId, intraId: IntraId) {
+      this.idMap.set(clientId, intraId);
     }
 
     removeUser(clientId: SocketId) {

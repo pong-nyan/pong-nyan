@@ -20,10 +20,16 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly userService: UserService) {}
 
 
-  async handleConnection(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
-    
+  async handleConnection(@ConnectedSocket() client: Socket) {
+
+
     console.log('AppGateway Connection', client.id);
-    // this.userService.addUser(client.id, payload.intraId);
+    if (this.userService.checkPnJwt(client))
+    {
+      return ;
+    }
+    const intraId = this.userService.getIntraId(client.id);
+    this.userService.setIdMap(client.id, intraId);
   }
 
   async handleDisconnect(client: Socket) {
