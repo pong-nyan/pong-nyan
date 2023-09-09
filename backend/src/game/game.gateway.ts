@@ -57,16 +57,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // }
     // this.server.to(roomName).emit('game-disconnect', { disconnectNickname: payload.nickname, gameInfo } );
   }
-
-  @SubscribeMessage('game-randomStart')
-  handleStartGame(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+ 
+  @SubscribeMessage('game-randomStart-rank-pn')
+  handleStartGame(@MessageBody() data: any, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
     const userInfo = this.userService.getUser(payload.intraId);
     if (!userInfo) return ;
-
     const [ roomName, player1Id, player2Id ] = this.gameService.match(client, payload.nickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;
-    this.server.to(roomName).emit('game-randomStart', {player1Id, player2Id});
+    this.server.to(roomName).emit('game-randomStart-rank-pn', {player1Id, player2Id});
   }
 
   @SubscribeMessage('game-keyEvent')

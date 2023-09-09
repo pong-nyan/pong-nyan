@@ -55,3 +55,12 @@ export type GameInfo = {
   nickname: Nickname;
 }
 
+export enum GameStatus {
+	Start,
+	RankPnRun,
+  NormalPnRun,
+  RankOriginRun,
+  NormalOriginRun,
+	End
+}
+

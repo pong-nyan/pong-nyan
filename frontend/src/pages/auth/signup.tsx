@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { usePostFetchData } from '@/context/usePostFetchData';
 import useRedirect from '@/context/useRedirect';
+import encodeFileToBase64 from '@/auth/logic/encodeFileToBase65';
 
 const SignUp = () => {
-  // create a form with nickname, image, email
-  // with react, and use onChange to set the state
-  // and onSubmit to send the data to the backend
   const [nickname, setNickname] = useState('');
-  const [avatar, setAvatar] = useState('');
+  const [avatar, setAvatar] = useState<string>();
   const [email, setEmail] = useState('');
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/signup`;
@@ -36,10 +34,17 @@ const SignUp = () => {
         />
         <label htmlFor="image">Image</label>
         <input
-          type="text"
+          type="file"
           id="image"
-          value={avatar}
-          onChange={(e) => setAvatar(e.target.value)}
+          accept='image/*'
+          onChange={async(e) => {
+            if (!e.target.files) return;
+            const file = e.target.files[0];
+            if (!file) return;
+            const image = await encodeFileToBase64(file);
+            setAvatar(image);
+          }}
+          onClick={(e) => e.currentTarget.value = ''}
         />
         <label htmlFor="email">Email</label>
         <input
