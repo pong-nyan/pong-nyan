@@ -8,6 +8,7 @@ import { PnJwtPayload } from 'src/chat/channel.dto';
 import { PnPayloadDto } from './channel.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as cookie from 'cookie';
+import { UserService } from 'src/user.service';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -17,7 +18,8 @@ import * as cookie from 'cookie';
 @UseGuards(ChannelGuard)
 export class ChannelGateway {
   constructor(private readonly channelService: ChannelService,
-    private readonly jwtService: JwtService) {}
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService) {}
 
   @WebSocketServer()
   server: Server;
@@ -91,31 +93,18 @@ export class ChannelGateway {
 
   handleConnection(@ConnectedSocket() client: Socket) {
     console.log('in cha handleConnection');
-    const cookies = client.handshake.headers.cookie;
-    console.log('cookies', cookies);
-    if (!cookies) {
-      console.error('Cookies not found');
-      return;
-    }
-    const pnJwtCookie = cookie.parse(cookies)['pn-jwt'];
 
-    if (!pnJwtCookie) {
-      console.error('JWT not found');
-      return;
+    if (!this.userService.checkPnJwt(client))
+    {
+      //
+      return ;
     }
-    try {
-      const payload: PnPayloadDto = this.jwtService.verify<PnPayloadDto>(pnJwtCookie);
-      if (payload.exp * 1000 < Date.now()) {
-        console.error('JWT expired');
-        return;
-      }
-      client.intraId = payload.intraId;
-      console.log('client', client.id);
-      console.log('client.intraId', client.intraId);
-    } catch (err) {
-      console.error('JWT verification failed', err);
-    }
+    // F5또는 새로고침 이런식으로 새로 접속하지만 pn-jwt가 있을 경우
+    // TODO: 이전 채널에 접속
+    // const userInfo = this.userService.getUserInfo(client.id);
+    // if (!userInfo) return ;
+    // const intraId = this.userService.getIntraId(client.id);
+    // const userInfo = this.userService.getUser(intraId);
 
-    console.log('client.user', client.rooms);
   }
 }
