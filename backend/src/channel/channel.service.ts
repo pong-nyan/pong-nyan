@@ -8,16 +8,18 @@ export class ChannelService {
   channelMap = new Map<string, Channel>();
 
   // 사용자가 채널을 추가
-  addChannel(channelInfo: ChannelInfo, client: Socket) {
+  addChannel(channelInfo: ChannelInfo, client: Socket, intraId: string) {
     console.log('service addChannel, channelInfo', channelInfo);
     const channelId = uuidv4();
-    const newChannel = {id: channelId, owner: client.id, administrator: [client.id], userList: [client.id], invitedUsers: [client.id], ...channelInfo };
+    const newChannel = {
+      id: channelId,
+      owner: intraId,
+      administrator: [intraId],
+      userList: [intraId],
+      invitedUsers: [intraId],
+      ...channelInfo };
     client.join(channelId);
     this.channelMap.set(channelId, newChannel);
-    const allChannels = Array.from(this.channelMap.values());
-    allChannels.forEach(channel => {
-        console.log('channel id:', channel.id, 'channel title:', channel.title);
-    });
     console.log('channel List :', this.channelMap);
   }
 

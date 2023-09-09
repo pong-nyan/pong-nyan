@@ -5,8 +5,10 @@ import ChatRoom from '@/chat/components/ChatRoom';
 import { useState } from 'react';
 import { Channel } from '@/chat/chatType';
 import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
+import useAuth from '@/context/useAuth';
 
 const ChannelListPage = () => {
+  useAuth();
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [isMakeChannelOpen, setMakeChannelOpen] = useState(false);
 
