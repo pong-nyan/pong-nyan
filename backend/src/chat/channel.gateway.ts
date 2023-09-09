@@ -92,6 +92,11 @@ export class ChannelGateway {
   handleConnection(@ConnectedSocket() client: Socket) {
     console.log('in cha handleConnection');
     const cookies = client.handshake.headers.cookie;
+    console.log('cookies', cookies);
+    if (!cookies) {
+      console.error('Cookies not found');
+      return;
+    }
     const pnJwtCookie = cookie.parse(cookies)['pn-jwt'];
 
     if (!pnJwtCookie) {
