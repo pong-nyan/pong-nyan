@@ -19,7 +19,7 @@ export class Google2faController {
     //  cookie 로 부터 user 정보를 가져옴
     console.log('accessToken', accessToken)
     const { intraId } = await this.authService.getUserInfoFromToken(accessToken);
-    const user = await this.authService.getUserInfoFromOurDB(intraId);
+    const user = await this.authService.findUser(intraId);
     const { otpAuthUrl } = await this.google2faService.generateTwoFactorAuthenticationSecret(user);
 
     return await this.google2faService.pipeQrCodeStream(response, otpAuthUrl);
@@ -30,7 +30,7 @@ export class Google2faController {
     console.log('enable code ', body.code);
 
     const { intraId } = await this.authService.getUserInfoFromToken(accessToken);
-    const user = await this.authService.getUserInfoFromOurDB(intraId);
+    const user = await this.authService.findUser(intraId);
     const isCodeValid = await this.google2faService.isTwoFactorAuthenticationCodeValid(body.code, user);
 
     if (isCodeValid) {
