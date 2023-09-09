@@ -1,7 +1,7 @@
 .PHONY: all iclean cclean dclean aclean are re
 
 all:
-	docker compose up
+	docker compose up -d
 
 re:
 	make dclean

@@ -2,51 +2,51 @@ import {
   WebSocketGateway,
   WebSocketServer,
   SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
-import { BallInfo, PlayerNumber } from '../type/game';
+import { BallInfo, PlayerNumber, Score } from 'src/type/game';
 import { parse } from 'cookie';
 import { JwtService } from '@nestjs/jwt';
-// import { UserService } from "../user.service;
+import { UseGuards } from '@nestjs/common';
+import { GameGuard } from './game.guard';
+import { PnJwtPayload, PnPayloadDto } from './game.dto';
 
 @WebSocketGateway({
   cors: { origin: '*' },
   path: '/socket/',
   cookie: true,
 })
+@UseGuards(GameGuard)
 export class GameGateway {
-  constructor(private readonly gameService: GameService,
-              private readonly jwtService: JwtService) {}
-              // private readonly authService: AuthService
-  waitLength: number = 0;
+  constructor(private readonly gameService: GameService) {}
 
-  @WebSocketServer()
-  server: Server;
+
+  @WebSocketServer() server: Server;
   fps = 1000 / 60;
 
   async handleConnection(client: Socket) {
-    console.log('GameGateway Connection', client.id);
+    console.log('handleConnection', client.id);
   }
 
   async handleDisconnect(client: Socket) {
-    console.log('GameGateway Disconnection', client.id);
+    console.log('handleDisconnect', client.id);
     this.gameService.removeMatchingClient(client);
   }
 
-
   @SubscribeMessage('game-randomStart')
-  handleStartGame(client: Socket) {
-    const pnJwt = parse(client.handshake.headers.cookie)['pn-jwt'];
-    const decodedJwt = JSON.parse(JSON.stringify(this.jwtService.decode(pnJwt)));
-    const [ roomName, player1Id, player2Id ] = this.gameService.match(client, decodedJwt.nickname);
+  handleStartGame(@MessageBody() data: any, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+    const nickname = payload.intraNickname;
+    const [ roomName, player1Id, player2Id ] = this.gameService.match(client, nickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;
     this.server.to(roomName).emit('game-randomStart', {player1Id, player2Id});
   }
 
   @SubscribeMessage('game-keyEvent')
-  handleGameKeyEvent(client: Socket, data: any) {
+  handleGameKeyEvent(@MessageBody() data: any, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
     const roomName = this.gameService.getGameRoom(client);
     console.log('roomName', roomName);
     this.server.to(data.opponentId).emit('game-keyEvent', {
@@ -59,43 +59,27 @@ export class GameGateway {
 
   // TODO: sensor에 닿을 시 score 변경
   @SubscribeMessage('game-score')
-  handleScore(client: Socket, data: {playerNumber: PlayerNumber, loser: PlayerNumber}) {
-    console.log('game-score', data);
+  handleScore(@MessageBody() data: {playerNumber: PlayerNumber, score: Score}, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+    console.log('INFO: game-score', data);
     const roomName = this.gameService.getGameRoom(client);
-    console.log('roomName', roomName);
+    const gameInfo = this.gameService.getGameInfo(roomName);
+    if (!gameInfo) return ;
 
-    console.log('waitLength', this.waitLength);
-    if (++this.waitLength === 2) {
-      this.waitLength = 0;
-      this.server.to(roomName).emit('game-score', { loser: data.loser, });
+    if (this.gameService.isReadyScoreCheck(gameInfo, data.playerNumber, data.score)) {
+      const winnerNickname = this.gameService.checkCorrectScoreWhoWinner(gameInfo)
+      console.log('INFO: 승자 발견', winnerNickname);
+      gameInfo.score = winnerNickname === '' ? gameInfo.score : gameInfo.waitList[0].score;
+      this.server.to(roomName).emit('game-score', { realScore: gameInfo.score, winnerNickname });
+      gameInfo.waitList = [];
     }
-    // const roomName = client.rooms.forEach((room) => {
-    //   if (room.startsWith('game-')) {
-    //     console.log('forEach', room);
-    //     return room;
-    //   }
-    // });
   }
 
   @SubscribeMessage('game-ball')
-  handleBall(client: Socket, ball: BallInfo) {
-    // get game-roomName
-    // TODO : refactoring
-    // const roomName = Array.from(client.rooms).find(room => room.startsWith('game-'));
-    // if (!roomName) return;
-
-    let roomName = '';
-    for (const value of client.rooms) {
-       if (value.startsWith('game-'))
-          {
-            roomName = value;
-            break;
-          }
-    }
-    if (roomName === '') return;
-
+  handleBall(@MessageBody() ball: BallInfo, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+    const roomName = this.gameService.getGameRoom(client);
     const updatedBallInfo = this.gameService.reconcilateBallInfo(roomName, ball);
     if (!updatedBallInfo) return;
     this.server.to(roomName).emit('game-ball', updatedBallInfo);
   }
 }
+

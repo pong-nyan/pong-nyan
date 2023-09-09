@@ -1,4 +1,11 @@
-.MakeChannelButton {
+.makeChannelButtonLayout {
+  position: absolute;
+  bottom: 76px;
+  right: 15px;
+}
+
+
+/* .MakeChannelButton {
     background-color: #3f0e40;
     color: white;
     border: none;
@@ -8,4 +15,4 @@
     font-weight: 900;
     cursor: pointer;
     margin-top: 10px;
-}
+} */

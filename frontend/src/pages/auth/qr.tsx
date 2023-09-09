@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
-import Google2FA from '../../components/auth/Google2FA';
+import Google2FA from '@/auth/components/Google2FA';
 
 const QR = () => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);

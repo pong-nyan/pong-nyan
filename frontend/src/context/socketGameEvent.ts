@@ -23,7 +23,6 @@ export const socketEmitGameKeyEvent = (playerNumber: PlayerNumber, opponentId: s
     step,
     velocity,
   });
-
 /**
  * 게임 Key 이벤트를 서버에서 받아와 업데이트합니다.
  * @param engine
@@ -80,12 +79,12 @@ export const socketOnGameBallEvent = (engine: Engine | undefined) =>
 /**
  * 진 플레이어의 이름을 서버로 전송합니다.
  * @param playerNumber 전송하는 플레이어의 번호
- * @param loser 진 플레이어의 이름
+ * @param 업데이트 된 score
  */
-export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, loser: string) => {
+export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, score: Score) => {
   socket.emit('game-score', { 
-    playerNumber: playerNumber, 
-    loser
+    playerNumber,
+    score,
   });
 };
 
@@ -95,14 +94,16 @@ export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, loser: stri
  * @returns
  */
 export const socketOnGameScoreEvent = (engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
-  socket.on('game-score', ({ loser }: { loser: PlayerNumber }) => {
+  socket.on('game-score', ( { realScore, winnerNickname } : { realScore: Score, winnerNickname: string }) => {
     if (!engine || !engine.world) return;
-    setScore((prevScore: Score) => {
-      if (loser === 'player1')  { return { p1: prevScore.p1, p2: prevScore.p2 + 1}; } 
-      else if (loser === 'player2') { return { p1: prevScore.p1 + 1, p2: prevScore.p2}; }
-      else { return prevScore; }
-    });
-    resumeGame(engine, loser);
+    console.log('INFO: socketOnGameScoreEvent', realScore);
+    if (realScore.p1 === 0 && realScore.p2 === 0) {
+      resumeGame(engine, '게임 시작!');
+    } else if (winnerNickname === '') {
+      setScore({ p1: realScore.p1, p2: realScore.p2 });
+      resumeGame(engine, '리매치!');
+    } else {
+      resumeGame(engine, `${winnerNickname} 승리!`);
+    }
   });
 };
-
