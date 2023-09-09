@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import useNotAuth from '@/context/useNotAuth';
+import { socket } from '@/context/socket';
 
 const Google2FA = () => {
   useNotAuth();
@@ -13,6 +14,7 @@ const Google2FA = () => {
       .then((res) => {
         if (res.status === 202) {
           localStorage.setItem('user', JSON.stringify(res.data));
+          socket.emit('auth-set-map', { intraId : res.data.intraId });
           router.replace('/');
         }
       }

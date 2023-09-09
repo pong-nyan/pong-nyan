@@ -6,6 +6,8 @@ import { User } from '../entity/User';
 import { JwtModule } from '@nestjs/jwt';
 import { Google2faController } from './google2fa.controller';
 import { Google2faService } from './google2fa.service';
+import { Google2faGateway } from './google2fa.gateway';
+import { UserService } from '../user.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ User ]),
@@ -16,6 +18,6 @@ import { Google2faService } from './google2fa.service';
     })
   ],
   controllers: [AuthController, Google2faController],
-  providers: [AuthService, Google2faService]
+  providers: [AuthService, Google2faService, Google2faGateway, UserService],
 })
 export class AuthModule {}
