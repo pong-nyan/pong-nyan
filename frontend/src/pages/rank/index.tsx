@@ -2,6 +2,7 @@ import RankUserList from '@/rank/components/RankUserList';
 import { useState, useEffect } from 'react';
 import { RankUserType } from '@/rank/rankType';
 import axios from 'axios';
+import Pagination from '@/rank/components/Pagination';
 
 const RankPage = () => {
   const [rankUsers, setRankUsers] = useState<RankUserType[]>([]);
@@ -34,9 +35,7 @@ const RankPage = () => {
     <div>
       <h1>Rank Page</h1>
       <RankUserList rankUserList={rankUsers} />
-      <button onClick={() => handleCurrentPage(currentPage - 1)}>이전</button>
-      {currentPage}
-      <button onClick={() => handleCurrentPage(currentPage + 1)}>다음</button>
+      <Pagination currentPage={currentPage} handleCurrentPage={handleCurrentPage} />
     </div>
   );
 };
