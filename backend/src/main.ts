@@ -5,13 +5,9 @@ import * as cookieParser from 'cookie-parser';
 import * as fs from 'fs';
 import * as express from 'express';
 import { setupSwagger } from './config/swagger';
+import { urlencoded, json } from 'body-parser';
 
 async function bootstrap() {
-  // const httpsOptions = {
-  //   key: fs.readFileSync('../secrets/localhost.key'),
-  //   cert: fs.readFileSync('../secrets/localhost.crt'),
-  // };
-
   const server = express();
   const app = await NestFactory.create(AppModule);
   //  TODO : port should be in config
@@ -25,11 +21,13 @@ async function bootstrap() {
     }
   );
   app.use(cookieParser());
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ limit: '50mb', extended: true }));
   app.useGlobalPipes(new ValidationPipe());
-  setupSwagger(app);
   app.use(server);
 
   app.setGlobalPrefix('api');
+  setupSwagger(app);
   await app.listen(4242);
 
   console.log(`🚀 Server ready at: ${ await app.getUrl()}`);
