@@ -1,7 +1,5 @@
-import { UseGuards } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'src/type/socketType';
-import { AuthGuard } from './auth.guard';
 import { UserService } from 'src/user.service';
 
 @WebSocketGateway({
@@ -14,6 +12,18 @@ export class Google2faGateway {
 
   @SubscribeMessage('auth-set-map')
   handleAuthSetMap(@ConnectedSocket() client: Socket, @MessageBody() payload : { intraId: number }) {
+    console.log('handleAuthSetMap client.id intraId', client.id, payload.intraId);
     this.userService.setIdMap(client.id, payload.intraId);
   }
+
+  // @SubscribeMessage('auth-set-map-payload')
+  // handleAuthSetMapPayload(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+  //   console.log('handleAuthSetMapPayload client.id', client.id);
+  //   if (!payload) {
+  //     console.log('payload null', payload);
+  //     return ;
+  //   }
+  //   console.log('handleAuthSetMapPayload client.id intraId', client.id, payload.intraId);
+  //   this.userService.setIdMap(client.id, payload.intraId);
+  // }
 }

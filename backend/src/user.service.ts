@@ -45,12 +45,25 @@ export class UserService {
     }
 
     setIdMap(clientId: SocketId, intraId: IntraId) {
+      console.log('setIdMap clientId, intraId', clientId, intraId);
       this.idMap.set(clientId, intraId);
+      console.log('setIdMap idMap', this.idMap);
     }
 
+    // deleteIdMap(clientId: SocketId) {
+    //   console.log('deleteIdMap', clientId);
+    //   this.idMap.delete(clientId);
+    // }
+
     deleteIdMap(clientId: SocketId) {
-      this.idMap.delete(clientId);
+      console.log('deleteIdMap', clientId);
+      if (this.idMap.delete(clientId)) {
+        console.log(`Successfully deleted clientId: ${clientId}`);
+      } else {
+        console.log(`Failed to delete clientId: ${clientId}`);
+      }
     }
+
 
     deleteUserMap(clientId: SocketId) {
       // TODO: 다시 생각해보기
@@ -61,6 +74,10 @@ export class UserService {
     }
 
     getIntraId(clientId: SocketId) {
+      console.log('getIntraId clientId', clientId);
+      console.log('getIntraId', this.idMap.get(clientId));
+      console.log('getIntraId idMap', this.idMap);
+
       return this.idMap.get(clientId);
     }
 
