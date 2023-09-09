@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import useRedirect from '../../context/useRedirect';
 import { useEffect, useState } from 'react';
-import { useGetFetchDataRedirect } from '../../context/useGetFetchData';
+import { useGetFetchDataRedirect } from '@/context/useGetFetchData';
 
 const LoginCallback = () => {
   const router = useRouter();
