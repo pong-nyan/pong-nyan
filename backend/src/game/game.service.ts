@@ -3,7 +3,7 @@ import { Game } from 'src/entity/Game';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 import { Socket } from 'socket.io';
-import { BallInfo, GameInfo, QueueInfo, RoomName } from 'src/type/game';
+import { BallInfo, GameInfo, PlayerNumber, QueueInfo, RoomName, Score } from 'src/type/game';
 import { User } from 'src/entity/User';
 
 @Injectable()
