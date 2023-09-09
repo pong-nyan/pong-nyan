@@ -15,7 +15,7 @@ services:
     volumes:
       - ./frontend/src:/usr/src/app/src # 호스트 파일 시스템과 컨테이너를 마운트하여 코드 변경 사항을 반영
       - ./frontend/public:/usr/src/app/public
-      - ./type:/usr/src/type
+      - ./type:/usr/src/app/src/type
       - ./secrets:/usr/src/secrets
     networks:
       - pongnyan
@@ -41,7 +41,7 @@ services:
       - backend/.env
     volumes:
       - ./backend/src:/usr/src/app/src # 호스트 파일 시스템과 컨테이너를 마운트하여 코드 변경 사항을 반영
-      - ./type:/usr/src/type
+      - ./type:/usr/src/app/src/type
       - ./secrets:/usr/src/secrets
     networks:
       - pongnyan

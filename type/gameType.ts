@@ -1,4 +1,5 @@
 import { RoomName } from './socketType';
+import { Socket } from './socketType';
 
 export type PlayerNumber = 'player1' | 'player2';
 
@@ -26,3 +27,8 @@ export type GameInfo = {
   ballInfo: BallInfo;
 }
 
+
+export type QueueInfo = {
+  client: Socket,
+  nickname: string;
+}
