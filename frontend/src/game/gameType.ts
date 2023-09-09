@@ -44,3 +44,13 @@ export type CanvasSize = {
   width: number;
   height: number;
 };
+
+export enum GameStatus {
+	Start,
+	RankPnRun,
+  NormalPnRun,
+  RankOriginRun,
+  NormalOriginRun,
+	End
+}
+
