@@ -16,5 +16,4 @@ export class ChannelController {
   getPublicChannels(): Channel[] {
     return this.channelService.getPublicChannels();
   }
-
 }

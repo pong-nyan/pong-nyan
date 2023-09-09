@@ -14,7 +14,6 @@ import * as cookie from 'cookie';
   path: '/socket/',
   cookie: true,
 })
-
 @UseGuards(ChannelGuard)
 export class ChannelGateway {
   constructor(private readonly channelService: ChannelService,
