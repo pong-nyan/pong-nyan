@@ -1,5 +1,5 @@
-import { createParamDecorator, ExecutionContext } from "@nestjs/common";
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class PnPayloadDto {
   @IsNotEmpty()
@@ -25,7 +25,7 @@ export class JwtDto {
 
 /**
  * CookieValue Custom Decorator
- * description: 앞단에 UseGuards(GameGuard)가 필요함. jwt payload를 가져옴 (jwt payload는 client.user에 저장되어 있음).
+ * description: 앞단에 UseGuards(ChannelGuard)가 필요함. jwt payload를 가져옴 (jwt payload는 client.user에 저장되어 있음).
  */
 export const PnJwtPayload = createParamDecorator(async (data: unknown, ctx: ExecutionContext) => {
   const client = ctx.switchToWs().getClient();
