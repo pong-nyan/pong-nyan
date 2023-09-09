@@ -10,8 +10,6 @@ import {
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { BallInfo, PlayerNumber, Score } from 'src/type/gameType';
-import { parse } from 'cookie';
-import { JwtService } from '@nestjs/jwt';
 import { UseGuards } from '@nestjs/common';
 import { GameGuard } from './game.guard';
 import { UserService } from 'src/user.service';
@@ -92,7 +90,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!gameInfo) return ;
 
     if (this.gameService.isReadyScoreCheck(gameInfo, data.playerNumber, data.score)) {
-      const winnerNickname = this.gameService.checkCorrectScoreWhoWinner(gameInfo)
+      const winnerNickname = this.gameService.checkCorrectScoreWhoWinner(gameInfo);
       console.log('INFO: 승자 발견', winnerNickname);
       gameInfo.score = winnerNickname === '' ? gameInfo.score : gameInfo.waitList[0].score;
       this.server.to(roomName).emit('game-score', { realScore: gameInfo.score, winnerNickname });
@@ -109,7 +107,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 }
 
-  // @SubscribeMessage('game-disconnect') 
+  // @SubscribeMessage('game-disconnect')
   // handleDisconnect(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
   //
   // }

@@ -15,6 +15,6 @@ import { UserService } from 'src/user.service';
       signOptions: { expiresIn: '1d'}
     }),
   ],
-  providers: [GameService, GameGateway],
+  providers: [GameService, GameGateway, UserService],
 })
 export class GameModule {}
