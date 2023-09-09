@@ -21,8 +21,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 
   async handleConnection(@ConnectedSocket() client: Socket) {
-
-
     console.log('AppGateway Connection', client.id);
     if (this.userService.checkPnJwt(client))
     {
@@ -30,10 +28,11 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
     const intraId = this.userService.getIntraId(client.id);
     this.userService.setIdMap(client.id, intraId);
+    console.log('AppGateway ReConnection, intraId', intraId);
   }
 
   async handleDisconnect(client: Socket) {
-    console.log('AppGateway Disconnection');
+    console.log('AppGateway Disconnection', this.userService.getIntraId(client.id));
     this.userService.deleteIdMap(client.id);
   }
 }
