@@ -50,6 +50,10 @@ export class UserService {
       this.idMap.set(clientId, intraId);
     }
 
+    deleteIdMap(clientId: SocketId) {
+      this.idMap.delete(clientId);
+    }
+
     removeUser(clientId: SocketId) {
       console.log('removeUser', clientId);
       // const intraId = this.idMap.get(clientId);
