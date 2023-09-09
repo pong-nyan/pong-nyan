@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const useGetFetchData = (url: string | null) => {
+export const useGetFetchDataRedirect = (url: string | null) => {
   const getFetchData = async () => {
     if (url) {
       try {
