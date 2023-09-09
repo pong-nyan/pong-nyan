@@ -1,4 +1,4 @@
-.PHONY: all iclean cclean dclean aclean are re
+.PHONY: all iclean cclean dclean aclean are re up down
 
 all:
 	docker compose up -d
