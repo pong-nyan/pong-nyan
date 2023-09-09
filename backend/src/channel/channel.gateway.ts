@@ -1,31 +1,39 @@
-import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { ChannelService } from './channel.service';
 import { ChannelInfo } from '../type/channel';
-import { v4 as uuidv4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
+import { UseGuards } from '@nestjs/common';
+import { ChannelGuard } from './channel.guard';
+import { PnJwtPayload } from 'src/game/game.dto';
+import { PnPayloadDto } from './channel.dto';
+import { JwtService } from '@nestjs/jwt';
+import * as cookie from 'cookie';
 
 @WebSocketGateway({
   cors: { origin: '*' },
   path: '/socket/',
+  cookie: true,
 })
 
+@UseGuards(ChannelGuard)
 export class ChannelGateway {
-  constructor(private readonly channelService: ChannelService) {}
+  constructor(private readonly channelService: ChannelService,
+    private readonly jwtService: JwtService) {}
 
   @WebSocketServer()
   server: Server;
   fps = 1000 / 60;
 
   @SubscribeMessage('chat-channel-make')
-  handleMakeChannel(client: Socket, channelInfo: ChannelInfo) {
-    this.channelService.addChannel(channelInfo, client);
+  handleMakeChannel(@ConnectedSocket() client: Socket, @MessageBody() channelInfo: ChannelInfo, @PnJwtPayload() payload: PnPayloadDto) {
+    this.channelService.addChannel(channelInfo, client, payload.intraId);
     const updatedChannelList = Array.from(this.channelService.getChannelMap().values());
     this.server.emit('chat-update-channel-list', updatedChannelList);
     console.log('chat-ch-make, updatedChList', updatedChannelList);
   }
 
   @SubscribeMessage('chat-join-channel')
-  handleJoinChannel(client: Socket, payload: { channelId: string, password?: string }) {
+  handleJoinChannel(@ConnectedSocket() client: Socket, @MessageBody() payload: { channelId: string, password?: string }) {
     const channel = this.channelService.getChannel(payload.channelId);
     console.log('chat-join-channel, payload', payload);
     console.log('chat-join-channel, channel', channel);
@@ -34,8 +42,7 @@ export class ChannelGateway {
       return ;
     }
     if (channel.channelType === 'private') {
-      // 초대 목록에 존재하는지 확인
-      if (!channel.invitedUsers.includes(client.id)) {
+      if (!channel.invitedUsers.includes(client.intraId)) {
         client.emit('chat-join-error', '이 채널에는 초대받지 않은 사용자는 접속할 수 없습니다.');
         return;
       }
@@ -46,11 +53,9 @@ export class ChannelGateway {
         return ;
       }
     }
-
     client.emit('chat-join-success');
-
     client.join(payload.channelId);
-    this.channelService.joinChannel(payload.channelId, client.id);
+    this.channelService.joinChannel(payload.channelId, client.intraId);
     const users = this.channelService.getChannelUsers(payload.channelId);
     console.log('chat-join-channel, channelId, users', payload.channelId, users);
 
@@ -63,7 +68,7 @@ export class ChannelGateway {
   }
 
   @SubscribeMessage('chat-message-in-channel')
-  handleMessageInChannel(client: Socket, payload: { channelId: string, message: string }) {
+  handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payload: { channelId: string, message: string }) {
     // 해당 채널의 모든 사용자에게 메시지 전송
     console.log('chat-message-in-channel, payload', payload);
     const chTest = this.channelService.getChannel(payload.channelId);
@@ -72,25 +77,41 @@ export class ChannelGateway {
   }
 
   @SubscribeMessage('chat-leave-channel')
-  handleLeaveChannel(client: Socket, channelId: string) {
+  handleLeaveChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string) {
       client.leave(channelId);
-      this.channelService.leaveChannel(channelId, client.id);
+      this.channelService.leaveChannel(channelId, client.intraId);
       const users = this.channelService.getChannelUsers(channelId);
       this.server.to(channelId).emit('chat-update-users', users);
   }
 
   @SubscribeMessage('chat-request-channel-list')
-  handleRequestChannelList(client: Socket) {
+  handleRequestChannelList(@ConnectedSocket() client: Socket) {
     const updatedChannelList = Array.from(this.channelService.getChannelMap().values());
     client.emit('chat-update-channel-list', updatedChannelList);
   }
 
-  // TODO: Socket이 userId를 담고 있지 않아서 오류가 생김
-  handleConnection(client: any) {
-    console.log('in cha gateway handleConnection');
-    console.log('client connected', client.id);
-    console.log('client', client.rooms);
-    client.userId = uuidv4(); // 임의의 UUID로 사용자 ID 할당
-    console.log('client.id uuidv4', client.id);
+  handleConnection(@ConnectedSocket() client: Socket) {
+    console.log('in cha handleConnection');
+    const cookies = client.handshake.headers.cookie;
+    const pnJwtCookie = cookie.parse(cookies)['pn-jwt'];
+
+    if (!pnJwtCookie) {
+      console.error('JWT not found');
+      return;
+    }
+    try {
+      const payload: PnPayloadDto = this.jwtService.verify<PnPayloadDto>(pnJwtCookie);
+      if (payload.exp * 1000 < Date.now()) {
+        console.error('JWT expired');
+        return;
+      }
+      client.intraId = payload.intraId;
+      console.log('client', client.id);
+      console.log('client.intraId', client.intraId);
+    } catch (err) {
+      console.error('JWT verification failed', err);
+    }
+
+    console.log('client.user', client.rooms);
   }
 }
