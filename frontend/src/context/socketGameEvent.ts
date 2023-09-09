@@ -108,6 +108,11 @@ export const socketOnGameScoreEvent = (sceneSize: CanvasSize, engine: Engine | u
   });
 };
 
+export const socketEmitGameDisconnectEvent = () => {
+  socket.emit('game-disconnect');
+
+}
+
 export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
   socket.on('game-disconnect', ( { disconnectNickname, gameInfo } : { disconnectNickname: string, gameInfo: GameInfo } ) => {
     if (!engine || !engine.world) return;
@@ -116,3 +121,5 @@ export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engin
     resumeGame(sceneSize, engine, 5, `${disconnectNickname}이(가) 나갔습니다.`);
   });
 };
+
+

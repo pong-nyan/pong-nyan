@@ -89,6 +89,8 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     eventOnBeforeUpdate(engine.current);
     eventOnCollisionStart(engine.current, runner.current, playerNumber, setScore);
     eventOnCollisionEnd(engine.current);
+    window.addEventListener('beforeunload', (event) => {
+    });
 
     /* socket on event */
     socketOnGameKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
