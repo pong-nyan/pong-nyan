@@ -32,9 +32,7 @@ export class UserService {
           console.error('JWT expired');
           return false;
         }
-        client.intraId = payload.intraId;
         console.log('client', client.id);
-        console.log('client.intraId', client.intraId);
       } catch (err) {
         console.error('JWT verification failed', err);
         return false;
@@ -54,11 +52,12 @@ export class UserService {
       this.idMap.delete(clientId);
     }
 
-    removeUser(clientId: SocketId) {
-      console.log('removeUser', clientId);
+    deleteUserMap(clientId: SocketId) {
+      // TODO: 다시 생각해보기
+      console.log('deleteUserMap', clientId);
       // const intraId = this.idMap.get(clientId);
       // this.idMap.delete(clientId);
-      // this.userService.removeUser(intraId);
+      // this.userService.deleteUserMap(intraId);
     }
 
     getIntraId(clientId: SocketId) {
