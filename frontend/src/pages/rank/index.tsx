@@ -1,30 +1,19 @@
 import RankUserList from '@/rank/components/RankUserList';
 import { useState, useEffect } from 'react';
 import { RankUserType } from '@/rank/rankType';
+import axios from 'axios';
 
 const RankPage = () => {
   const [rankUsers, setRankUsers] = useState<RankUserType[]>([]);
 
-  // dummy data
-
   useEffect(() => {
-    setRankUsers([
-      {
-        nickname: 'test1',
-        rankScore: 100,
-        rank: 1
-      },
-      {
-        nickname: 'test2',
-        rankScore: 200,
-        rank: 2
-      },
-      {
-        nickname: 'test3',
-        rankScore: 300,
-        rank: 3
-      },
-    ]);
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/rank`, { withCredentials: true })
+      .then(response => {
+        setRankUsers(response.data.rankUsers);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }, []);
 
   return (

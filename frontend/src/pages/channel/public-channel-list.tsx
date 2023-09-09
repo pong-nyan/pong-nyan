@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Channel } from '@/chat/chatType';
 import axios from 'axios';
+import useAuth from '@/context/useAuth';
 
 const PublicChannelListPage = () => {
+  useAuth();
   const [publicChannels, setPublicChannels] = useState<Channel[]>([]);
 
   const fetchChannels = () => {
