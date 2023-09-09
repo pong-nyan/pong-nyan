@@ -7,11 +7,13 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './config/datasource';
 import { ChatModule } from './chat/chat.module';
 import { AppGateway } from './app.gateway';
-import { ChannelModule } from './channel/channel.module';
 import { UserMapService } from './user.map.service';
+import { ChannelModule } from './chat/channel.module';
+import { RankModule } from './rank/rank.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), GameModule, AuthModule, DatabaseModule, ChatModule, ChannelModule],
+  imports: [ConfigModule.forRoot(), GameModule, AuthModule, DatabaseModule, ChatModule, ChannelModule, RankModule, ProfileModule],
   controllers: [AppController],
   providers: [AppService, AppGateway, UserMapService],
 })

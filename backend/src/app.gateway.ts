@@ -2,33 +2,32 @@ import {
   WebSocketGateway,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  SubscribeMessage,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { GameService } from './game/game.service';
+import { PnJwtPayload, PnPayloadDto } from 'src/game/game.dto';
 import { UserService } from './user.service';
-import { Channel, UserInfo, ChannelInfo } from "./type/channel";
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from './auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @WebSocketGateway({
-  cors: { origin: "*" },
+  cors: { origin: '*' },
   path: '/socket/',
   cookie: true,
 })
-
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(
-    private readonly userService: UserService
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
-  async handleConnection(client: Socket) {
+
+  async handleConnection(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+    
     console.log('AppGateway Connection', client.id);
-    // get client cookie
-    const cookie = client.handshake.headers.cookie;
-    console.log('cookie', cookie);
+    // this.userService.addUser(client.id, payload.intraId);
   }
-
 
   async handleDisconnect(client: Socket) {
     console.log('AppGateway Disconnection');
+    // this.userService.removeUser(client.id);
   }
 }

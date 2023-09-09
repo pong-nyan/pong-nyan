@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Game } from 'src/entity/Game';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
-import { Socket } from 'socket.io';
-import { BallInfo, GameInfo, PlayerNumber, QueueInfo, RoomName, Score } from 'src/type/game';
-import { User } from 'src/entity/User';
+import { Repository } from 'typeorm';
+import { Socket, RoomName } from 'src/type/socketType';
+import { BallInfo, GameInfo, QueueInfo, PlayerNumber, Score, RoomName } from 'src/type/gameType';
 
 @Injectable()
 export class GameService {
@@ -22,6 +21,7 @@ export class GameService {
   recentBallInfoMap = new Map<RoomName, BallInfo>();
   gameMap = new Map<RoomName, GameInfo>();
 
+
   match(client: Socket, nickname: string) {
     this.matchingQueue.push({client, nickname});
     if (this.matchingQueue.length > 1) {
@@ -33,6 +33,8 @@ export class GameService {
       const player1Id = player1.client.id;
       const player2Id = player2.client.id;
       this.gameMap.set(roomName, {
+        roomName,
+        clientId: { p1: player1.client.id, p2: player2.client.id },
         score: { p1: 0, p2: 0 },
         nickname: { p1: player1.nickname, p2: player2.nickname },
         waitList: [],
@@ -45,6 +47,7 @@ export class GameService {
     }
     return [ undefined, undefined, undefined ];
   }
+
 
   getGameRoom(client: Socket) {
     //refactor: for문을 사용하지 않고 찾는 방법
@@ -76,7 +79,7 @@ export class GameService {
   checkCorrectScoreWhoWinner(gameInfo: GameInfo) {
     console.log('INFO: 점수 체크 준비 완료', gameInfo.waitList);
     if ((gameInfo.waitList[0].score.p1 !== gameInfo.waitList[1].score.p1)
-        && (gameInfo.waitList[0].score.p2 !== gameInfo.waitList[1].score.p2)) { return ''; }
+        || (gameInfo.waitList[0].score.p2 !== gameInfo.waitList[1].score.p2)) { return ''; }
     return gameInfo.waitList[0].score.p1 - gameInfo.score.p1 === 1 ? gameInfo.nickname.p1
       : gameInfo.waitList[0].score.p2 - gameInfo.score.p2 === 1 ? gameInfo.nickname.p2 : '';
   }

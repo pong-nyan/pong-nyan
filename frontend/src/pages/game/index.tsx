@@ -1,14 +1,9 @@
 import Start from '@/game/components/Start';
 import RunWrapper from '@/game/components/RunWrapper';
 import End from '@/game/components/End';
-import { PlayerNumber, Score } from '@/game/gameType';
+import { PlayerNumber, Score, GameStatus } from '@/type/gameType';
 import { useState } from 'react';
 
-enum GameStatus {
-	Start,
-	Run,
-	End
-}
 
 export default function Game(): JSX.Element {
   // TODO: start game button
@@ -21,7 +16,14 @@ export default function Game(): JSX.Element {
   switch (gameStatus) {
   case GameStatus.Start:
     return (<Start setGameStatus={setGameStatus} setPlayerNumber={setPlayerNumber} setOpponentId={setOpponentId} />);
-  case GameStatus.Run:
+  // TODO: 각  모드에 맞게  수정  필요
+  case GameStatus.RankPnRun:
+    return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);
+  case GameStatus.NormalPnRun:
+    return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);
+  case GameStatus.RankOriginRun:
+    return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);
+  case GameStatus.NormalOriginRun:
     return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);
   case GameStatus.End:
     return (<End setGameStatus={setGameStatus} setPlayerNumber={setPlayerNumber} />);
