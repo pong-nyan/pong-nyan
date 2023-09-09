@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { SocketContext } from '@/context/socket';
 import { PlayerNumber } from '@/game/gameType';
-import styles from '@/game/styles/Start.module.css';
+import GameStartWrapper from './GameStartWrapper';
 
 export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
   : { setGameStatus: Dispatch<SetStateAction<number>>, setPlayerNumber: Dispatch<SetStateAction<PlayerNumber | undefined>>, setOpponentId: Dispatch<SetStateAction<string | undefined>>}) {
@@ -26,10 +26,6 @@ export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
   return (
     loading ?
       'Loading' :
-      <div className={styles.buttonWrapper} onClick={() => {
-        socket.emit('game-randomStart');
-      }} tabIndex={0}>
-        <button className={styles.startButton}>Start</button>
-      </div> 
+      <GameStartWrapper />
   );
 }
