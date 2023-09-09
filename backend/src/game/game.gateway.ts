@@ -36,13 +36,13 @@ export class GameGateway {
     this.gameService.removeMatchingClient(client);
   }
 
-  @SubscribeMessage('game-randomStart')
+  @SubscribeMessage('game-randomStart-rank-pn')
   handleStartGame(@MessageBody() data: any, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
     const nickname = payload.intraNickname;
     const [ roomName, player1Id, player2Id ] = this.gameService.match(client, nickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;
-    this.server.to(roomName).emit('game-randomStart', {player1Id, player2Id});
+    this.server.to(roomName).emit('game-randomStart-rank-pn', {player1Id, player2Id});
   }
 
   @SubscribeMessage('game-keyEvent')

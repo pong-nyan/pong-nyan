@@ -8,7 +8,7 @@ export default function Start({ setGameStatus, setPlayerNumber, setOpponentId }
   const socket = useContext(SocketContext);
   const [ loading, setLoading ] = useState(false);
 
-  socket.on('game-randomStart', ({player1Id, player2Id}: {player1Id: string, player2Id: string}) => {
+  socket.on('game-randomStart-rank-pn', ({player1Id, player2Id}: {player1Id: string, player2Id: string}) => {
     if (socket.id === player1Id) { 
       setPlayerNumber('player1');
       setOpponentId(player2Id);

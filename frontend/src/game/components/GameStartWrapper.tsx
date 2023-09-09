@@ -13,7 +13,7 @@ const GameStartWrapper = () => {
       <div className={styles.buttonOption}>
         <CatButton
           onClickFunction={() => {
-            socket.emit('game-randomStart');
+            socket.emit('game-randomStart-rank-pn');
           }}
           text="rank pn"
           width={buttonWidth}
@@ -21,7 +21,7 @@ const GameStartWrapper = () => {
         />
         <CatButton
           onClickFunction={() => {
-            socket.emit('game-loading');
+            socket.emit('game-randomStart-normal-pn');
           }}
           text="normal pn"
           width={buttonWidth}
@@ -29,7 +29,7 @@ const GameStartWrapper = () => {
         />
         <CatButton
           onClickFunction={() => {
-            socket.emit('game-loading');
+            socket.emit('game-randomStart-rank-origin');
           }}
           text="rank origin"
           width={buttonWidth}
@@ -37,7 +37,7 @@ const GameStartWrapper = () => {
         />
         <CatButton
           onClickFunction={() => {
-            socket.emit('game-loading');
+            socket.emit('game-randomStart-normal-origin');
           }}
           text="normal origin"
           width={buttonWidth}
