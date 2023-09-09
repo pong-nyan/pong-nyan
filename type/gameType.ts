@@ -27,7 +27,6 @@ export type GameInfo = {
   ballInfo: BallInfo;
 }
 
-
 export type QueueInfo = {
   client: Socket,
   nickname: string;
