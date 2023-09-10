@@ -1,0 +1,64 @@
+/* styles.module.css */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+}
+
+.linkList {
+  list-style: none;
+  padding: 0;
+  display: flex
+}
+
+.linkItem {
+  margin-right: 20px;
+  font-size: xx-large;
+}
+
+.linkItem:last-child {
+  margin-right: 0;
+}
+
+.linkItem>div {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  animation: sparkle 1s infinite;
+}
+
+.linkItem>div:hover {
+  color: #ff0000;
+  animation : sparkleBox 1s infinite;
+}
+
+@keyframes sparkle {
+  0% {
+    color: #333;
+  }
+  50% {
+    color: #0070f3;
+  }
+  100% {
+    color: #333;
+  }
+}
+
+@keyframes sparkleBox {
+  0% {
+    color: #333;
+    box-shadow: none; /* 박스 쉐도우 초기화 */
+    border-radius: 0; /* 박스 쉐도우 초기화 */
+  }
+  50% {
+    color: #ff0000;
+    box-shadow: 0 0 42px 1rem rgba(255, 0, 0 , 0.6); /* 박스 쉐도우 추가 */
+    border-radius: 42px;
+  }
+  100% {
+    color: #333;
+    box-shadow: none; /* 박스 쉐도우 초기화 */
+    border-radius: 0; /* 박스 쉐도우 초기화 */
+  }
+}

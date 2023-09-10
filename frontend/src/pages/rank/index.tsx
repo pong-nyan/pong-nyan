@@ -34,7 +34,7 @@ const RankPage = () => {
   return (
     <div>
       <h1>Rank Page</h1>
-      <RankUserList rankUserList={rankUsers} />
+      <RankUserList rankUserList={rankUsers} currentPage={currentPage} />
       <Pagination currentPage={currentPage} handleCurrentPage={handleCurrentPage} />
     </div>
   );

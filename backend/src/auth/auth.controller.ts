@@ -78,4 +78,21 @@ export class AuthController {
         // return response.status(HttpStatus.OK).send(user);
         return response.status(HttpStatus.OK).send('mypage auth sucess');
     }
+
+    // backdoor for testing
+    @ApiOperation({ summary: 'backdoor', description: '테스트용 mock user를 create, backdoor' })
+    @ApiTags('backdoor')
+    @Get('backdoor')
+    async backdoor(@Req() request: Request, @Res() response: Response) {
+        console.log('backdoor');
+        for (let i = 0; i < 42; i++) {
+            const randomIntraId = Math.floor(Math.random() * 100000);
+            const randomIntraNickname = Math.floor(Math.random() * 100000).toString() + 'intra_nickname';
+            const randomNickname = Math.floor(Math.random() * 1000000).toString() + 'nickname';
+            const randomAvatar = Math.floor(Math.random() * 1000000).toString() + 'avatar';
+            const randomEmail = Math.floor(Math.random() * 10000).toString() + '@gmail.com';
+            await this.authService.createUser(randomIntraId, randomIntraNickname, randomNickname, randomAvatar, 0, randomEmail);
+        }
+        return response.status(HttpStatus.OK).send('42 mock user created sucess');
+    }
 }

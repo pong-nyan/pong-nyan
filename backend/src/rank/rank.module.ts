@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { RankController } from './rank.controller';
 import { RankService } from './rank.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/entity/User';
+import { VRanking } from 'src/entity/VRanking';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ User ])],
+  imports: [TypeOrmModule.forFeature([ VRanking ])],
   controllers: [RankController],
   providers: [RankService]
 })

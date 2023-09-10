@@ -1,11 +1,11 @@
 export type RankUserType = {
-    intraNickname: string;
+    nickname: string;
     rankScore: number;
-    rank: number;
 };
 
 export type RankUserListProps = {
     rankUserList: RankUserType[];
+    currentPage: number;
 };
  
 export type RankUserProps = {

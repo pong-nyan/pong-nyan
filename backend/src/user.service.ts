@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserInfo, IntraId} from 'src/type/userType';
 import { SocketId, Socket } from 'src/type/socketType';
 import { JwtService } from '@nestjs/jwt';
-import { PnPayloadDto } from 'src/chat/channel.dto';
+import { PnPayloadDto } from 'src/dto/pnPayload.dto';
 import * as cookie from 'cookie';
 
 @Injectable()
@@ -11,6 +11,9 @@ export class UserService {
 
     userMap = new Map<IntraId, UserInfo>();
     idMap = new Map<SocketId, IntraId>();
+
+    getIntraId(clientId: SocketId) { return this.idMap.get(clientId); }
+    getUserInfo(intraId: number) { return this.userMap.get(intraId); }
 
     checkPnJwt(client: Socket) {
       console.log('in the checktPnJwt');
@@ -103,18 +106,12 @@ export class UserService {
       // this.userService.deleteUserMap(intraId);
     }
 
-    getIntraId(clientId: SocketId) {
-      console.log('getIntraId clientId', clientId);
-      console.log('getIntraId', this.idMap.get(clientId));
-      console.log('getIntraId idMap', this.idMap);
-
-      return this.idMap.get(clientId);
+    leaveGameRoom(intraId: IntraId) {
+      const userInfo = this.userMap.get(intraId);
+      if (!userInfo) return ;
+      userInfo.gameRoom = '';
     }
 
-    getUserInfo(clientId: SocketId) {
-      const intraId = this.getIntraId(clientId);
-      return this.getUser(intraId);
-    }
 
     getUser(intraId: IntraId) {
         return this.userMap.get(intraId);
@@ -123,4 +120,5 @@ export class UserService {
     getUserInfoChatRoomList(intraId: IntraId) {
       return this.getUser(intraId).chatRoomList;
     }
+
 }
