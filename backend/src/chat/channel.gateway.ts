@@ -92,13 +92,15 @@ export class ChannelGateway {
   }
 
   handleConnection(@ConnectedSocket() client: Socket) {
-    console.log('in cha handleConnection');
+    console.log('[ChannelGateway] Connection', client.id);
 
-    if (!this.userService.checkPnJwt(client))
-    {
-      //
-      return ;
-    }
+    if (!this.userService.checkPnJwt(client)) return ;
+  }
+
+  handleDisconnect(@ConnectedSocket() client: Socket) {
+    console.log('[ChannelGateway] Disconnection', client.id);
+
+    if (!this.userService.checkPnJwt(client)) return ;
     // F5또는 새로고침 이런식으로 새로 접속하지만 pn-jwt가 있을 경우
     // TODO: 이전 채널에 접속
     // const userInfo = this.userService.getUserInfo(client.id);

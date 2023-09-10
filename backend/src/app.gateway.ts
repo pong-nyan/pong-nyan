@@ -24,14 +24,14 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   fps = 1000 / 60;
 
   async handleConnection(@ConnectedSocket() client: Socket) {
-    console.log('AppGateway Connection', client.id);
+    console.log('[AppGateway] Connection ', client.id);
     if (!this.userService.checkPnJwt(client)) return ;
     console.log('AppGateway Connection, befor auth-set-map-payload client.id', client.id);
     this.server.to(client.id).emit('auth-set-map-payload');
   }
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
-    console.log('AppGateway Disconnection client.id', client.id);
+    console.log('[AppGateway] Disconnection ', client.id);
     this.userService.deleteIdMap(client.id);
   }
 }

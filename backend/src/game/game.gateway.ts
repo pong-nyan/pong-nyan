@@ -29,7 +29,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   fps = 1000 / 60;
 
   async handleConnection(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
-    console.log('[gameGateway] handleConnection', client.id);
+    console.log('[GameGateway] Connection', client.id);
     // const userInfo = this.userService.getUser(payload.intraId);
     // if (!userInfo) return ;
     // if (userInfo.gameRoom) {
@@ -40,7 +40,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
-    console.log('[INFO] handleDisconnect :', );
+    console.log('[GameGateway] Disconnection', client.id);
     //
     // const intraId = this.userService.getIntraId(client.id);
     // const userInfo = this.userService.getUser(intraId);
