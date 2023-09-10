@@ -101,26 +101,26 @@ export class GameService {
     console.log(this.matchingQueue.length);
   }
 
-  public async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
-    if (!winner || !loser) return;
-    const winnerUser = await this.userRepository.findOne( { where: { intraId: winner } });
-    const loserUser = await this.userRepository.findOne({ where: { intraId: loser } });
-    if (!winnerUser || !loserUser) return;
-    winnerUser.rankScore += rankScore;
-    loserUser.rankScore -= rankScore;
-    await this.userRepository.save(winnerUser);
-    await this.userRepository.save(loserUser);
-    await this.gameRepository.save({ winner: winnerUser, loser: loserUser, gameMode, rankScore, gameInfo });
-  }
+  // public async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
+  //   if (!winner || !loser) return;
+  //   const winnerUser = await this.userRepository.findOne( { where: { intraId: winner } });
+  //   const loserUser = await this.userRepository.findOne({ where: { intraId: loser } });
+  //   if (!winnerUser || !loserUser) return;
+  //   winnerUser.rankScore += rankScore;
+  //   loserUser.rankScore -= rankScore;
+  //   await this.userRepository.save(winnerUser);
+  //   await this.userRepository.save(loserUser);
+  //   await this.gameRepository.save({ winner: winnerUser, loser: loserUser, gameMode, rankScore, gameInfo });
+  // }
 
-  public async getMyGameInfo(intraId: number) {
-    if (!intraId) return null;
-    const user = await this.userRepository.findOne( { where: { intraId }, relations: ['winnerGames', 'loserGames'] } );
-    if (!user) return null;
-    const winnerGames = user.winnerGames;
-    const loserGames = user.loserGames;
-    return { winnerGames, loserGames };
-  }
+  // public async getMyGameInfo(intraId: number) {
+  //   if (!intraId) return null;
+  //   const user = await this.userRepository.findOne( { where: { intraId }, relations: ['winnerGames', 'loserGames'] } );
+  //   if (!user) return null;
+  //   const winnerGames = user.winnerGames;
+  //   const loserGames = user.loserGames;
+  //   return { winnerGames, loserGames };
+  // }
 
   /* -------------------------------------------------------------------- */
 
