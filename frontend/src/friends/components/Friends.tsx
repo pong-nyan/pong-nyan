@@ -1,12 +1,6 @@
-import styles from '@/friends/styles/friends.css';
+import styles from '@/friends/styles/Friends.module.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Link from 'next/link';
-
-enum userOn {
-  online,
-  offline
-}
 
 // TODO: type 분리 해야함!!!!!
 type FriendsProps = {
@@ -16,34 +10,55 @@ type FriendsProps = {
 type FriendsData = {
   intraId: number;
   nickname: string;
-  userOn: userOn;
+  status: number;
+  avatar: string;
+  rankScore: number;
+}
+
+function checkFriends(element: FriendsData, intraId: number): boolean {
+  return (element.intraId === intraId);
 }
 
 const Friends = ({ intraId } : FriendsProps) => {
   const [ friends, setFriends ] = useState<FriendsData[] | null>(null);
   
   useEffect(() => {
-    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/friends?intraId=${ intraId }`).then((res) => {
-      setFriends([friends, res.data]);
-    }).catch((err) => {
-      console.log(err);
-    });
+    if (friends?.length && friends?.some(checkFriends)) {
+      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/friends?intraId=${intraId}`).then((res) => {
+        setFriends([friends, res.data]);
+      }).catch((err) => {
+        console.log(err);
+      });
+    }
   }, [ intraId ]);
 
-  console.log(friends);
-  //친구 목록을 생성한다.
+  if (friends === null) {
+    return (
+      <div className={styles.friends}>
+        <h1>너 친구도 없냐? ㅋㅋㅋ</h1>
+      </div>
+    );
+  }
 
+  //친구를 출력한다. 
   // ---- //
   return (
-    <div className={styles.friends}>
-      {friends?.map((friends) => (
-        <li key={friends.nickname}>
-          <Link href={`/profile/?intraId=${ intraId }`}>
-            <a>{friends.nickname}</a>
-          </Link>
-        </li>
-      ))}      
-    </div>
+    <>
+      <h1>친구</h1>
+      <ol>
+        {friends.map((friend) => (
+          <li key={friend.intraId}>
+            <div className={styles.friend}>
+              <img src={friend.avatar} alt="avatar" />
+              <div className={styles.friendInfo}>
+                <h2>{friend.nickname}</h2>
+                <p>{friend.rankScore}</p>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </>
   );
 };
 
