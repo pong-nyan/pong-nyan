@@ -14,6 +14,14 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!nickname) {
+      alert('Nickname is required');
+      return;
+    }
+    if (!email) {
+      alert('Email is required');
+      return;
+    }
 
     const output = await postFetchData();
     setRedirectUrl(output);
