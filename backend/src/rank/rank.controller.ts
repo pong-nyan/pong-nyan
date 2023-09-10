@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query, Res, Req, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { RankService } from './rank.service';
-import { RankUserDto, RankUserListDto } from './rank.dto';
+import { RankUserListDto } from './rank.dto';
 
 @Controller('rank')
 @ApiTags('rank')
