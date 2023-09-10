@@ -15,12 +15,12 @@ export enum GameStatus {
 	End
 }
 
-export type Indetify = {
+export type QueueInfo = {
   client: Socket,
   nickname: string
 }
 
-export type MatchingQueue = Indetify[];
+export type MatchingQueue = QueueInfo[];
 
 /*
 * shared between frontend and backend
