@@ -5,34 +5,32 @@ import { JwtService } from '@nestjs/jwt';
 import { PnPayloadDto } from 'src/chat/channel.dto';
 import * as cookie from 'cookie';
 
+
 @Injectable()
 export class UserService {
     constructor(private readonly jwtService: JwtService) {}
 
-    userMap = new Map<number, UserInfo>();
-    idMap = new Map<SocketId, IntraId>();
+    public getIntraId(clientId: SocketId) { return this.idMap.get(clientId); }
+    public getUser(intraId: number) { return this.userMap.get(intraId); }
 
-    checkPnJwt(client: Socket) {
-      console.log('in the checktPnJwt');
+    public checkPnJwt(client: Socket) {
       const cookies = client.handshake.headers.cookie;
-      console.log('cookies', cookies);
       if (!cookies) {
         console.error('Cookies not found');
         return undefined;
       }
       const pnJwtCookie = cookie.parse(cookies)['pn-jwt'];
-
       if (!pnJwtCookie) {
         console.error('JWT not found');
         return undefined;
       }
+
       try {
         const payload: PnPayloadDto = this.jwtService.verify<PnPayloadDto>(pnJwtCookie);
         if (payload.exp * 1000 < Date.now()) {
           console.error('JWT expired');
           return undefined;
         }
-        console.log('client', client.id);
         return payload;
       } catch (err) {
         console.error('JWT verification failed', err);
@@ -40,32 +38,11 @@ export class UserService {
       }
     }
 
-    setUserMap(intraId : IntraId, userInfo: UserInfo) {
+    public setUserMap(intraId : IntraId, userInfo: UserInfo) {
       this.userMap.set(intraId, userInfo);
     }
 
-    setIdMap(clientId: SocketId, intraId: IntraId) {
-      console.log('setIdMap clientId, intraId', clientId, intraId);
-      this.idMap.set(clientId, intraId);
-      console.log('setIdMap idMap', this.idMap);
-    }
-
-    // deleteIdMap(clientId: SocketId) {
-    //   console.log('deleteIdMap', clientId);
-    //   this.idMap.delete(clientId);
-    // }
-
-    deleteIdMap(clientId: SocketId) {
-      console.log('deleteIdMap', clientId);
-      if (this.idMap.delete(clientId)) {
-        console.log(`Successfully deleted clientId: ${clientId}`);
-      } else {
-        console.log(`Failed to delete clientId: ${clientId}`);
-      }
-    }
-
-
-    deleteUserMap(clientId: SocketId) {
+    public deleteUserMap(clientId: SocketId) {
       // TODO: 다시 생각해보기
       console.log('deleteUserMap', clientId);
       // const intraId = this.idMap.get(clientId);
@@ -73,20 +50,20 @@ export class UserService {
       // this.userService.deleteUserMap(intraId);
     }
 
-    getIntraId(clientId: SocketId) {
-      console.log('getIntraId clientId', clientId);
-      console.log('getIntraId', this.idMap.get(clientId));
-      console.log('getIntraId idMap', this.idMap);
-
-      return this.idMap.get(clientId);
+    public setIdMap(clientId: SocketId, intraId: IntraId) {
+      console.log('(Before) setIdMap idMap : ', this.idMap);
+      this.idMap.set(clientId, intraId);
+      console.log('(After) setIdMap idMap : ', this.idMap);
     }
 
-    getUserInfo(clientId: SocketId) {
-      const intraId = this.getIntraId(clientId);
-      return this.getUser(intraId);
+    public deleteIdMap(clientId: SocketId) {
+      console.log('(Before) deleteIdMap : ', this.idMap);
+      this.idMap.delete(clientId)
+      console.log('(After) deleteIdMap : ', this.idMap);
     }
 
-    getUser(intraId: number) {
-        return this.userMap.get(intraId);
-    }
+    /* -------------------------------------------------------------------- */
+
+    private userMap = new Map<number, UserInfo>();
+    private idMap = new Map<SocketId, IntraId>();
 }
