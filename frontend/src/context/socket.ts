@@ -1,6 +1,5 @@
 import { io as socketIOClient } from 'socket.io-client';
 import { createContext } from 'react';
-import { type } from 'os';
 
 export const socket = socketIOClient({ path: '/socket/'});
 export const SocketContext = createContext(socket);
