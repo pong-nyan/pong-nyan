@@ -1,13 +1,13 @@
 import RankUser from './RankUser';
-import { RankUserListProps } from '../rankType';
+import { RankUserListProps } from '@/type/rankType';
 import styles from '@/rank/styles/Rank.module.css';
 
-const RankUserList = ({ rankUserList } : RankUserListProps) => {
+const RankUserList = ({ rankUserList, currentPage } : RankUserListProps) => {
   return (
     <div className={styles.rankUserList}>
       <RankUserColumn />
       {rankUserList.map((rankUser, index) => (
-        <RankUser key={rankUser.intraNickname} rankUser={rankUser} rank={index + 1} />
+        <RankUser key={index} rankUser={rankUser} rank={(index + 1) + 10 * (currentPage - 1)} />
       ))}
     </div>
   );

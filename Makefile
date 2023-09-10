@@ -1,10 +1,19 @@
 .PHONY: all iclean cclean dclean aclean are re up down
 
+MAKE := make -i
+
 all:
-	docker compose up -d
+	${MAKE} build
+	${MAKE} up
+
+build:
+	docker compose build
 
 up: 
 	docker compose up
+
+up_d:
+	docker compose up -d
 
 down:
 	docker compose down

@@ -46,12 +46,11 @@ export class AuthController {
     @ApiOperation({ summary: 'signup', description: '회원가입을 진행한다.' })
     @ApiResponse({ status: HttpStatus.CREATED, type: DefaultDto, description: '회원가입 성공. qr 등록하러 이동'})
     async signUp(@CookieValue() accessToken: string, @Body() signupDto: SignupDto) {
-        //  user exist check from my database
         const userInfo = await this.authService.getUserInfoFromToken(accessToken);
         if (!userInfo) return new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
-        const { intraId, intraNickname } = userInfo;
+        const { intraId, intraNickname, defaultAvatar } = userInfo;
         const { email, nickname, avatar } = signupDto;
-        const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar, 0, email);
+        const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar || defaultAvatar, 0, email);
         if (!result) return new HttpException('Create User Faild', HttpStatus.INTERNAL_SERVER_ERROR);
         return { redirectUrl: '/auth/qr' };
     }
@@ -78,5 +77,22 @@ export class AuthController {
         // if (!user) return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send('signin failed');
         // return response.status(HttpStatus.OK).send(user);
         return response.status(HttpStatus.OK).send('mypage auth sucess');
+    }
+
+    // backdoor for testing
+    @ApiOperation({ summary: 'backdoor', description: '테스트용 mock user를 create, backdoor' })
+    @ApiTags('backdoor')
+    @Get('backdoor')
+    async backdoor(@Req() request: Request, @Res() response: Response) {
+        console.log('backdoor');
+        for (let i = 0; i < 42; i++) {
+            const randomIntraId = Math.floor(Math.random() * 100000);
+            const randomIntraNickname = Math.floor(Math.random() * 100000).toString() + 'intra_nickname';
+            const randomNickname = Math.floor(Math.random() * 1000000).toString() + 'nickname';
+            const randomAvatar = Math.floor(Math.random() * 1000000).toString() + 'avatar';
+            const randomEmail = Math.floor(Math.random() * 10000).toString() + '@gmail.com';
+            await this.authService.createUser(randomIntraId, randomIntraNickname, randomNickname, randomAvatar, 0, randomEmail);
+        }
+        return response.status(HttpStatus.OK).send('42 mock user created sucess');
     }
 }

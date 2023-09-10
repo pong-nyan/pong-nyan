@@ -8,7 +8,7 @@ export class ChannelService {
   channelMap = new Map<string, Channel>();
 
   // 사용자가 채널을 추가
-  addChannel(channelInfo: ChannelInfo, client: Socket, intraId: string) {
+  addChannel(channelInfo: ChannelInfo, client: Socket, intraId: number) {
     console.log('service addChannel, channelInfo', channelInfo);
     const channelId = uuidv4();
     const newChannel = {
@@ -24,7 +24,7 @@ export class ChannelService {
   }
 
   // 채널이 사용자를 추가
-  joinChannel(channelId: string, userId: string) {
+  joinChannel(channelId: string, userId: number) {
     console.log('service joinChannel, channelId, userId', channelId, userId);
 
     const channel = this.channelMap.get(channelId);
@@ -40,7 +40,7 @@ export class ChannelService {
     }
   }
 
-  leaveChannel(channelId: string, userId: string) {
+  leaveChannel(channelId: string, userId: number) {
     const channel = this.channelMap.get(channelId);
     if (channel) {
       const index = channel.userList.indexOf(userId);
@@ -50,7 +50,7 @@ export class ChannelService {
     }
   }
 
-  getChannelUsers(channelId: string): string[] {
+  getChannelUsers(channelId: string): number[] {
     const channel = this.channelMap.get(channelId);
     return channel ? channel.userList : [];
   }

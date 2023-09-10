@@ -6,9 +6,16 @@ export type RankUserType = {
 
 export type RankUserListProps = {
     rankUserList: RankUserType[];
+    currentPage: number;
 };
  
 export type RankUserProps = {
     rankUser: RankUserType;
     rank: number;
 };
+
+export type PaginationProps = {
+    currentPage: number;
+    handleCurrentPage: (page: number) => void;
+};
+  

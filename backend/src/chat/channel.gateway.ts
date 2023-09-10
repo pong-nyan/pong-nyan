@@ -4,10 +4,10 @@ import { ChannelInfo } from 'src/type/chatType';
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
 import { ChannelGuard } from './channel.guard';
-import { PnJwtPayload } from 'src/chat/channel.dto';
-import { PnPayloadDto } from './channel.dto';
+import { PnJwtPayload, PnPayloadDto } from 'src/chat/channel.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as cookie from 'cookie';
+import { UserService } from 'src/user.service';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -17,7 +17,8 @@ import * as cookie from 'cookie';
 @UseGuards(ChannelGuard)
 export class ChannelGateway {
   constructor(private readonly channelService: ChannelService,
-    private readonly jwtService: JwtService) {}
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService) {}
 
   @WebSocketServer()
   server: Server;
@@ -32,7 +33,7 @@ export class ChannelGateway {
   }
 
   @SubscribeMessage('chat-join-channel')
-  handleJoinChannel(@ConnectedSocket() client: Socket, @MessageBody() payload: { channelId: string, password?: string }) {
+  handleJoinChannel(@ConnectedSocket() client: Socket, @MessageBody() payload: { channelId: string, password?: string }, @PnJwtPayload() pnPayload: PnPayloadDto) {
     const channel = this.channelService.getChannel(payload.channelId);
     console.log('chat-join-channel, payload', payload);
     console.log('chat-join-channel, channel', channel);
@@ -41,7 +42,7 @@ export class ChannelGateway {
       return ;
     }
     if (channel.channelType === 'private') {
-      if (!channel.invitedUsers.includes(client.intraId)) {
+      if (!channel.invitedUsers.includes(pnPayload.intraId)) {
         client.emit('chat-join-error', '이 채널에는 초대받지 않은 사용자는 접속할 수 없습니다.');
         return;
       }
@@ -54,7 +55,7 @@ export class ChannelGateway {
     }
     client.emit('chat-join-success');
     client.join(payload.channelId);
-    this.channelService.joinChannel(payload.channelId, client.intraId);
+    this.channelService.joinChannel(payload.channelId, pnPayload.intraId);
     const users = this.channelService.getChannelUsers(payload.channelId);
     console.log('chat-join-channel, channelId, users', payload.channelId, users);
 
@@ -76,9 +77,10 @@ export class ChannelGateway {
   }
 
   @SubscribeMessage('chat-leave-channel')
-  handleLeaveChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string) {
+  handleLeaveChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string, @PnJwtPayload() payload: PnPayloadDto) {
       client.leave(channelId);
-      this.channelService.leaveChannel(channelId, client.intraId);
+      //TODO
+      this.channelService.leaveChannel(channelId, payload.intraId);
       const users = this.channelService.getChannelUsers(channelId);
       this.server.to(channelId).emit('chat-update-users', users);
   }
@@ -91,31 +93,21 @@ export class ChannelGateway {
 
   handleConnection(@ConnectedSocket() client: Socket) {
     console.log('in cha handleConnection');
-    const cookies = client.handshake.headers.cookie;
-    console.log('cookies', cookies);
-    if (!cookies) {
-      console.error('Cookies not found');
-      return;
-    }
-    const pnJwtCookie = cookie.parse(cookies)['pn-jwt'];
 
-    if (!pnJwtCookie) {
-      console.error('JWT not found');
-      return;
+    if (!this.userService.checkPnJwt(client))
+    {
+      //
+      return ;
     }
-    try {
-      const payload: PnPayloadDto = this.jwtService.verify<PnPayloadDto>(pnJwtCookie);
-      if (payload.exp * 1000 < Date.now()) {
-        console.error('JWT expired');
-        return;
-      }
-      client.intraId = payload.intraId;
-      console.log('client', client.id);
-      console.log('client.intraId', client.intraId);
-    } catch (err) {
-      console.error('JWT verification failed', err);
-    }
+    // F5또는 새로고침 이런식으로 새로 접속하지만 pn-jwt가 있을 경우
+    // TODO: 이전 채널에 접속
+    // const userInfo = this.userService.getUserInfo(client.id);
+    // if (!userInfo) return ;
+    // const intraId = this.userService.getIntraId(client.id);
+    // const userInfo = this.userService.getUser(intraId);
 
-    console.log('client.user', client.rooms);
   }
 }
+
+// TODO : setUserInfoChatRoomList 만들기
+    // chatRoomList: RoomName[],
