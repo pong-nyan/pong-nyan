@@ -1,6 +1,6 @@
 import { NextRouter } from 'next/router';
 
-const redirectOauth = (router: NextRouter) => {
+const redirect42Oauth = (router: NextRouter) => {
   const client_id = process.env.NEXT_PUBLIC_CLIENT_ID;
   const redirect_uri = process.env.NEXT_PUBLIC_REDIRECT_URI;
   router.push(
@@ -8,4 +8,4 @@ const redirectOauth = (router: NextRouter) => {
   );
 };
 
-export default redirectOauth;
+export default redirect42Oauth;

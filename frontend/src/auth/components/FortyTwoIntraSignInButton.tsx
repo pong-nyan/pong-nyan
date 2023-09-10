@@ -1,12 +1,12 @@
 import { useRouter } from 'next/router';
-import redirectOauth  from '@/auth/logic/redirectOauth';
+import redirect42Oauth  from '@/auth/logic/redirectOauth';
 import styles from '@/auth/styles/Login.module.css';
 
 const FortyTwoIntraSignInButton = () => {
   const router = useRouter();
   
   return (
-    <button onClick={() => redirectOauth(router)} className={styles.signUpButton}>42 Sign In</button>
+    <button onClick={() => redirect42Oauth(router)} className={styles.signUpButton}>42 Sign In</button>
   );
 };
 
