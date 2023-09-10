@@ -1,3 +1,4 @@
+import styles from '@/friend/styles/RequestFriend.module.css';
 import { useState } from 'react';
 
 const RequestFriend = () => {
@@ -13,14 +14,17 @@ const RequestFriend = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <label>친구요청할 친구의 nickname</label>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <label className={styles.label}>친구요청할 친구의 nickname</label>
         <input
+          className={styles.input}
           type='text'
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
         />
-        <button type='submit'>친구요청</button>
+        <button className={styles.button} type='submit'>
+          친구요청
+        </button>
       </form>
     </>
   );
