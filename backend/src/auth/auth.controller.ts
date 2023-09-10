@@ -50,7 +50,7 @@ export class AuthController {
         if (!userInfo) return new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
         const { intraId, intraNickname, defaultAvatar } = userInfo;
         const { email, nickname, avatar } = signupDto;
-        const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar ?? defaultAvatar, 0, email);
+        const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar || defaultAvatar, 0, email);
         if (!result) return new HttpException('Create User Faild', HttpStatus.INTERNAL_SERVER_ERROR);
         return { redirectUrl: '/auth/qr' };
     }
