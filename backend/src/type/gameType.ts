@@ -15,12 +15,19 @@ export enum GameStatus {
 	End
 }
 
-export type PlayerNumber = 'player1' | 'player2';
+export type Indetify = {
+  client: Socket,
+  nickname: string
+}
+
+export type MatchingQueue = Indetify[];
 
 /*
 * shared between frontend and backend
 * below type
 */
+
+export type PlayerNumber = 'player1' | 'player2';
 
 export type BallInfo = {
   position: { x: number, y: number },
@@ -49,11 +56,6 @@ export type GameInfo = {
   nickname: Nickname,
   waitList: { playerNumber: PlayerNumber, score: Score }[],
   ballInfo: BallInfo
-}
-
-export type QueueInfo = {
-  client: Socket,
-  nickname: string
 }
 
 export type KeyEventMessage =
