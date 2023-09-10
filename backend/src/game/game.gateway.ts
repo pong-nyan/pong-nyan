@@ -11,11 +11,11 @@ import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { BallInfo, PlayerNumber, Score } from 'src/type/gameType';
 import { UseGuards } from '@nestjs/common';
-import { GameGuard } from './game.guard';
 import { UserService } from 'src/user.service';
 import { PnJwtPayload, PnPayloadDto } from './game.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { GatewayGuard } from 'src/context/gateway.guard';
 
+@UseGuards(GatewayGuard)
 @WebSocketGateway({
   cors: { origin: '*' },
   path: '/socket/',
@@ -28,41 +28,54 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   fps = 1000 / 60;
 
-  async handleConnection(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
-    console.log('[gameGateway] handleConnection', client.id);
-    // const userInfo = this.userService.getUser(payload.intraId);
-    // if (!userInfo) return ;
-    // if (userInfo.gameRoom) {
-    //   console.log('[INFO] 이전 게임 방 접속합니다.');
-    //   client.join(userInfo.gameRoom);
-    // }
-  }
 
+  async handleConnection(@ConnectedSocket() client: Socket) {
+    console.log('[GameGateway] Connection', client.id);
+    if (!this.userService.checkPnJwt(client)) return ;
+
+    const intraId = this.userService.getIntraId(client.id);
+    const userInfo = this.userService.getUserInfo(intraId);
+    if (!userInfo || !userInfo.gameRoom) return ;
+    const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
+    if (!gameInfo) return ;
+    client.join(userInfo.gameRoom);
+    // this.server.to(userInfo.gameRoom).emit('game-reconnect', { gameInfo.gameStatus });
+  }
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     console.log('[INFO] handleDisconnect :', );
     //
-    // const intraId = this.userService.getIntraId(client.id);
-    // const userInfo = this.userService.getUser(intraId);
-    // if (!userInfo.gameRoom) {
-    //   console.log('[INFO] 게임 방이 없습니다.');
-    //   this.gameService.removeMatchingClient(client);
-    //   return ;
-    // }
-    // const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
-    // if (!gameInfo) {
-    //   console.log('[INFO] 게임 정보가 없습니다.');
-    //   client.leave(userInfo.gameRoom);
-    //   return ;
-    // }
-    // this.server.to(roomName).emit('game-disconnect', { disconnectNickname: payload.nickname, gameInfo } );
+    const intraId = this.userService.getIntraId(client.id);
+    const userInfo = this.userService.getUserInfo(intraId);
+    if (!userInfo.gameRoom) {
+      console.log('[INFO] 게임 방이 없습니다.');
+      this.gameService.removeMatchingClient(client);
+      return ;
+    }
+    const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
+    if (!gameInfo) {
+      this.userService.leaveGameRoom(intraId);
+      return ;
+    }
+    this.server.to(userInfo.gameRoom).emit('game-disconnect', {
+      disconnectNickname: userInfo.nickname,
+      gameInfo
+    });
   }
- 
-  @SubscribeMessage('game-randomStart-rank-pn')
-  handleStartGame(@MessageBody() data: any, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
-    const userInfo = this.userService.getUser(payload.intraId);
+
+  // @SubscribeMessage('game-randomStart-rank-pn')
+  // handleStartGame(@MessageBody() data: any, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+  //   const userInfo = this.userService.getUser(payload.intraId);
+  //   if (!userInfo) return ;
+  //   const [ roomName, player1Id, player2Id ] = this.gameService.match(client, payload.nickname);
+  // }
+
+  @SubscribeMessage('game-start')
+  handleStartGame(@ConnectedSocket() client: Socket, @MessageBody() data: any, @PnJwtPayload() payload: PnPayloadDto) {
+    const userInfo = this.userService.getUserInfo(payload.intraId);
     if (!userInfo) return ;
-    const [ roomName, player1Id, player2Id ] = this.gameService.match(client, payload.nickname);
+
+    const [ roomName, player1Id, player2Id ] = this.gameService.match(client, 0, payload.nickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;
     this.server.to(roomName).emit('game-randomStart-rank-pn', {player1Id, player2Id});
