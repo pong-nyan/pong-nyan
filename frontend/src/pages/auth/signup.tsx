@@ -60,7 +60,7 @@ const SignUp = () => {
           }}
           onClick={(e) => e.currentTarget.value = ''}
         />
-        <img src={avatar} alt="avatar" />
+        {avatar && <img src={avatar} alt="avatar" />}
         <label htmlFor="email">Email</label>
         <input
           type="text"
