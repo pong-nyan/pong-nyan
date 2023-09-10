@@ -3,23 +3,28 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class PnPayloadDto {
   @IsNotEmpty()
-  @IsString()
-  intraId: string;
+  @IsNumber()
+  intraId: number;
+
   @IsNotEmpty()
   @IsString()
   nickname: string;
+
   @IsNotEmpty()
   @IsString()
   intraNickname: string;
+
   @IsNotEmpty()
   @IsNumber()
   iat: number;
+
   @IsNotEmpty()
   @IsNumber()
   exp: number;
 }
 
 export class JwtDto {
+  @IsNotEmpty()
   payload: PnPayloadDto;
 }
 

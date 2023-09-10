@@ -2,17 +2,21 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { IsNumber, IsNotEmpty, IsString } from 'class-validator';
 export class PnPayloadDto {
     @IsNotEmpty()
-    @IsString()
+    @IsNumber()
     intraId: number;
+
     @IsNotEmpty()
     @IsString()
     nickname: string;
+
     @IsNotEmpty()
     @IsString()
     intraNickname: string;
+
     @IsNotEmpty()
     @IsNumber()
     iat: number;
+
     @IsNotEmpty()
     @IsNumber()
     exp: number;

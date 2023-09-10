@@ -13,10 +13,10 @@ export type ChannelType = 'public' | 'private' | 'protected';
 
 export type Channel = ChannelInfo & {
   id: string,
-  owner: string,
-  administrator: string[],
-  userList: string[]
-  invitedUsers: string[]
+  owner: number,
+  administrator: number[],
+  userList: number[]
+  invitedUsers: number[]
 }
 
 export type ChannelInfo = {

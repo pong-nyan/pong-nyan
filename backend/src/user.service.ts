@@ -1,25 +1,83 @@
 import { Injectable } from '@nestjs/common';
 import { UserInfo, IntraId} from 'src/type/userType';
-import { SocketId } from 'src/type/socketType';
+import { SocketId, Socket } from 'src/type/socketType';
+import { JwtService } from '@nestjs/jwt';
+import { PnPayloadDto } from 'src/chat/channel.dto';
+import * as cookie from 'cookie';
 
 @Injectable()
 export class UserService {
+    constructor(private readonly jwtService: JwtService) {}
+
     userMap = new Map<number, UserInfo>();
     idMap = new Map<SocketId, IntraId>();
 
-    addUser(userInfo: UserInfo, clientId: SocketId) {
-      this.userMap.set(userInfo.intraId, userInfo);
-      this.idMap.set(clientId, userInfo.intraId);
+    checkPnJwt(client: Socket) {
+      console.log('in the checktPnJwt');
+      const cookies = client.handshake.headers.cookie;
+      console.log('cookies', cookies);
+      if (!cookies) {
+        console.error('Cookies not found');
+        return false;
+      }
+      const pnJwtCookie = cookie.parse(cookies)['pn-jwt'];
+
+      if (!pnJwtCookie) {
+        console.error('JWT not found');
+        return false;
+      }
+      try {
+        const payload: PnPayloadDto = this.jwtService.verify<PnPayloadDto>(pnJwtCookie);
+        if (payload.exp * 1000 < Date.now()) {
+          console.error('JWT expired');
+          return false;
+        }
+        console.log('client', client.id);
+      } catch (err) {
+        console.error('JWT verification failed', err);
+        return false;
+      }
+      return true;
     }
 
-    removeUser(clientId: SocketId) {
-      console.log('removeUser', clientId);
+    setUserMap(intraId : IntraId, userInfo: UserInfo) {
+      this.userMap.set(intraId, userInfo);
+    }
+
+    setIdMap(clientId: SocketId, intraId: IntraId) {
+      console.log('setIdMap clientId, intraId', clientId, intraId);
+      this.idMap.set(clientId, intraId);
+      console.log('setIdMap idMap', this.idMap);
+    }
+
+    // deleteIdMap(clientId: SocketId) {
+    //   console.log('deleteIdMap', clientId);
+    //   this.idMap.delete(clientId);
+    // }
+
+    deleteIdMap(clientId: SocketId) {
+      console.log('deleteIdMap', clientId);
+      if (this.idMap.delete(clientId)) {
+        console.log(`Successfully deleted clientId: ${clientId}`);
+      } else {
+        console.log(`Failed to delete clientId: ${clientId}`);
+      }
+    }
+
+
+    deleteUserMap(clientId: SocketId) {
+      // TODO: 다시 생각해보기
+      console.log('deleteUserMap', clientId);
       // const intraId = this.idMap.get(clientId);
       // this.idMap.delete(clientId);
-      // this.userService.removeUser(intraId);
+      // this.userService.deleteUserMap(intraId);
     }
 
     getIntraId(clientId: SocketId) {
+      console.log('getIntraId clientId', clientId);
+      console.log('getIntraId', this.idMap.get(clientId));
+      console.log('getIntraId idMap', this.idMap);
+
       return this.idMap.get(clientId);
     }
 
