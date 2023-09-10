@@ -10,9 +10,10 @@ import { AppGateway } from './app.gateway';
 import { ChannelModule } from './chat/channel.module';
 import { RankModule } from './rank/rank.module';
 import { UserModule } from './user.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), GameModule, AuthModule, DatabaseModule, ChatModule, ChannelModule, RankModule, UserModule],
+  imports: [ConfigModule.forRoot(), GameModule, AuthModule, DatabaseModule, ChatModule, ChannelModule, RankModule, UserModule, ProfileModule],
   controllers: [AppController],
   providers: [AppService, AppGateway],
 })
