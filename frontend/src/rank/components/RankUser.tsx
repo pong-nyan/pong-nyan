@@ -6,7 +6,7 @@ const RankUser = ({ rankUser, rank }: RankUserProps) => {
     <div className={styles.rankUser}>
       <p>{rank}</p>
       <p>{rankUser.rankScore}</p>
-      <p>{rankUser.intraNickname}</p>
+      <p>{rankUser.nickname}</p>
     </div>
   );
 };
