@@ -28,19 +28,26 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   fps = 1000 / 60;
 
-  async handleConnection(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+  async handleConnection(@ConnectedSocket() client: Socket) {
     console.log('[GameGateway] Connection', client.id);
-    // const userInfo = this.userService.getUser(payload.intraId);
-    // if (!userInfo) return ;
-    // if (userInfo.gameRoom) {
-    //   console.log('[INFO] 이전 게임 방 접속합니다.');
-    //   client.join(userInfo.gameRoom);
-    // }
+    if (!this.userService.checkPnJwt(client)) return ;
+
+    const intraId = this.userService.getIntraId(client.id);
+    const userInfo = this.userService.getUser(intraId);
+    if (!userInfo) return ;
+
+    if (userInfo.gameRoom) {
+      client.join(userInfo.gameRoom);
+      const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
+
+      this.server.to(userInfo.gameRoom).emit('game-reconnect', {  });
+    }
   }
 
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     console.log('[GameGateway] Disconnection', client.id);
+    if (!this.userService.checkPnJwt(client)) return ;
     //
     // const intraId = this.userService.getIntraId(client.id);
     // const userInfo = this.userService.getUser(intraId);
@@ -57,15 +64,30 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // }
     // this.server.to(roomName).emit('game-disconnect', { disconnectNickname: payload.nickname, gameInfo } );
   }
- 
-  @SubscribeMessage('game-randomStart-rank-pn')
-  handleStartGame(@MessageBody() data: any, @ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
+
+  // @SubscribeMessage('game-randomStart-normal-orign')
+  // handleStartNormalOrign(@ConnectedSocket() client: Socket, @MessageBody() data: any, @PnJwtPayload() payload: PnPayloadDto) {
+  //   this.handleStartGame();
+  // }
+  // @SubscribeMessage('game-randomStart-normal-pn')
+  // handleStartNormalPn(@ConnectedSocket() client: Socket, @MessageBody() data: any, @PnJwtPayload() payload: PnPayloadDto) {
+  //   this.handleStartGame();
+  // }
+  //
+  // @SubscribeMessage('game-randomStart-rank-orign')
+  // handleStartRankOrign(@ConnectedSocket() client: Socket, @MessageBody() data: any, @PnJwtPayload() payload: PnPayloadDto) {
+  //   this.handleStartGame();
+  // }
+  //
+
+  @SubscribeMessage('game-start')
+  handleStartGame(@ConnectedSocket() client: Socket, @MessageBody() data: any, @PnJwtPayload() payload: PnPayloadDto) {
     const userInfo = this.userService.getUser(payload.intraId);
     if (!userInfo) return ;
     const [ roomName, player1Id, player2Id ] = this.gameService.match(client, payload.nickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;
-    this.server.to(roomName).emit('game-randomStart-rank-pn', {player1Id, player2Id});
+    this.server.to(roomName).emit('game-start', {player1Id, player2Id});
   }
 
   @SubscribeMessage('game-keyEvent')

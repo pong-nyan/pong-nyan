@@ -18,3 +18,4 @@ socket.on('auth-set-map-payload', () => {
   console.log('auth-set-map-payload item', item);
   socket.emit('auth-set-map', { intraId: item.intraId });
 });
+

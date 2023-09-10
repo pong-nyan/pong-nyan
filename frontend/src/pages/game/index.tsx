@@ -2,7 +2,8 @@ import Start from '@/game/components/Start';
 import RunWrapper from '@/game/components/RunWrapper';
 import End from '@/game/components/End';
 import { PlayerNumber, Score, GameStatus } from '@/type/gameType';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { socket } from '@/context/socket';
 
 
 export default function Game(): JSX.Element {
@@ -13,9 +14,16 @@ export default function Game(): JSX.Element {
   const [opponentId, setOpponentId] = useState<string>();
   const [score, setScore] = useState<Score>({p1: 0, p2: 0});
 
+  useEffect(() => {
+    socket.on('game-reconnect', () => {
+      alert('이전 게임 방 접속합니다.');
+      // setGameStatus(GameStatus.RankPnRun);
+    });
+  }, []);
+
   switch (gameStatus) {
   case GameStatus.Start:
-    return (<Start setGameStatus={setGameStatus} setPlayerNumber={setPlayerNumber} setOpponentId={setOpponentId} />);
+    return (<Start gameStatus={gameStatus} setGameStatus={setGameStatus} setPlayerNumber={setPlayerNumber} setOpponentId={setOpponentId} />);
   // TODO: 각  모드에 맞게  수정  필요
   case GameStatus.RankPnRun:
     return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);

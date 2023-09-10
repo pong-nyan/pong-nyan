@@ -1,10 +1,22 @@
 import { Dispatch, SetStateAction } from 'react';
 import { socket } from '@/context/socket';
-import { KeyEventMessage, PlayerNumber, Score, GameInfo, CanvasSize } from '@/type/gameType';
+import { KeyEventMessage, PlayerNumber, Score, GameInfo, CanvasSize, GameStatus } from '@/type/gameType';
 import { Body, Engine } from 'matter-js';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
 import { movePlayer, movePaddle } from '@/game/matterEngine/player';
 import { resumeGame } from '@/game/logic/resumeGame';
+
+
+/**
+ * 게임 시작을 서버로 전송합니다.
+ * @param gameStatus: GameStatus
+ * @returns
+ */
+export const socketEmitGameStartEvent = (gameStatus: GameStatus) => {
+  socket.emit('game-start', {
+    gameStatus,
+  });
+}
 
 /**
  * 게임 키 이벤트를 서버로 전송합니다. 

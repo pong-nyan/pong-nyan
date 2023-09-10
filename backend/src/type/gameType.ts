@@ -15,12 +15,12 @@ export enum GameStatus {
 	End
 }
 
+export type PlayerNumber = 'player1' | 'player2';
+
 /*
 * shared between frontend and backend
 * below type
 */
-
-export type PlayerNumber = 'player1' | 'player2';
 
 export type BallInfo = {
   position: { x: number, y: number },
