@@ -9,7 +9,7 @@ export class RankService {
 
     async getRankInPage(page: number) {
         const [rankUser, total] = await this.vRankingRepository.findAndCount({
-            select: ['intraNickname', 'rankScore'],
+            select: ['nickname', 'rankScore'],
             skip: (page - 1) * 10,
             take: 10
         });
