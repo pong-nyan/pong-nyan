@@ -48,9 +48,9 @@ export class AuthController {
     async signUp(@CookieValue() accessToken: string, @Body() signupDto: SignupDto) {
         const userInfo = await this.authService.getUserInfoFromToken(accessToken);
         if (!userInfo) return new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
-        const { intraId, intraNickname } = userInfo;
+        const { intraId, intraNickname, defaultAvatar } = userInfo;
         const { email, nickname, avatar } = signupDto;
-        const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar, 0, email);
+        const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar ?? defaultAvatar, 0, email);
         if (!result) return new HttpException('Create User Faild', HttpStatus.INTERNAL_SERVER_ERROR);
         return { redirectUrl: '/auth/qr' };
     }
