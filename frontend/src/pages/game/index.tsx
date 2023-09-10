@@ -4,9 +4,11 @@ import End from '@/game/components/End';
 import { PlayerNumber, Score, GameStatus } from '@/type/gameType';
 import { useState, useEffect } from 'react';
 import { socket } from '@/context/socket';
+import useAuth from '@/context/useAuth';
 
 
 export default function Game(): JSX.Element {
+  useAuth();
   // TODO: start game button
   // FIXME: game status
   const [gameStatus, setGameStatus] =  useState(0);
