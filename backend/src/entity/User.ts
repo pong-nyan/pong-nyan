@@ -13,7 +13,6 @@ export class User {
     intraNickname: string;
 
     @Column({ unique: true })
-    @Generated('uuid')
     nickname : string;
 
     @Column({ nullable: true })
