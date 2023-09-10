@@ -11,7 +11,7 @@ export class UserService {
     constructor(private readonly jwtService: JwtService) {}
 
     public getIntraId(clientId: SocketId) { return this.idMap.get(clientId); }
-    public getUser(intraId: number) { return this.userMap.get(intraId); }
+    public getUserInfo(intraId: number) { return this.userMap.get(intraId); }
 
     public checkPnJwt(client: Socket) {
       const cookies = client.handshake.headers.cookie;
@@ -67,6 +67,7 @@ export class UserService {
       if (!userInfo) return ;
       userInfo.gameRoom = '';
     }
+
     /* -------------------------------------------------------------------- */
 
     private userMap = new Map<number, UserInfo>();

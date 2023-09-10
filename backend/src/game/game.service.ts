@@ -15,7 +15,7 @@ export class GameService {
     private readonly userRepository: Repository<User>
   ) { }
 
-  public match(client: Socket, nickname: string) {
+  public match(client: Socket, gameStatusIndex: number, nickname: string) {
     // this.matchingList[gameStatusIndex].push({client, nickname});
     this.matchingQueue.push({client, nickname});
     if (this.matchingQueue.length > 1) {

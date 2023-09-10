@@ -12,6 +12,7 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     console.log('AuthGuard');
     //TODO: Oauth인증까지만 한 유저인지 확인하는 로직을 작성한다.
+    return false;
   }
 }
 
