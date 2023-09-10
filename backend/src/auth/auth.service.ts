@@ -38,7 +38,8 @@ export class AuthService {
     //  get user info from 42 api
     const ftUserInfo = await this.getFtUserInfo(accessToken);
     const { id: intraId, login: intraNickname } = ftUserInfo.data;
-    return { intraId, intraNickname };
+    const defaultAvatar: string = ftUserInfo.data.image.link;
+    return { intraId, intraNickname, defaultAvatar };
   }
 
   async findUser(intraId: number) {

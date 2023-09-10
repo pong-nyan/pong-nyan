@@ -5,7 +5,7 @@ import encodeFileToBase64 from '@/auth/logic/encodeFileToBase65';
 
 const SignUp = () => {
   const [nickname, setNickname] = useState('');
-  const [avatar, setAvatar] = useState<string>();
+  const [avatar, setAvatar] = useState<string>('');
   const [email, setEmail] = useState('');
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/signup`;
@@ -38,9 +38,15 @@ const SignUp = () => {
           id="image"
           accept='image/*'
           onChange={async(e) => {
-            if (!e.target.files) return;
+            if (!e.target.files) {
+              setAvatar('');
+              return;
+            }
             const file = e.target.files[0];
-            if (!file) return;
+            if (!file) {
+              setAvatar('');
+              return;
+            }
             const image = await encodeFileToBase64(file);
             setAvatar(image);
           }}
