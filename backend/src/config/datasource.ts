@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entity/User';
 import { Game } from 'src/entity/Game';
+import { VRanking } from 'src/entity/VRanking';
+import FriendStatus from 'src/entity/FriendStatus';
+import Friend from 'src/entity/Friend';
 
 @Module({
   imports: [
@@ -14,7 +17,7 @@ import { Game } from 'src/entity/Game';
       database: process.env.POSTGRES_DB,
       synchronize: true,
       logging: true,
-      entities: [ User, Game ],
+      entities: [ User, Game, VRanking, Friend, FriendStatus ],
     }),
   ],
 })

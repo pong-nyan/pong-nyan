@@ -2,12 +2,12 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ChannelService } from './channel.service';
 import { Channel } from 'src/type/chatType';
-import { ChannelGuard } from './channel.guard';
+import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
 import { UseGuards } from '@nestjs/common';
 
 @Controller('channel')
 @ApiTags('channel')
-@UseGuards(ChannelGuard)
+@UseGuards()
 export class ChannelController {
   constructor(private readonly channelService: ChannelService) {
   }

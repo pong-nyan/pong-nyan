@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserInfo, IntraId} from 'src/type/userType';
 import { SocketId, Socket } from 'src/type/socketType';
 import { JwtService } from '@nestjs/jwt';
-import { PnPayloadDto } from 'src/chat/channel.dto';
+import { PnPayloadDto } from 'src/dto/pnPayload.dto';
 import * as cookie from 'cookie';
 
 
@@ -42,7 +42,13 @@ export class UserService {
       this.userMap.set(intraId, userInfo);
     }
 
-    public deleteUserMap(clientId: SocketId) {
+    public setIdMap(clientId: SocketId, intraId: IntraId) {
+      console.log('(Before) setIdMap idMap : ', this.idMap);
+      this.idMap.set(clientId, intraId);
+      console.log('(After) setIdMap idMap : ', this.idMap);
+    }
+
+    deleteUserMap(clientId: SocketId) {
       // TODO: 다시 생각해보기
       console.log('deleteUserMap', clientId);
       // const intraId = this.idMap.get(clientId);
@@ -50,18 +56,17 @@ export class UserService {
       // this.userService.deleteUserMap(intraId);
     }
 
-    public setIdMap(clientId: SocketId, intraId: IntraId) {
-      console.log('(Before) setIdMap idMap : ', this.idMap);
-      this.idMap.set(clientId, intraId);
-      console.log('(After) setIdMap idMap : ', this.idMap);
-    }
-
     public deleteIdMap(clientId: SocketId) {
       console.log('(Before) deleteIdMap : ', this.idMap);
-      this.idMap.delete(clientId)
+      this.idMap.delete(clientId);
       console.log('(After) deleteIdMap : ', this.idMap);
     }
 
+    public leaveGameRoom(intraId: IntraId) {
+      const userInfo = this.userMap.get(intraId);
+      if (!userInfo) return ;
+      userInfo.gameRoom = '';
+    }
     /* -------------------------------------------------------------------- */
 
     private userMap = new Map<number, UserInfo>();

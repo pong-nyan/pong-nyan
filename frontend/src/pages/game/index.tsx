@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import { socket } from '@/context/socket';
 import useAuth from '@/context/useAuth';
 
-
 export default function Game(): JSX.Element {
   useAuth();
   // TODO: start game button

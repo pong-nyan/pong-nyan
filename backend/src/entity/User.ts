@@ -1,26 +1,27 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, JoinTable, DeleteDateColumn, Generated } from 'typeorm';
+import { Game } from './Game';
 
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
     id : number;
 
-    @Column()
+    @Column( { unique: true })
     intraId: number;
 
-    @Column()
+    @Column({ unique: true })
     intraNickname: string;
 
-    @Column()
+    @Column({ unique: true })
     nickname : string;
 
-    @Column()
+    @Column({ nullable: true })
     avatar: string;
 
-    @Column()
+    @Column({ nullable: true })
     rankScore: number;
 
-    @Column()
+    @Column({ nullable: true })
     email: string;
 
     @Column({ nullable: true })
@@ -29,10 +30,18 @@ export class User {
     @Column({ default: false })
     google2faEnable: boolean;
 
+    @OneToMany(() => Game, game => game.winner)
+    winnerGames: Game[];
+
+    @OneToMany(() => Game, game => game.loser)
+    loserGames: Game[];
+
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     createdAt: Date;
 
     @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
     updatedAt: Date;
 
+    @DeleteDateColumn({ type: 'timestamp', nullable: true })
+    deletedAt: Date;
 }

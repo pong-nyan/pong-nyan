@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { usePostFetchData } from '@/context/usePostFetchData';
 import useRedirect from '@/context/useRedirect';
 import encodeFileToBase64 from '@/auth/logic/encodeFileToBase65';
+import styles from '@/auth/styles/signUp.module.css';
 
 const SignUp = () => {
   const [nickname, setNickname] = useState('');
@@ -14,6 +15,14 @@ const SignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!nickname) {
+      alert('Nickname is required');
+      return;
+    }
+    if (!email) {
+      alert('Email is required');
+      return;
+    }
 
     const output = await postFetchData();
     setRedirectUrl(output);
@@ -22,17 +31,18 @@ const SignUp = () => {
   useRedirect(redirectUrl);
 
   return (
-    <div>
-      <h1>Sign Up</h1>
+    <div className={styles.signUpContainer}>
+      <h1 className={styles.signUpTitle}>Sign Up</h1>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="nickname">Nickname</label>
+        <label className={styles.signUpLabel} htmlFor="nickname">Nickname</label>
         <input
           type="text"
           id="nickname"
+          className={styles.signUpInput}
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
         />
-        <label htmlFor="image">Image</label>
+        <label className={styles.signUpLabel} htmlFor="image">Image</label>
         <input
           type="file"
           id="image"
@@ -52,14 +62,16 @@ const SignUp = () => {
           }}
           onClick={(e) => e.currentTarget.value = ''}
         />
-        <label htmlFor="email">Email</label>
+        {avatar && <img src={avatar} alt="avatar" className={styles.signUpImage} />}
+        <label className={styles.signUpLabel} htmlFor="email">Email</label>
         <input
           type="text"
           id="email"
+          className={styles.signUpInput}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <button type="submit">Sign Up</button>
+        <button type="submit" className={styles.signUpButton}>Sign Up</button>
       </form>
     </div>
   );

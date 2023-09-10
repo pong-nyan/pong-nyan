@@ -6,6 +6,7 @@ export type RankUserType = {
 
 export type RankUserListProps = {
     rankUserList: RankUserType[];
+    currentPage: number;
 };
  
 export type RankUserProps = {
