@@ -9,7 +9,7 @@ import * as cookie from 'cookie';
 export class UserService {
     constructor(private readonly jwtService: JwtService) {}
 
-    userMap = new Map<number, UserInfo>();
+    userMap = new Map<IntraId, UserInfo>();
     idMap = new Map<SocketId, IntraId>();
 
     checkPnJwt(client: Socket) {
@@ -50,10 +50,36 @@ export class UserService {
       console.log('setIdMap idMap', this.idMap);
     }
 
-    // deleteIdMap(clientId: SocketId) {
-    //   console.log('deleteIdMap', clientId);
-    //   this.idMap.delete(clientId);
-    // }
+    setUserInfoChatRoomList(intraId: IntraId, channelId: string) {
+      const userInfo = this.getUser(intraId);
+      if (!userInfo) {
+        console.error(`User with intraId ${intraId} not found.`);
+        return;
+      }
+      if (!userInfo.chatRoomList) {
+        userInfo.chatRoomList = [];
+      }
+
+      userInfo.chatRoomList.push(channelId);
+      this.setUserMap(intraId, userInfo);
+      console.log('setUserInfoChatRoomList userMap', this.userMap);
+    }
+
+    deleteUserInfoChatRoomList(intraId: IntraId, channelId: string) {
+      const userInfo = this.getUser(intraId);
+      if (!userInfo) {
+        console.error(`User with intraId ${intraId} not found.`);
+        return;
+      }
+
+      if (!userInfo.chatRoomList || userInfo.chatRoomList.length === 0) {
+        console.warn(`User with intraId ${intraId} has no chat rooms to delete.`);
+        return;
+      }
+
+      userInfo.chatRoomList = userInfo.chatRoomList.filter((remainChannelId) => remainChannelId !== channelId);
+      this.setUserMap(intraId, userInfo);
+    }
 
     deleteIdMap(clientId: SocketId) {
       console.log('deleteIdMap', clientId);
