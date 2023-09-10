@@ -1,9 +1,12 @@
+import FeatureLinkList from '@/_components/FeatureLinkList';
 import useAuth from '@/context/useAuth';
 
 export default function Home() {
   useAuth();
 
   return (
-    <h1>Hello World</h1>
+    <>
+      <FeatureLinkList /> 
+    </>
   );
 }

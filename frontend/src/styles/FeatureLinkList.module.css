@@ -1,0 +1,33 @@
+/* styles.module.css */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.linkList {
+  list-style: none;
+  padding: 0;
+  display: flex
+}
+
+.linkItem {
+  margin-right: 20px;
+  font-size: xx-large;
+}
+
+.linkItem:last-child {
+  margin-right: 0;
+}
+
+.linkItem>div {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+.linkItem>div:hover {
+  color: #0070f3;
+  /* 이 부분은 링크에 호버 효과를 줄 색상을 지정합니다. */
+}
