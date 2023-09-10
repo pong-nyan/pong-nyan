@@ -51,27 +51,31 @@ export class UserService {
     }
 
     setUserInfoChatRoomList(intraId: IntraId, channelId: string) {
+      console.log('setUserInfoChatRoomList', intraId, channelId);
       const userInfo = this.getUser(intraId);
+      console.log('setUserInfoChatRoomList userInfo', userInfo);
       if (!userInfo) {
         console.error(`User with intraId ${intraId} not found.`);
-        return;
+        return ;
       }
       if (!userInfo.chatRoomList) {
         userInfo.chatRoomList = [];
       }
 
-      userInfo.chatRoomList.push(channelId);
+      if (!userInfo.chatRoomList.includes(channelId)) {
+        userInfo.chatRoomList.push(channelId);
+      }
       this.setUserMap(intraId, userInfo);
       console.log('setUserInfoChatRoomList userMap', this.userMap);
     }
 
     deleteUserInfoChatRoomList(intraId: IntraId, channelId: string) {
+      console.log('deleteUserInfoChatRoomList', intraId, channelId);
       const userInfo = this.getUser(intraId);
       if (!userInfo) {
         console.error(`User with intraId ${intraId} not found.`);
-        return;
+        return ;
       }
-
       if (!userInfo.chatRoomList || userInfo.chatRoomList.length === 0) {
         console.warn(`User with intraId ${intraId} has no chat rooms to delete.`);
         return;
@@ -79,6 +83,7 @@ export class UserService {
 
       userInfo.chatRoomList = userInfo.chatRoomList.filter((remainChannelId) => remainChannelId !== channelId);
       this.setUserMap(intraId, userInfo);
+      console.log('deleteUserInfoChatRoomList userMap', this.userMap);
     }
 
     deleteIdMap(clientId: SocketId) {
@@ -89,7 +94,6 @@ export class UserService {
         console.log(`Failed to delete clientId: ${clientId}`);
       }
     }
-
 
     deleteUserMap(clientId: SocketId) {
       // TODO: 다시 생각해보기
@@ -112,7 +116,11 @@ export class UserService {
       return this.getUser(intraId);
     }
 
-    getUser(intraId: number) {
+    getUser(intraId: IntraId) {
         return this.userMap.get(intraId);
+    }
+
+    getUserInfoChatRoomList(intraId: IntraId) {
+      return this.getUser(intraId).chatRoomList;
     }
 }
