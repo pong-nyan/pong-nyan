@@ -12,10 +12,10 @@ import { GameService } from './game.service';
 import { BallInfo, PlayerNumber, Score } from 'src/type/gameType';
 import { UseGuards } from '@nestjs/common';
 import { UserService } from 'src/user.service';
-import { PnJwtPayload, PnPayloadDto } from './game.dto';
-import { GatewayGuard } from 'src/context/gateway.guard';
+import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
+import { PnJwtPayload, PnPayloadDto } from 'src/dto/pnPayload.dto';
 
-@UseGuards(GatewayGuard)
+@UseGuards(Gateway2faGuard)
 @WebSocketGateway({
   cors: { origin: '*' },
   path: '/socket/',
@@ -75,7 +75,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const userInfo = this.userService.getUserInfo(payload.intraId);
     if (!userInfo) return ;
 
-    const [ roomName, player1Id, player2Id ] = this.gameService.match(client, 0, payload.nickname);
+    const [ roomName, player1Id, player2Id ] = this.gameService.match(client, payload.nickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;
     this.server.to(roomName).emit('game-randomStart-rank-pn', {player1Id, player2Id});

@@ -15,7 +15,7 @@ export class GameService {
     private readonly userRepository: Repository<User>
   ) { }
 
-  public match(client: Socket, gameStatusIndex: GameStatus, nickname: string) {
+  public match(client: Socket, nickname: string) {
     // this.matchingList[gameStatusIndex].push({client, nickname});
     this.matchingQueue.push({client, nickname});
     if (this.matchingQueue.length > 1) {
@@ -124,7 +124,6 @@ export class GameService {
 
   /* -------------------------------------------------------------------- */
 
-  private matchingQueueList: MatchingQueue[] = [];
   private matchingQueue: QueueInfo[] = [];
   // TODO: 적절하게  recentBallInfo 메모리 관리해야함.
   // IDEA: 게임이 끝나면 삭제하는 방법

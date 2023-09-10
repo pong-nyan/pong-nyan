@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserInfo, IntraId} from 'src/type/userType';
 import { SocketId, Socket } from 'src/type/socketType';
 import { JwtService } from '@nestjs/jwt';
-import { PnPayloadDto } from 'src/chat/channel.dto';
+import { PnPayloadDto } from 'src/dto/pnPayload.dto';
 import * as cookie from 'cookie';
 
 @Injectable()

@@ -2,14 +2,14 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import * as cookie from 'cookie';
-import { PnPayloadDto } from './game.dto';
+import { PnPayloadDto } from 'src/dto/pnPayload.dto';
 
 /**
  * GameGuard
  * description: pn-jwt 를 decode 하여 payload 를 client.user 에 저장함.
  */
 @Injectable()
-export class GatewayGuard implements CanActivate {
+export class Gateway2faGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
   ) {}

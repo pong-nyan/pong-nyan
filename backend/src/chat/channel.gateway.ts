@@ -3,9 +3,8 @@ import { ChannelService } from './channel.service';
 import { ChannelInfo } from 'src/type/chatType';
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
-import { ChannelGuard } from './channel.guard';
-import { GatewayGuard } from 'src/context/gateway.guard';
-import { PnJwtPayload, PnPayloadDto } from 'src/chat/channel.dto';
+import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
+import { PnJwtPayload, PnPayloadDto } from 'src/dto/pnPayload.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as cookie from 'cookie';
 import { UserService } from 'src/user.service';
@@ -15,7 +14,7 @@ import { UserService } from 'src/user.service';
   path: '/socket/',
   cookie: true,
 })
-@UseGuards(GatewayGuard)
+@UseGuards(Gateway2faGuard)
 export class ChannelGateway {
   constructor(private readonly channelService: ChannelService,
     private readonly jwtService: JwtService,

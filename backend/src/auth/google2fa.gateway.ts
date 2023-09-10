@@ -1,12 +1,11 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'src/type/socketType';
 import { UserService } from 'src/user.service';
-import { PnJwtPayload, PnPayloadDto } from 'src/game/game.dto';
+import { PnJwtPayload, PnPayloadDto } from 'src/dto/pnPayload.dto';
 import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { GatewayGuard } from 'src/context/gateway.guard';
+import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
 
-@UseGuards(GatewayGuard)
+@UseGuards(Gateway2faGuard)
 @WebSocketGateway({
   cors: { origin: '*' },
   path: '/socket/',
