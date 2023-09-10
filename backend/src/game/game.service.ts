@@ -3,7 +3,8 @@ import { Game } from 'src/entity/Game';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Socket, RoomName } from 'src/type/socketType';
-import { BallInfo, GameInfo, QueueInfo, PlayerNumber, Score, RoomName } from 'src/type/gameType';
+import { BallInfo, GameInfo, QueueInfo, PlayerNumber, Score } from 'src/type/gameType';
+import { User } from 'src/entity/User';
 
 @Injectable()
 export class GameService {

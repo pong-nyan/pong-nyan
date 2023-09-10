@@ -10,13 +10,13 @@ import { UserModule } from 'src/user.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ Game ]),
+    TypeOrmModule.forFeature([ Game, User ]),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d'}
     }),
     UserModule],
-  providers: [GameService, GameGateway],
+  providers: [GameService, GameGateway, UserService],
 })
 export class GameModule {}

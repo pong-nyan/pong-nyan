@@ -7,7 +7,6 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './config/datasource';
 import { ChatModule } from './chat/chat.module';
 import { AppGateway } from './app.gateway';
-import { UserMapService } from './user.map.service';
 import { ChannelModule } from './chat/channel.module';
 import { RankModule } from './rank/rank.module';
 import { UserModule } from './user.module';
