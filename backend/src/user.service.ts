@@ -18,26 +18,26 @@ export class UserService {
       console.log('cookies', cookies);
       if (!cookies) {
         console.error('Cookies not found');
-        return false;
+        return undefined;
       }
       const pnJwtCookie = cookie.parse(cookies)['pn-jwt'];
 
       if (!pnJwtCookie) {
         console.error('JWT not found');
-        return false;
+        return undefined;
       }
       try {
         const payload: PnPayloadDto = this.jwtService.verify<PnPayloadDto>(pnJwtCookie);
         if (payload.exp * 1000 < Date.now()) {
           console.error('JWT expired');
-          return false;
+          return undefined;
         }
         console.log('client', client.id);
+        return payload;
       } catch (err) {
         console.error('JWT verification failed', err);
-        return false;
+        return undefined;
       }
-      return true;
     }
 
     setUserMap(intraId : IntraId, userInfo: UserInfo) {
