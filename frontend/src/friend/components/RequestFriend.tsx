@@ -13,7 +13,6 @@ const RequestFriend = () => {
 
   return (
     <>
-      <h1>Request Friend</h1>
       <form onSubmit={handleSubmit}>
         <label>친구요청할 친구의 nickname</label>
         <input
