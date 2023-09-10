@@ -15,15 +15,4 @@ export class Google2faGateway {
     console.log('handleAuthSetMap client.id intraId', client.id, payload.intraId);
     this.userService.setIdMap(client.id, payload.intraId);
   }
-
-  // @SubscribeMessage('auth-set-map-payload')
-  // handleAuthSetMapPayload(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
-  //   console.log('handleAuthSetMapPayload client.id', client.id);
-  //   if (!payload) {
-  //     console.log('payload null', payload);
-  //     return ;
-  //   }
-  //   console.log('handleAuthSetMapPayload client.id intraId', client.id, payload.intraId);
-  //   this.userService.setIdMap(client.id, payload.intraId);
-  // }
 }
