@@ -1,4 +1,4 @@
-import { RankUserProps } from '../../type/rankType';
+import { RankUserProps } from '@/type/rankType';
 import styles from '@/rank/styles/Rank.module.css';
 
 const RankUser = ({ rankUser, rank }: RankUserProps) => {
