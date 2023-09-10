@@ -28,7 +28,7 @@ export class User {
     @Column({ nullable: true })
     google2faSecret: string;
 
-    @Column({ nullable: true, default: false })
+    @Column({ default: false })
     google2faEnable: boolean;
 
     @OneToMany(() => Game, game => game.winner)
