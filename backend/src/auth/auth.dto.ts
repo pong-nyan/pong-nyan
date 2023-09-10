@@ -29,7 +29,6 @@ export class SignupDto {
     @IsNotEmpty()
     @IsString()
     nickname: string;
-    @IsNotEmpty()
     @IsString()
     avatar: string;
 }
