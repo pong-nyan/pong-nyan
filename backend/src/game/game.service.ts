@@ -4,10 +4,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Socket, RoomName } from 'src/type/socketType';
 import { BallInfo, GameInfo, QueueInfo, PlayerNumber, Score } from 'src/type/gameType';
+import { User } from 'src/entity/User';
 
 @Injectable()
 export class GameService {
-  constructor(@InjectRepository(Game) private readonly gameRepository: Repository<Game>) { }
+  constructor(
+    @InjectRepository(Game)
+    private readonly gameRepository: Repository<Game>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
+  ) { }
 
   // TODO: matchingQueue 확인해야함
   matchingQueue: QueueInfo[] = [];
@@ -104,14 +110,26 @@ export class GameService {
     console.log(this.matchingQueue.length);
   }
 
-    async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
-        await this.gameRepository.insert({ winner, loser, gameMode, rankScore, gameInfo });
+  async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
+    if (!winner || !loser) return;
+    const winnerUser = await this.userRepository.findOne( { where: { intraId: winner } });
+    const loserUser = await this.userRepository.findOne({ where: { intraId: loser } });
+    if (!winnerUser || !loserUser) return;
+    winnerUser.rankScore += rankScore;
+    loserUser.rankScore -= rankScore;
+    await this.userRepository.save(winnerUser);
+    await this.userRepository.save(loserUser);
+    await this.gameRepository.save({ winner: winnerUser, loser: loserUser, gameMode, rankScore, gameInfo });
+  }
+
+  async getMyGameInfo(intraId: number) {
+      if (!intraId) return null;
+      const user = await this.userRepository.findOne( { where: { intraId }, relations: ['winnerGames', 'loserGames'] } );
+      if (!user) return null;
+      const winnerGames = user.winnerGames;
+      const loserGames = user.loserGames;
+      return { winnerGames, loserGames };
     }
 
-    async getMyGameInfo(intraId: number) {
-        if (!intraId) return null;
-        return await this.gameRepository.find({ where: [{ winner: intraId }, { loser: intraId }] });
-    }
 }
-
 
