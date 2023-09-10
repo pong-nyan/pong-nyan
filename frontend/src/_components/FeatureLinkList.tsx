@@ -2,9 +2,9 @@ import Link from 'next/link';
 import styles from '@/styles/FeatureLinkList.module.css';
 
 const FeatureLinkList = () => {
-  const features = [{ id: 1, name: 'rank', path: '/rank' },
-    { id: 2, name: 'game', path: '/game' },
-    { id: 3, name: 'chat', path: '/channel/list' },  
+  const features = [{ id: 1, name: 'Rank', path: '/rank' },
+    { id: 2, name: 'Game', path: '/game' },
+    { id: 3, name: 'Chat', path: '/channel/list' },  
   ];
     
   return (
