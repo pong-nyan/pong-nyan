@@ -1,7 +1,6 @@
 export type RankUserType = {
     nickname: string;
     rankScore: number;
-    rank: number;
 };
 
 export type RankUserListProps = {
