@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entity/User';
+import { VRanking } from 'src/entity/VRanking';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class RankService {
-    constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) { }
+    constructor(@InjectRepository(VRanking) private readonly vRankingRepository: Repository<VRanking>) { }
 
     async getRankInPage(page: number) {
-        const [rankUser, total] = await this.userRepository.findAndCount({
+        const [rankUser, total] = await this.vRankingRepository.findAndCount({
             select: ['intraNickname', 'rankScore'],
-            order: { rankScore: 'DESC' },
             skip: (page - 1) * 10,
             take: 10
         });
