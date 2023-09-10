@@ -3,14 +3,15 @@ import { Game } from 'src/entity/Game';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Socket, RoomName } from 'src/type/socketType';
-import { BallInfo, GameInfo, MatchingQueue, PlayerNumber, Score, GameStatus } from 'src/type/gameType';
+import { BallInfo, GameInfo, QueueInfo, MatchingQueue, PlayerNumber, Score, GameStatus } from 'src/type/gameType';
 
 @Injectable()
 export class GameService {
   constructor(@InjectRepository(Game) private readonly gameRepository: Repository<Game>) { }
 
   // TODO: matchingQueue 확인해야함
-  matchingList: MatchingQueue[] = [];
+  matchingQueueList: MatchingQueue[] = [];
+  matchingQueue: QueueInfo[] = [];
   // TODO: 적절하게  recentBallInfo 메모리 관리해야함.
   // IDEA: 게임이 끝나면 삭제하는 방법
   recentBallInfoMap = new Map<RoomName, BallInfo>();
@@ -18,8 +19,8 @@ export class GameService {
 
 
   match(client: Socket, gameStatusIndex: GameStatus, nickname: string) {
-    this.matchingList[gameStatusIndex].push({client, nickname});
-    this.matchingQueue.push();
+    // this.matchingList[gameStatusIndex].push({client, nickname});
+    this.matchingQueue.push({client, nickname});
     if (this.matchingQueue.length > 1) {
       const player1 = this.matchingQueue.shift();
       const player2 = this.matchingQueue.shift();
