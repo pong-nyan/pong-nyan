@@ -12,6 +12,9 @@ export class UserService {
     userMap = new Map<number, UserInfo>();
     idMap = new Map<SocketId, IntraId>();
 
+    getIntraId(clientId: SocketId) { return this.idMap.get(clientId); }
+    getUserInfo(intraId: number) { return this.userMap.get(intraId); }
+
     checkPnJwt(client: Socket) {
       console.log('in the checktPnJwt');
       const cookies = client.handshake.headers.cookie;
@@ -64,7 +67,6 @@ export class UserService {
       }
     }
 
-
     deleteUserMap(clientId: SocketId) {
       // TODO: 다시 생각해보기
       console.log('deleteUserMap', clientId);
@@ -73,20 +75,13 @@ export class UserService {
       // this.userService.deleteUserMap(intraId);
     }
 
-    getIntraId(clientId: SocketId) {
-      console.log('getIntraId clientId', clientId);
-      console.log('getIntraId', this.idMap.get(clientId));
-      console.log('getIntraId idMap', this.idMap);
-
-      return this.idMap.get(clientId);
+    leaveGameRoom(intraId: IntraId) {
+      const userInfo = this.userMap.get(intraId);
+      if (!userInfo) return ;
+      userInfo.gameRoom = '';
     }
 
-    getUserInfo(clientId: SocketId) {
-      const intraId = this.getIntraId(clientId);
-      return this.getUser(intraId);
-    }
 
-    getUser(intraId: number) {
-        return this.userMap.get(intraId);
-    }
+    /* -------------------------------------------------------------------- */
+
 }
