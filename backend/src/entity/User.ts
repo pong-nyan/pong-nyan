@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, JoinTable, DeleteDateColumn, Generated } from 'typeorm';
 import { Game } from './Game';
+import Friend from './Friend';
 
 @Entity()
 export class User {
@@ -43,5 +44,10 @@ export class User {
     updatedAt: Date;
 
     @DeleteDateColumn({ type: 'timestamp', nullable: true })
-    deletedAt: Date;
+
+    @OneToMany(() => Friend, friend => friend.requestUser)
+    requestFriends: Friend[];
+
+    @OneToMany(() => Friend, friend => friend.addressUser)
+    addressFriends: Friend[]; deletedAt: Date;
 }
