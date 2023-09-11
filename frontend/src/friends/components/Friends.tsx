@@ -1,6 +1,7 @@
 import styles from '@/friends/styles/Friends.module.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Friend from './Friend';
 
 // TODO: type 분리 해야함!!!!!
 type FriendsProps = {
@@ -32,20 +33,21 @@ const Friends = ({ intraId } : FriendsProps) => {
     }
   }, [ intraId ]);
 
-  if (friends === null) {
-    return (
-      <div className={styles.friends}>
-        <h1>너 친구도 없냐? ㅋㅋㅋ</h1>
-      </div>
-    );
-  }
+  // if (friends === null) {
+  //   return (
+  //     <div className={styles.friends}>
+  //       <h1>너 친구도 없냐? ㅋㅋㅋ</h1>
+  //     </div>
+  //   );
+  // }
 
   //친구를 출력한다. 
   // ---- //
   return (
     <>
-      <h1>친구</h1>
-      <ol>
+      <h1 className={styles.profile}>Friends List</h1>
+      <Friend intraId={0}/>
+      {/* <ol>
         {friends.map((friend) => (
           <li key={friend.intraId}>
             <div className={styles.friend}>
@@ -57,7 +59,7 @@ const Friends = ({ intraId } : FriendsProps) => {
             </div>
           </li>
         ))}
-      </ol>
+      </ol> */}
     </>
   );
 };

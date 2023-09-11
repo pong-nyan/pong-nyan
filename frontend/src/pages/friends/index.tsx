@@ -1,9 +1,10 @@
+import Friend from "@/friends/components/Friend";
 import Friends from "@/friends/components/Friends";
 
 const FriendsPage = () => {
   return (
     <div>
-      <Friend intraId={0} />
+      <Friends intraId={0} />
     </div>
   );
 };
