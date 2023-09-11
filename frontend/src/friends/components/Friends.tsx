@@ -2,6 +2,7 @@ import styles from '@/friends/styles/Friends.module.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Friend from './Friend';
+import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
 
 // TODO: type 분리 해야함!!!!!
 type FriendsProps = {
@@ -60,6 +61,7 @@ const Friends = ({ intraId } : FriendsProps) => {
           </li>
         ))}
       </ol> */}
+      <NavButtonWrapper />
     </>
   );
 };
