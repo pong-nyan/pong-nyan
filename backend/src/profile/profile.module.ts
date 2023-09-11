@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/entity/User';
+import { Game } from 'src/entity/Game';
 
 @Module({
- // TODO: after table setting, change this code
-  imports: [],
+  imports: [TypeOrmModule.forFeature([ User, Game ])],
   controllers: [ProfileController],
   providers: [ProfileService]
 })
