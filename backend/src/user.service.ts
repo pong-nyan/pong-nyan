@@ -51,7 +51,7 @@ export class UserService {
     }
     setUserInfoChatRoomList(intraId: IntraId, channelId: string) {
       console.log('setUserInfoChatRoomList', intraId, channelId);
-      const userInfo = this.getUser(intraId);
+      const userInfo = this.getUserInfo(intraId);
       console.log('setUserInfoChatRoomList userInfo', userInfo);
       if (!userInfo) {
         console.error(`User with intraId ${intraId} not found.`);
@@ -70,7 +70,7 @@ export class UserService {
 
     deleteUserInfoChatRoomList(intraId: IntraId, channelId: string) {
       console.log('deleteUserInfoChatRoomList', intraId, channelId);
-      const userInfo = this.getUser(intraId);
+      const userInfo = this.getUserInfo(intraId);
       if (!userInfo) {
         console.error(`User with intraId ${intraId} not found.`);
         return ;
