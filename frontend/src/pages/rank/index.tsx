@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { RankUserType } from '@/type/rankType';
 import axios from 'axios';
 import Pagination from '@/rank/components/Pagination';
+import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
 
 const RankPage = () => {
   const [rankUsers, setRankUsers] = useState<RankUserType[]>([]);
@@ -36,6 +37,7 @@ const RankPage = () => {
       <h1>Rank Page</h1>
       <RankUserList rankUserList={rankUsers} currentPage={currentPage} />
       <Pagination currentPage={currentPage} handleCurrentPage={handleCurrentPage} />
+      <NavButtonWrapper />
     </div>
   );
 };

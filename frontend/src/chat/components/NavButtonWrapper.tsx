@@ -44,6 +44,20 @@ const GameButton = () => {
   );
 };
 
+const FriendsButton = () => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const intraId = user.intraId;
+  const redirection = `/friends/${intraId}`;
+
+  return (
+    <button style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <Link href={redirection}>
+        <Image src="/assets/friends.png" alt="friends" fill style={{ objectFit: 'contain' }} />
+      </Link>
+    </button>
+  );
+};
+
 const NavButtonWrapper = () => {
   return (
     <nav className={styles.navButtonWrapper}>{/* 하단 네비게이션 최상위 태그 */}
@@ -51,6 +65,7 @@ const NavButtonWrapper = () => {
       <ListButton />
       <PublicChannelListButton />
       <GameButton />
+      <FriendsButton />
     </nav>
   );
 };
