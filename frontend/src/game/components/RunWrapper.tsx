@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from 'react';
 import Run from './Run';
 import CountDown from './CountDown';
-import { PlayerNumber, Score } from '@/type/gameType';
+import { PlayerNumber, Score, GameStatus } from '@/type/gameType';
 
-const RunWrapper = ({ setGameStatus, playerNumber, opponentId, score, setScore}
-    : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber | undefined, opponentId: string | undefined, score: Score, setScore: Dispatch<SetStateAction<Score>> } ) => {
+const RunWrapper = ({ gameStatus, setGameStatus, playerNumber, opponentId, score, setScore}
+    : { gameStatus: GameStatus, setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber | undefined, opponentId: string | undefined, score: Score, setScore: Dispatch<SetStateAction<Score>> } ) => {
 
   return (
     <div style={{ position: 'relative' }}>

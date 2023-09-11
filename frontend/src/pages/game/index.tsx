@@ -20,13 +20,13 @@ export default function Game(): JSX.Element {
     return (<Start gameStatus={gameStatus} setGameStatus={setGameStatus} setPlayerNumber={setPlayerNumber} setOpponentId={setOpponentId} />);
   // TODO: 각  모드에 맞게  수정  필요
   case GameStatus.RankPnRun:
-    return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);
+    return (<RunWrapper gameStatus={gameStatus} setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);
   case GameStatus.NormalPnRun:
-    return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);
+    return (<RunWrapper gameStatus={gameStatus} setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);
   case GameStatus.RankOriginRun:
-    return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);
+    return (<RunWrapper gameStatus={gameStatus} setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);
   case GameStatus.NormalOriginRun:
-    return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);
+    return (<RunWrapper gameStatus={gameStatus} setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore}/>);
   case GameStatus.End:
     return (<End setGameStatus={setGameStatus} setPlayerNumber={setPlayerNumber} />);
   default:

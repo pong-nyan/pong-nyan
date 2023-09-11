@@ -3,7 +3,7 @@ import { Game } from 'src/entity/Game';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Socket, RoomName } from 'src/type/socketType';
-import { BallInfo, GameInfo, QueueInfo, PlayerNumber, Score } from 'src/type/gameType';
+import { BallInfo, GameInfo, QueueInfo, PlayerNumber, GameStatus } from 'src/type/gameType';
 import { IntraId, UserInfo } from 'src/type/userType';
 import { User } from 'src/entity/User';
 import { UserService } from 'src/user.service';
@@ -22,7 +22,7 @@ export class GameService {
     const userInfo = this.userService.getUserInfo(intraId);
     if (!userInfo) return ;
     console.log('userInfo', userInfo);
-    // this.matchingList[gameStatusIndex].push({client, nickname});
+    // this.matchingQueueList[gameStatusIndex].push({client, nickname});
     this.matchingQueue.push({client, nickname, intraId});
     if (this.matchingQueue.length > 1) {
       const player1 = this.matchingQueue.shift();
@@ -39,9 +39,9 @@ export class GameService {
       const player1Id = player1.client.id;
       const player2Id = player2.client.id;
       this.gameMap.set(roomName, {
-        roomName,
         gameStatus: gameStatusIndex + 1,
         clientId: { p1: player1.client.id, p2: player2.client.id },
+        intraId: { p1: player1.intraId, p2: player2.intraId },
         score: { p1: 0, p2: 0 },
         nickname: { p1: player1.nickname, p2: player2.nickname },
         waitList: [],
@@ -72,9 +72,9 @@ export class GameService {
       const player1Id = player1.client.id;
       const player2Id = player2.client.id;
       this.gameMap.set(roomName, {
-        roomName,
-        gameStatus: gameStatusIndex + 1,
+        gameStatus: GameStatus.NormalPnRun,
         clientId: { p1: player1.client.id, p2: player2.client.id },
+        intraId: { p1: player1.intraId, p2: player2.intraId },
         score: { p1: 0, p2: 0 },
         nickname: { p1: player1.nickname, p2: player2.nickname },
         waitList: [],
@@ -107,7 +107,7 @@ export class GameService {
     return this.gameMap.get(roomName);
   }
 
-  public isReadyScoreCheck(gameInfo: GameInfo, playerNumber: PlayerNumber, score: Score): boolean {
+  public isReadyScoreCheck(gameInfo: GameInfo, playerNumber: PlayerNumber, score: { p1: number, p2: number}): boolean {
     if (!gameInfo.waitList.some(item => item.playerNumber === playerNumber)) {
       console.log('INFO: 점수 체크 준비', playerNumber, score);
       gameInfo.waitList.push({playerNumber, score: score});
@@ -171,6 +171,23 @@ export class GameService {
     const winnerGames = user.winnerGames;
     const loserGames = user.loserGames;
     return { winnerGames, loserGames };
+  }
+
+  public findGameRoomByNickname(nickname: string) {
+    console.log('findGameRoomByNickname', this.gameMap.values());
+    for (const gameInfo of this.gameMap.values()) {
+      console.log('gameInfo', gameInfo);
+      if (gameInfo.nickname.p1 && gameInfo.nickname.p2) {
+        if (gameInfo.nickname.p1 === nickname || gameInfo.nickname.p2 === nickname) {
+          return gameInfo;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  public deleteGameRoom(roomName: RoomName) {
+    this.gameMap.delete(roomName);
   }
 
   /* -------------------------------------------------------------------- */

@@ -39,9 +39,9 @@ export class UserService {
     }
 
     public setUserMap(intraId : IntraId, userInfo: UserInfo) {
-      console.log('(Before) setUserMap : ', this.userMap);
+      // console.log('(Before) setUserMap : ', this.userMap);
       this.userMap.set(intraId, userInfo);
-      console.log('(After) setUserMap : ', this.userMap);
+      // console.log('(After) setUserMap : ', this.userMap);
     }
 
     public setUniqueValue(clientId: SocketId, intraId: IntraId) {
@@ -55,10 +55,10 @@ export class UserService {
     }
 
     public setIdMap(clientId: SocketId, intraId: IntraId) {
-      console.log('(Before) setIdMap idMap : ', this.idMap);
+      // console.log('(Before) setIdMap idMap : ', this.idMap);
       this.setUniqueValue(clientId, intraId);
       this.idMap.set(clientId, intraId);
-      console.log('(After) setIdMap idMap : ', this.idMap);
+      // console.log('(After) setIdMap idMap : ', this.idMap);
     }
 
     public setUserInfoChatRoomList(intraId: IntraId, channelId: string) {
@@ -97,18 +97,14 @@ export class UserService {
       console.log('deleteUserInfoChatRoomList userMap', this.userMap);
     }
 
-    deleteUserMap(clientId: SocketId) {
-      // TODO: 다시 생각해보기
-      console.log('deleteUserMap', clientId);
-      // const intraId = this.idMap.get(clientId);
-      // this.idMap.delete(clientId);
-      // this.userService.deleteUserMap(intraId);
-    }
+    // deleteUserMap(clientId: SocketId) {
+    //   // this.userService.deleteUserMap(intraId);
+    // }
 
     public deleteIdMap(clientId: SocketId) {
-      console.log('(Before) deleteIdMap : ', this.idMap);
+      // console.log('(Before) deleteIdMap : ', this.idMap);
       this.idMap.delete(clientId);
-      console.log('(After) deleteIdMap : ', this.idMap);
+      // console.log('(After) deleteIdMap : ', this.idMap);
     }
 
     public setGameRoom(intraId: IntraId, roomName: string) {
