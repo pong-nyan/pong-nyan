@@ -4,6 +4,11 @@ export type Game = {
     gameInfo: JSON;
 };
 
+export enum GameModeEnum {
+    Normal = 0,
+    Rank = 1
+}
+
 export type ProfileProps = {
     nickname: string;
   };
@@ -13,7 +18,7 @@ export type ProfileData = {
     avatar: string;
     nickname: string;
     rankScore: number;
-    winnerGames: Game;
-    loserGames: Game;
+    winnerGames: Game[];
+    loserGames: Game[];
 };
-  
+ 
