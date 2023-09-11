@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import SendMessageButton from './SendMessageButton';
-import { socket } from '@/context/socket';
+import { SocketContext } from '@/context/socket';
 
 function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: string, selectedChannel: { title: string }, onLeaveChannel: () => void }) {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [channelUsers, setChannelUsers] = useState<string[]>([]);
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
     socket.on('chat-new-message', (message) => {

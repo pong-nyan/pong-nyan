@@ -1,11 +1,14 @@
-import { Column, CreateDateColumn, ManyToOne, } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, } from 'typeorm';
 import { User } from './User';
 import Friend from './Friend';
 
-
+@Entity()
 export default class FriendStatus {
-    @ManyToOne(() => Friend)
+    @PrimaryGeneratedColumn()
     id : number;
+
+    @ManyToOne(() => Friend, friend => friend.id)
+    friend : Friend;
 
     @Column()
     status: number;
