@@ -12,7 +12,7 @@ import { resumeGame, waitPlayer } from '@/game/logic/resumeGame';
  * @param gameStatus: GameStatus
  * @returns
  */
-export const socketEmitGameStartEvent = (socket: Socket, gameStatus: GameStatus) => {
+export const socketEmitGameStartEvent = (gameStatus: GameStatus) => {
   socket.emit('game-start', {
     gameStatus,
   });
