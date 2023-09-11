@@ -42,7 +42,7 @@ export class Google2faController {
       await this.authService.enableTwoFactorAuthentication(user);
       response.cookie('pn-jwt', jwt, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
 
-      this.userService.setUserMap(intraId, { nickname: user.nickname, chatRoomList: [], gameRoom: ''});
+      this.userService.setUserMap(intraId, { nickname: user.nickname, chatRoomList: [], gameRoom: '', online: false});
 
       return response.status(HttpStatus.ACCEPTED).send({ exp: decodedJwt.exp, nickname: decodedJwt.nickname, intraId: decodedJwt.intraId });
     }

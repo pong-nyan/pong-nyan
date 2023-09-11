@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserInfo, IntraId} from 'src/type/userType';
 import { SocketId, Socket } from 'src/type/socketType';
 import { JwtService } from '@nestjs/jwt';
@@ -8,7 +8,12 @@ import * as cookie from 'cookie';
 
 @Injectable()
 export class UserService {
-    constructor(private readonly jwtService: JwtService) {}
+    constructor(
+      private readonly jwtService: JwtService,
+      ) {}
+
+    private userMap = new Map<IntraId, UserInfo>();
+    private idMap = new Map<SocketId, IntraId>();
 
     public getIntraId(clientId: SocketId) { return this.idMap.get(clientId); }
     public getUserInfo(intraId: number) { return this.userMap.get(intraId); }
@@ -115,7 +120,14 @@ export class UserService {
 
     /* -------------------------------------------------------------------- */
 
-    private userMap = new Map<IntraId, UserInfo>();
-    private idMap = new Map<SocketId, IntraId>();
+    public getUserInfoByIntraIdList(intraIdList: IntraId[]) {
+      if (!intraIdList) return [];
+      const userNicknameList = [];
+      for (const intraId of intraIdList) {
+        userNicknameList.push((this.userMap.get(intraId)).nickname);
+      }
+
+    }
+
 
 }
