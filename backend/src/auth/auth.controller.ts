@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from './auth.guard';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { RedirectDto, DefaultDto, CodeDto, CookieValue, SignupDto } from './auth.dto';
 
 @Controller('auth')
@@ -44,6 +44,7 @@ export class AuthController {
 
     @Post('signup')
     @ApiOperation({ summary: 'signup', description: '회원가입을 진행한다.' })
+    @ApiBody({ type: SignupDto })
     @ApiResponse({ status: HttpStatus.CREATED, type: DefaultDto, description: '회원가입 성공. qr 등록하러 이동'})
     async signUp(@CookieValue() accessToken: string, @Body() signupDto: SignupDto) {
         const userInfo = await this.authService.getUserInfoFromToken(accessToken);

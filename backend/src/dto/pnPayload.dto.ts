@@ -1,9 +1,11 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class PnPayloadDto {
   @IsNotEmpty()
   @IsNumber()
+  @Transform(({ value }) => { return Number(value);})
   intraId: number;
 
   @IsNotEmpty()
@@ -16,10 +18,12 @@ export class PnPayloadDto {
 
   @IsNotEmpty()
   @IsNumber()
+  @Transform(({ value }) => { return Number(value);})
   iat: number;
 
   @IsNotEmpty()
   @IsNumber()
+  @Transform(({ value }) => { return Number(value);})
   exp: number;
 }
 

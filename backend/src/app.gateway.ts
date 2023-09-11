@@ -25,7 +25,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(@ConnectedSocket() client: Socket) {
     console.log('[AppGateway] Connection ', client.id);
-    const pnPayload = this.userService.checkPnJwt(client)
+    const pnPayload = this.userService.checkPnJwt(client);
     if (!pnPayload) return;
     this.userService.setIdMap(client.id, pnPayload.intraId);
 
@@ -34,18 +34,27 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
      */
     const userInfo = this.userService.getUserInfo(pnPayload.intraId);
     if (userInfo) {
-      console.log('[AppGateway] YES userInfo');
+      console.log('>>> [AppGateway] YES userInfo');
+      this.userService.setUserMap(pnPayload.intraId, { ...userInfo, online: true });
       return;
     }
     console.log('[AppGateway] new setUserMap');
     this.userService.setUserMap(pnPayload.intraId, {
       nickname: pnPayload.nickname,
       chatRoomList: [],
-      gameRoom: ''
+      gameRoom: '',
+      online: true,
     });
+    console.log('>>> [AppGateway] setUserMap done', this.userService.getUserInfo(pnPayload.intraId));
   }
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     console.log('[AppGateway] Disconnection ', client.id);
+    const intraId = this.userService.getIntraId(client.id);
+    const userInfo = this.userService.getUserInfo(intraId);
+    const updateUserInfo = { ...userInfo, online: false };
+    console.log('>>> [AppGateway] setUserMap', updateUserInfo);
+    this.userService.setUserMap(intraId, updateUserInfo);
+    this.userService.deleteIdMap(client.id);
   }
 }

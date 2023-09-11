@@ -22,7 +22,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ limit: '50mb', extended: true }));
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.use(server);
 
   app.setGlobalPrefix('api');
