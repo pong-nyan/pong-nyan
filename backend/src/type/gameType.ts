@@ -51,6 +51,7 @@ export type ClientId = {
 }
 
 export type GameInfo = {
+  roomName: RoomName,
   gameStatus: GameStatus,
   clientId: ClientId,
   score: Score,

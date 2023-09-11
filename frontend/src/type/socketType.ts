@@ -1,4 +1,7 @@
-export { Socket } from 'socket.io';
+export { Socket } from 'socket.io-client';
+
+
+/* shared between frontend and backend */
 
 export type RoomName = string;
 

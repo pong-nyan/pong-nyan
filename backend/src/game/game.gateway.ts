@@ -14,6 +14,7 @@ import { UseGuards } from '@nestjs/common';
 import { UserService } from 'src/user.service';
 import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
 import { PnJwtPayload, PnPayloadDto } from 'src/dto/pnPayload.dto';
+import { GameStatus } from 'src/type/gameType';
 
 @UseGuards(Gateway2faGuard)
 @WebSocketGateway({
@@ -40,33 +41,35 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log('[GameGateway] have a userInfo', client.id);
     const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
     if (!gameInfo) return ;
-    console.log('[GameGateway] rejoin', userInfo.gameRoom);
     client.join(userInfo.gameRoom);
     console.log('[GameGateway] reconnect', userInfo.gameRoom);
   }
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     console.log('[GameGateway] Disconnection', client.id);
+
     if (!this.userService.checkPnJwt(client)) return ;
-    //
+    console.log('[GameGateway] have pnJwt', client.id);
+
     const intraId = this.userService.getIntraId(client.id);
     if (!intraId) return ;
+
     const userInfo = this.userService.getUserInfo(intraId);
-    if (!userInfo) return ;
-    if (!userInfo.gameRoom) {
-      console.log('[INFO] 게임 방이 없습니다.');
-      this.gameService.removeMatchingClient(client);
-      return ;
-    }
+    if (!userInfo ) return ;
+    console.log('[GameGateway] have userInfo', userInfo);
+
+    this.gameService.removeMatchingClient(client);
+    if (userInfo.gameRoom === '') return ;
+    console.log('[GameGateway] is in gameRoom', userInfo.gameRoom);
+
     const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
-    if (!gameInfo) {
-      this.userService.deleteGameRoom(intraId);
-      return ;
-    }
+    if (!gameInfo) return ;
+    console.log('[GameGateway] emit gameInfo', client.id);
     this.server.to(userInfo.gameRoom).emit('game-disconnect', {
       disconnectNickname: userInfo.nickname,
       gameInfo
     });
+    this.userService.deleteGameRoom(intraId);
   }
 
   // @SubscribeMessage('game-randomStart-normal-orign')
@@ -85,7 +88,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   //
 
   @SubscribeMessage('game-start')
-  handleStartGame(@ConnectedSocket() client: Socket, @MessageBody() payload: any, @PnJwtPayload() pnPayload: PnPayloadDto) {
+  handleStartGame(@ConnectedSocket() client: Socket, @MessageBody() payload: { gameStatus: GameStatus }, @PnJwtPayload() pnPayload: PnPayloadDto) {
     console.log('[Game Gateway] game-start');
     const [ roomName, player1Id, player2Id ] =
       this.gameService.match(client, payload.gameStatus - 1, pnPayload.intraId, pnPayload.nickname);
@@ -109,15 +112,33 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // TODO: sensor에 닿을 시 score 변경
   @SubscribeMessage('game-score')
   handleScore(@ConnectedSocket() client: Socket, @MessageBody() payload: {playerNumber: PlayerNumber, score: Score}, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    console.log('[Game Gateway] game-score');
+    console.log('payload', client.rooms);
     const roomName = this.gameService.getGameRoom(client);
+    console.log('roomName', roomName);
     const gameInfo = this.gameService.getGameInfo(roomName);
+    console.log('gameInfo', gameInfo);
     if (!gameInfo) return ;
+
 
     if (this.gameService.isReadyScoreCheck(gameInfo, payload.playerNumber, payload.score)) {
       const winnerNickname = this.gameService.checkCorrectScoreWhoWinner(gameInfo);
       console.log('INFO: 승자 발견', winnerNickname);
       gameInfo.score = winnerNickname === '' ? gameInfo.score : gameInfo.waitList[0].score;
-      this.server.to(roomName).emit('game-score', { realScore: gameInfo.score, winnerNickname });
+
+      if (gameInfo.score.p1 < 5 && gameInfo.score.p2 < 5) {
+        console.log('INFO: 게임 스코어');
+        this.server.to(roomName).emit('game-score', { realScore: gameInfo.score, winnerNickname });
+      }
+      else { /* 5점 이상일 때 */
+        // DB에 저장
+        console.log('INFO: DB에 저장');
+        if (gameInfo.gameStatus === GameStatus.RankPnRun || gameInfo.gameStatus === GameStatus.RankOriginRun) {
+            // 랭킹에 저장
+            console.log('INFO: 랭킹 업데이트');
+        }
+      }
+      this.server.to(roomName).emit('game-end');
       gameInfo.waitList = [];
     }
   }

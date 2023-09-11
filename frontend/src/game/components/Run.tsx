@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useContext, KeyboardEvent} from 'react';
+import { SocketContext } from '@/context/socket';
 import { Engine, Render, World, Runner, Body } from 'matter-js';
 import { initEngine, initWorld } from '@/game/matterEngine/matterJsSet';
 import { movePlayer, movePaddle, getOwnTarget } from '@/game/matterEngine/player';
@@ -11,6 +12,7 @@ import styles from '@/game/styles/Run.module.css';
 
 const Run = ({ setGameStatus, playerNumber, opponentId, score, setScore}
   : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber | undefined, opponentId: string | undefined, score: Score, setScore: Dispatch<SetStateAction<Score>>}) => {
+  const socket = useContext(SocketContext);
   const scene = useRef<HTMLDivElement>(null);
   const engine = useRef<Engine>();
   const render = useRef<Render>();
@@ -89,8 +91,6 @@ const Run = ({ setGameStatus, playerNumber, opponentId, score, setScore}
     eventOnBeforeUpdate(engine.current);
     eventOnCollisionStart(engine.current, runner.current, playerNumber, setScore);
     eventOnCollisionEnd(engine.current);
-    window.addEventListener('beforeunload', (event) => {
-    });
 
     /* socket on event */
     socketOnGameKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
@@ -110,13 +110,13 @@ const Run = ({ setGameStatus, playerNumber, opponentId, score, setScore}
       render.current.canvas.remove();
       render.current.textures = {};
     };
-  }, [playerNumber, opponentId, setScore, setGameStatus]);
+  }, [socket, playerNumber, opponentId, setScore, setGameStatus]);
 
   useEffect(() => {
     if (!playerNumber) return;
     console.log('INFO: game-score', score);
     socketEmitGameScoreEvent(playerNumber, score);
-  }, [playerNumber, score]);
+  }, [socket, playerNumber, score]);
 
   return (
     <div

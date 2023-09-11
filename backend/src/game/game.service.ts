@@ -35,6 +35,7 @@ export class GameService {
       const player1Id = player1.client.id;
       const player2Id = player2.client.id;
       this.gameMap.set(roomName, {
+        roomName,
         gameStatus: gameStatusIndex + 1,
         clientId: { p1: player1.client.id, p2: player2.client.id },
         score: { p1: 0, p2: 0 },
@@ -74,6 +75,7 @@ export class GameService {
       gameInfo.waitList.push({playerNumber, score: score});
     }
     if (gameInfo.waitList.length != 2) return false;
+    console.log('INFO: 점수 이상 무 ', playerNumber, score);
     return true;
   }
 
@@ -106,6 +108,9 @@ export class GameService {
 
   public removeMatchingClient(client: Socket) {
     this.matchingQueue = this.matchingQueue.filter(item => item.client.id !== client.id);
+    // this.matchingQueueList.forEach((matchingQueue, index) => {
+    //   this.matchingQueueList[index] = matchingQueue.filter(item => item.client.id !== client.id);
+    // });
     console.log(this.matchingQueue.length);
   }
 

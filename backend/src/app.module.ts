@@ -13,7 +13,7 @@ import { UserModule } from './user.module';
 import { ProfileModule } from './profile/profile.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), GameModule, AuthModule, DatabaseModule, ChatModule, ChannelModule, UserModule, RankModule, ProfileModule],
+  imports: [ConfigModule.forRoot(), GameModule, DatabaseModule, ChatModule, ChannelModule, UserModule, RankModule, ProfileModule, AuthModule],
   controllers: [AppController],
   providers: [AppService, AppGateway],
 })

@@ -107,7 +107,6 @@ export class ChannelGateway {
     // if (!userInfo) return ;
     // const intraId = this.userService.getIntraId(client.id);
     // const userInfo = this.userService.getUser(intraId);
-
   }
 }
 

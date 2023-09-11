@@ -47,6 +47,5 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     console.log('[AppGateway] Disconnection ', client.id);
-    this.userService.deleteIdMap(client.id);
   }
 }

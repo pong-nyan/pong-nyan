@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Body, Engine, Runner } from 'matter-js';
-import { socket } from '@/context/socket';
 import { KeyEventMessage, PlayerNumber, Score, GameInfo, CanvasSize, GameStatus } from '@/type/gameType';
-import { Socket } from '@/type/socketType';
+import { SocketId, RoomName } from '@/type/socketType';
+import { socket } from '@/context/socket';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
 import { movePlayer, movePaddle } from '@/game/matterEngine/player';
-import { resumeGame, waitPlayer } from '@/game/logic/resumeGame';
+import { resumeGame } from '@/game/logic/resumeGame';
 
 /**
  * 게임 시작을 서버로 전송합니다.
@@ -13,6 +13,7 @@ import { resumeGame, waitPlayer } from '@/game/logic/resumeGame';
  * @returns
  */
 export const socketEmitGameStartEvent = (gameStatus: GameStatus) => {
+  console.log('socketEmitGameStartEvent', socket, gameStatus);
   socket.emit('game-start', {
     gameStatus,
   });
@@ -120,9 +121,9 @@ export const socketOnGameScoreEvent = (sceneSize: CanvasSize, engine: Engine | u
   });
 };
 
-export const socketEmitGameDisconnectEvent = () => {
-  socket.emit('game-disconnect');
-}
+// export const socketEmitGameDisconnectEvent = (socket: Socket) => {
+//   socket.emit('game-disconnect');
+// }
 
 export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>, setGameStatus: Dispatch<SetStateAction<GameStatus>>) => {
   socket.on('game-disconnect', ( { disconnectNickname, gameInfo } : { disconnectNickname: string, gameInfo: GameInfo } ) => {
@@ -135,7 +136,25 @@ export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engin
   });
 };
 
+export const socketOnGameStartEvent = (setGameStatus: Dispatch<SetStateAction<GameStatus>>, setPlayerNumber: Dispatch<SetStateAction<PlayerNumber>>, setOpponentId: Dispatch<SetStateAction<SocketId>>) => {
+  if (!socket) return;
+  socket.on('game-start', ({ player1Id, player2Id }: {roomName: RoomName, player1Id: string, player2Id: string}) => {
+    if (socket.id === player1Id) { 
+      setPlayerNumber('player1');
+      setOpponentId(player2Id);
+    }
+    else if (socket.id == player2Id){
+      setPlayerNumber('player2');
+      setOpponentId(player1Id);
+    }
+    setGameStatus(GameStatus.RankPnRun);
+  });
+}
 
-
-
+export const socketOnGameLoadingEvent = (setLoading: Dispatch<SetStateAction<boolean>>) => {
+  if (!socket) return;
+  socket.on('game-loading', () => {
+    setLoading(true);
+  });
+}
 

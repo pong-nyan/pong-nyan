@@ -15,7 +15,7 @@ const GameStartWrapper = ({ gameStatus } : { gameStatus: GameStatus }) => {
       <div className={styles.buttonOption}>
         <CatButton
           onClickFunction={() => {
-            socketEmitGameStartEvent(gameStatus); 
+            socketEmitGameStartEvent(GameStatus.RankPnRun); 
           }}
           text="rank pn"
           width={buttonWidth}
@@ -23,7 +23,7 @@ const GameStartWrapper = ({ gameStatus } : { gameStatus: GameStatus }) => {
         />
         <CatButton
           onClickFunction={() => {
-            socketEmitGameStartEvent(gameStatus);
+            socketEmitGameStartEvent(GameStatus.NormalPnRun);
           }}
           text="normal pn"
           width={buttonWidth}
@@ -31,7 +31,7 @@ const GameStartWrapper = ({ gameStatus } : { gameStatus: GameStatus }) => {
         />
         <CatButton
           onClickFunction={() => {
-            socketEmitGameStartEvent(gameStatus);
+            socketEmitGameStartEvent(GameStatus.RankOriginRun);
           }}
           text="rank origin"
           width={buttonWidth}
@@ -39,7 +39,7 @@ const GameStartWrapper = ({ gameStatus } : { gameStatus: GameStatus }) => {
         />
         <CatButton
           onClickFunction={() => {
-            socketEmitGameStartEvent(gameStatus);
+            socketEmitGameStartEvent(GameStatus.NormalOriginRun);
           }}
           text="normal origin"
           width={buttonWidth}

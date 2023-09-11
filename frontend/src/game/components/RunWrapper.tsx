@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import Run from './Run';
 import CountDown from './CountDown';
 import { PlayerNumber, Score } from '@/type/gameType';

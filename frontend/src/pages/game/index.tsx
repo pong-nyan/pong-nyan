@@ -2,10 +2,8 @@ import Start from '@/game/components/Start';
 import RunWrapper from '@/game/components/RunWrapper';
 import End from '@/game/components/End';
 import { PlayerNumber, Score, GameStatus } from '@/type/gameType';
-import { useState, useEffect } from 'react';
-import { socket } from '@/context/socket';
+import { useState, useEffect, useContext } from 'react';
 import useAuth from '@/context/useAuth';
-import { resumeGame } from '@/game/logic/resumeGame';
 
 export default function Game(): JSX.Element {
   useAuth();
