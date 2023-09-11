@@ -2,7 +2,6 @@ import styles from '@/profile/styles/Profile.module.css';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import useAuth from '@/context/useAuth';
 import { ProfileProps, ProfileData } from '@/type/profileType';
 
 const Profile = ({ nickname }: ProfileProps) => {
