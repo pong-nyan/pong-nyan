@@ -59,19 +59,24 @@ const Friend = ({ intraId } : FriendProps) => {
   //TODO: remove data and change realdate
   const friend = {
     avatar: '/pong-nyan.png',
-    nickname: 'test',
+    nickname: 'juha',
     rankScore: 1000,
     status: FriendStatus.ONLINE,
   };
+  const redirection = 'profile/' + friend.nickname;
   const styleColor = {color : 'gray'};
   
   return (
     <div className={styles.friend}>
       <p>
-        <span className={styles.nickname} style={styleColor}> {friend.nickname} </span>
-        <Image src={friend.avatar ?? 'pong-nyan.png'} alt="avatar" width={50} height={50} /> 
+        <span className={styles.nickname} style={styleColor}> 
+          <Link href={redirection}>
+            {friend.nickname} 
+          </Link>
+        </span>
+        <Image src={friend.avatar ?? 'pong-nyan.png'} alt='avatar' width={50} height={50} /> 
         <span className={styles.score}> 
-          <Link href="rank"> {friend.rankScore}</Link> 
+          <Link href='rank'> {friend.rankScore}</Link> 
         </span>
       </p>
     </div>
