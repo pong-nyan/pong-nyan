@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useContext, KeyboardEvent} from 'react';
+import { SocketContext } from '@/context/socket';
 import { Engine, Render, World, Runner, Body } from 'matter-js';
 import { initEngine, initWorld } from '@/game/matterEngine/matterJsSet';
 import { movePlayer, movePaddle, getOwnTarget } from '@/game/matterEngine/player';
@@ -9,8 +10,9 @@ import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent, so
     
 import styles from '@/game/styles/Run.module.css';
 
-export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore }
-  : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber | undefined, opponentId: string | undefined, score: Score, setScore: Dispatch<SetStateAction<Score>>}) {
+const Run = ({ setGameStatus, playerNumber, opponentId, score, setScore}
+  : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber | undefined, opponentId: string | undefined, score: Score, setScore: Dispatch<SetStateAction<Score>>}) => {
+  const socket = useContext(SocketContext);
   const scene = useRef<HTMLDivElement>(null);
   const engine = useRef<Engine>();
   const render = useRef<Render>();
@@ -89,15 +91,12 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     eventOnBeforeUpdate(engine.current);
     eventOnCollisionStart(engine.current, runner.current, playerNumber, setScore);
     eventOnCollisionEnd(engine.current);
-    window.addEventListener('beforeunload', (event) => {
-    });
 
     /* socket on event */
     socketOnGameKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
     socketOnGameBallEvent(engine.current);  // 공 위치, 속도 동기화
     socketOnGameScoreEvent(sceneSize, engine.current, setScore);
-    socketOnGameDisconnectEvent(sceneSize, engine.current, setScore);
-
+    socketOnGameDisconnectEvent(sceneSize, engine.current, runner.current, setScore, setGameStatus);
     // run the engine
     Runner.run(runner.current, engine.current);
     Render.run(render.current);
@@ -111,13 +110,13 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       render.current.canvas.remove();
       render.current.textures = {};
     };
-  }, [playerNumber, opponentId, setScore]);
+  }, [socket, playerNumber, opponentId, setScore, setGameStatus]);
 
   useEffect(() => {
     if (!playerNumber) return;
     console.log('INFO: game-score', score);
     socketEmitGameScoreEvent(playerNumber, score);
-  }, [playerNumber, score]);
+  }, [socket, playerNumber, score]);
 
   return (
     <div
@@ -137,3 +136,5 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     </div>
   );
 }
+
+export default Run;

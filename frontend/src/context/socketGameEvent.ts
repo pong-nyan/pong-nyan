@@ -1,10 +1,23 @@
 import { Dispatch, SetStateAction } from 'react';
+import { Body, Engine, Runner } from 'matter-js';
+import { KeyEventMessage, PlayerNumber, Score, GameInfo, CanvasSize, GameStatus } from '@/type/gameType';
+import { SocketId, RoomName } from '@/type/socketType';
 import { socket } from '@/context/socket';
-import { KeyEventMessage, PlayerNumber, Score, GameInfo, CanvasSize } from '@/type/gameType';
-import { Body, Engine } from 'matter-js';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
 import { movePlayer, movePaddle } from '@/game/matterEngine/player';
 import { resumeGame } from '@/game/logic/resumeGame';
+
+/**
+ * 게임 시작을 서버로 전송합니다.
+ * @param gameStatus: GameStatus
+ * @returns
+ */
+export const socketEmitGameStartEvent = (gameStatus: GameStatus) => {
+  console.log('socketEmitGameStartEvent', socket, gameStatus);
+  socket.emit('game-start', {
+    gameStatus,
+  });
+}
 
 /**
  * 게임 키 이벤트를 서버로 전송합니다. 
@@ -108,18 +121,40 @@ export const socketOnGameScoreEvent = (sceneSize: CanvasSize, engine: Engine | u
   });
 };
 
-export const socketEmitGameDisconnectEvent = () => {
-  socket.emit('game-disconnect');
+// export const socketEmitGameDisconnectEvent = (socket: Socket) => {
+//   socket.emit('game-disconnect');
+// }
 
-}
-
-export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
+export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>, setGameStatus: Dispatch<SetStateAction<GameStatus>>) => {
   socket.on('game-disconnect', ( { disconnectNickname, gameInfo } : { disconnectNickname: string, gameInfo: GameInfo } ) => {
-    if (!engine || !engine.world) return;
+    if (!engine || !engine.world || !runner) return;
+    Runner.stop(runner);
+    alert(`${disconnectNickname}님이 나가셨습니다.`);
     console.log('game-disconnect', disconnectNickname, gameInfo);
-    setScore({ p1: gameInfo.score.p1, p2: gameInfo.score.p2 });
-    resumeGame(sceneSize, engine, 5, `${disconnectNickname}이(가) 나갔습니다.`);
+    setGameStatus(GameStatus.End);
+    setScore({ p1: gameInfo.score.p2, p2: gameInfo.score.p2 });
   });
 };
 
+export const socketOnGameStartEvent = (setGameStatus: Dispatch<SetStateAction<GameStatus>>, setPlayerNumber: Dispatch<SetStateAction<PlayerNumber>>, setOpponentId: Dispatch<SetStateAction<SocketId>>) => {
+  if (!socket) return;
+  socket.on('game-start', ({ player1Id, player2Id }: {roomName: RoomName, player1Id: string, player2Id: string}) => {
+    if (socket.id === player1Id) { 
+      setPlayerNumber('player1');
+      setOpponentId(player2Id);
+    }
+    else if (socket.id == player2Id){
+      setPlayerNumber('player2');
+      setOpponentId(player1Id);
+    }
+    setGameStatus(GameStatus.RankPnRun);
+  });
+}
+
+export const socketOnGameLoadingEvent = (setLoading: Dispatch<SetStateAction<boolean>>) => {
+  if (!socket) return;
+  socket.on('game-loading', () => {
+    setLoading(true);
+  });
+}
 

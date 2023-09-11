@@ -4,7 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Socket, RoomName } from 'src/type/socketType';
 import { BallInfo, GameInfo, QueueInfo, PlayerNumber, Score } from 'src/type/gameType';
+import { IntraId, UserInfo } from 'src/type/userType';
 import { User } from 'src/entity/User';
+import { UserService } from 'src/user.service';
 
 @Injectable()
 export class GameService {
@@ -12,22 +14,29 @@ export class GameService {
     @InjectRepository(Game)
     private readonly gameRepository: Repository<Game>,
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private readonly userService: UserService,
   ) { }
 
-  public match(client: Socket, nickname: string) {
+  public match(client: Socket, gameStatusIndex: number, intraId: IntraId, nickname: string) {
+    const userInfo = this.userService.getUserInfo(intraId);
+    if (!userInfo) return ;
+    console.log('userInfo', userInfo);
     // this.matchingList[gameStatusIndex].push({client, nickname});
-    this.matchingQueue.push({client, nickname});
+    this.matchingQueue.push({client, nickname, intraId});
     if (this.matchingQueue.length > 1) {
       const player1 = this.matchingQueue.shift();
       const player2 = this.matchingQueue.shift();
       const roomName = 'game-' + player1.nickname + ':' + player2.nickname;
       player1.client.join(roomName);
       player2.client.join(roomName);
+      this.userService.setGameRoom(player1.intraId, roomName);
+      this.userService.setGameRoom(player2.intraId, roomName);
       const player1Id = player1.client.id;
       const player2Id = player2.client.id;
       this.gameMap.set(roomName, {
         roomName,
+        gameStatus: gameStatusIndex + 1,
         clientId: { p1: player1.client.id, p2: player2.client.id },
         score: { p1: 0, p2: 0 },
         nickname: { p1: player1.nickname, p2: player2.nickname },
@@ -41,6 +50,40 @@ export class GameService {
     }
     return [ undefined, undefined, undefined ];
   }
+
+  public friendMatch(client: Socket, gameStatusIndex: number, intraId: IntraId, nickname: string, friendNickname: string) {
+    const friendIndex = this.findNicknameMatchingQueue(friendNickname);
+    this.friendMatchingQueue.push({client, nickname, intraId});
+    // 이미 친구가 매칭큐에 있다면 매칭시켜줌
+    if (friendIndex !== -1) {
+      const meIndex = this.findNicknameMatchingQueue(nickname);
+      const player1 = this.friendMatchingQueue[friendIndex];
+      const player2 = this.friendMatchingQueue[meIndex];
+      // 매칭큐에서 두 유저 삭제
+      this.friendMatchingQueue = this.friendMatchingQueue.filter(item => item.nickname !== nickname);
+      this.friendMatchingQueue = this.friendMatchingQueue.filter(item => item.nickname !== friendNickname);
+      const roomName = 'game-' + player1.nickname + ':' + player2.nickname;
+      player1.client.join(roomName);
+      player2.client.join(roomName);
+      const player1Id = player1.client.id;
+      const player2Id = player2.client.id;
+      this.gameMap.set(roomName, {
+        roomName,
+        gameStatus: gameStatusIndex + 1,
+        clientId: { p1: player1.client.id, p2: player2.client.id },
+        score: { p1: 0, p2: 0 },
+        nickname: { p1: player1.nickname, p2: player2.nickname },
+        waitList: [],
+        ballInfo: {
+          position: { x: 0, y: 0 },
+          velocity: { x: 0, y: 0 },
+        },
+      });
+      return [ roomName, player1Id, player2Id ];
+    }
+    return [ undefined, undefined, undefined ];
+  }
+
 
   public getGameRoom(client: Socket) {
     //refactor: for문을 사용하지 않고 찾는 방법
@@ -56,7 +99,7 @@ export class GameService {
     return roomName;
   }
 
-  public getGameInfo(roomName: RoomName) {
+  public getGameInfo(roomName: RoomName): GameInfo {
     return this.gameMap.get(roomName);
   }
 
@@ -66,6 +109,7 @@ export class GameService {
       gameInfo.waitList.push({playerNumber, score: score});
     }
     if (gameInfo.waitList.length != 2) return false;
+    console.log('INFO: 점수 이상 무 ', playerNumber, score);
     return true;
   }
 
@@ -98,6 +142,9 @@ export class GameService {
 
   public removeMatchingClient(client: Socket) {
     this.matchingQueue = this.matchingQueue.filter(item => item.client.id !== client.id);
+    // this.matchingQueueList.forEach((matchingQueue, index) => {
+    //   this.matchingQueueList[index] = matchingQueue.filter(item => item.client.id !== client.id);
+    // });
     console.log(this.matchingQueue.length);
   }
 
@@ -124,7 +171,12 @@ export class GameService {
 
   /* -------------------------------------------------------------------- */
 
+  private findNicknameMatchingQueue(friendNickname: string) {
+    return this.friendMatchingQueue.findIndex(item => item.nickname === friendNickname);
+  }
+
   private matchingQueue: QueueInfo[] = [];
+  private friendMatchingQueue: QueueInfo[] = [];
   // TODO: 적절하게  recentBallInfo 메모리 관리해야함.
   // IDEA: 게임이 끝나면 삭제하는 방법
   private recentBallInfoMap = new Map<RoomName, BallInfo>();

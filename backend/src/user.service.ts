@@ -5,57 +5,53 @@ import { JwtService } from '@nestjs/jwt';
 import { PnPayloadDto } from 'src/dto/pnPayload.dto';
 import * as cookie from 'cookie';
 
+
 @Injectable()
 export class UserService {
     constructor(private readonly jwtService: JwtService) {}
 
-    userMap = new Map<IntraId, UserInfo>();
-    idMap = new Map<SocketId, IntraId>();
+    public getIntraId(clientId: SocketId) { return this.idMap.get(clientId); }
+    public getUserInfo(intraId: number) { return this.userMap.get(intraId); }
 
-    getIntraId(clientId: SocketId) { return this.idMap.get(clientId); }
-    getUserInfo(intraId: number) { return this.userMap.get(intraId); }
-
-    checkPnJwt(client: Socket) {
-      console.log('in the checktPnJwt');
+    public checkPnJwt(client: Socket) {
       const cookies = client.handshake.headers.cookie;
-      console.log('cookies', cookies);
       if (!cookies) {
         console.error('Cookies not found');
-        return false;
+        return undefined;
       }
       const pnJwtCookie = cookie.parse(cookies)['pn-jwt'];
-
       if (!pnJwtCookie) {
         console.error('JWT not found');
-        return false;
+        return undefined;
       }
+
       try {
         const payload: PnPayloadDto = this.jwtService.verify<PnPayloadDto>(pnJwtCookie);
         if (payload.exp * 1000 < Date.now()) {
           console.error('JWT expired');
-          return false;
+          return undefined;
         }
-        console.log('client', client.id);
+        return payload;
       } catch (err) {
         console.error('JWT verification failed', err);
-        return false;
+        return undefined;
       }
-      return true;
     }
 
-    setUserMap(intraId : IntraId, userInfo: UserInfo) {
+    public setUserMap(intraId : IntraId, userInfo: UserInfo) {
+      console.log('(Before) setUserMap : ', this.userMap);
       this.userMap.set(intraId, userInfo);
+      console.log('(After) setUserMap : ', this.userMap);
     }
 
-    setIdMap(clientId: SocketId, intraId: IntraId) {
-      console.log('setIdMap clientId, intraId', clientId, intraId);
+    public setIdMap(clientId: SocketId, intraId: IntraId) {
+      console.log('(Before) setIdMap idMap : ', this.idMap);
       this.idMap.set(clientId, intraId);
-      console.log('setIdMap idMap', this.idMap);
+      console.log('(After) setIdMap idMap : ', this.idMap);
     }
-
     setUserInfoChatRoomList(intraId: IntraId, channelId: string) {
       console.log('setUserInfoChatRoomList', intraId, channelId);
-      const userInfo = this.getUser(intraId);
+      const userInfo = this.getUserInfo(intraId);
       console.log('setUserInfoChatRoomList userInfo', userInfo);
       if (!userInfo) {
         console.error(`User with intraId ${intraId} not found.`);
@@ -74,7 +70,7 @@ export class UserService {
 
     deleteUserInfoChatRoomList(intraId: IntraId, channelId: string) {
       console.log('deleteUserInfoChatRoomList', intraId, channelId);
-      const userInfo = this.getUser(intraId);
+      const userInfo = this.getUserInfo(intraId);
       if (!userInfo) {
         console.error(`User with intraId ${intraId} not found.`);
         return ;
@@ -89,15 +85,6 @@ export class UserService {
       console.log('deleteUserInfoChatRoomList userMap', this.userMap);
     }
 
-    deleteIdMap(clientId: SocketId) {
-      console.log('deleteIdMap', clientId);
-      if (this.idMap.delete(clientId)) {
-        console.log(`Successfully deleted clientId: ${clientId}`);
-      } else {
-        console.log(`Failed to delete clientId: ${clientId}`);
-      }
-    }
-
     deleteUserMap(clientId: SocketId) {
       // TODO: 다시 생각해보기
       console.log('deleteUserMap', clientId);
@@ -106,19 +93,29 @@ export class UserService {
       // this.userService.deleteUserMap(intraId);
     }
 
-    leaveGameRoom(intraId: IntraId) {
+    public deleteIdMap(clientId: SocketId) {
+      console.log('(Before) deleteIdMap : ', this.idMap);
+      this.idMap.delete(clientId);
+      console.log('(After) deleteIdMap : ', this.idMap);
+    }
+
+    public setGameRoom(intraId: IntraId, roomName: string) {
+      const userInfo = this.userMap.get(intraId);
+      if (!userInfo) return ;
+      userInfo.gameRoom = roomName;
+      console.log('[userService] setGameRoom', this.userMap);
+    }
+
+    public deleteGameRoom(intraId: IntraId) {
       const userInfo = this.userMap.get(intraId);
       if (!userInfo) return ;
       userInfo.gameRoom = '';
+      console.log('[userService] deleteGameRoom', this.userMap);
     }
 
+    /* -------------------------------------------------------------------- */
 
-    getUser(intraId: IntraId) {
-        return this.userMap.get(intraId);
-    }
-
-    getUserInfoChatRoomList(intraId: IntraId) {
-      return this.getUser(intraId).chatRoomList;
-    }
+    private userMap = new Map<IntraId, UserInfo>();
+    private idMap = new Map<SocketId, IntraId>();
 
 }
