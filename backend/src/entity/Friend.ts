@@ -1,5 +1,6 @@
-import { CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './User';
+import FriendStatus from './FriendStatus';
 
 @Entity()
 export default class Friend {
@@ -14,4 +15,7 @@ export default class Friend {
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     createdAt: Date;
+
+    @OneToMany(() => FriendStatus, friendStatus => friendStatus.friend)
+    friendStatuses: FriendStatus[];
 }

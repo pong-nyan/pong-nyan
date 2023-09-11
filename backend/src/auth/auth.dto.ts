@@ -5,14 +5,22 @@ import { plainToClass } from 'class-transformer';
 import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
 
 export class RedirectDto {
-    @ApiProperty()
+    @ApiProperty({
+        description: '리디렉션 경로',
+        example: '/auth/signup | /auth/signin | /auth/qr',
+        required: true,
+    })
     redirectUrl: RedirectUrl;
 }
 
 export type RedirectUrl = '/auth/signup' | '/auth/signin' | '/auth/qr';
 
 export class DefaultDto {
-    @ApiProperty()
+    @ApiProperty({
+        description: '메세지',
+        example: 'message',
+        required: true,
+    })
     message: string;
 }
 
@@ -23,12 +31,27 @@ export class CodeDto {
 }
 
 export class SignupDto {
+    @ApiProperty({
+        description: '이메일',
+        example: 'email@email.com',
+        required: true,
+    })
     @IsNotEmpty()
     @IsEmail()
     email: string;
+    @ApiProperty({
+        description: '닉네임',
+        example: 'nickname',
+        required: true,
+    })
     @IsNotEmpty()
     @IsString()
     nickname: string;
+    @ApiProperty({
+        description: '아바타',
+        example: 'image to string 값',
+        required: true,
+    })
     @IsString()
     avatar: string;
 }
