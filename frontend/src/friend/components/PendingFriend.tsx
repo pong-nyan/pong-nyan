@@ -1,7 +1,7 @@
 import { PendingFriendProps } from '@/type/friendType';
 import styles from '@/friend/styles/PendingFriend.module.css';
 
-const pendingFriend = ({ pendingFriend }: PendingFriendProps) => {
+const PendingFriend = ({ pendingFriend }: PendingFriendProps) => {
   return (
     <div className={styles.container}>
       <p className={styles.nickname}>{pendingFriend.nickname}</p>
@@ -14,4 +14,4 @@ const pendingFriend = ({ pendingFriend }: PendingFriendProps) => {
   );
 };
 
-export default pendingFriend;
+export default PendingFriend;
