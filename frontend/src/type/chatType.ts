@@ -19,3 +19,8 @@ export type ChannelInfo = {
   channelType: 'public' | 'private' | 'protected',
   maxUsers: number,
 }
+
+export type Message = {
+  content: string;
+  nickname: string;
+};
