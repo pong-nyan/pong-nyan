@@ -7,11 +7,11 @@ export default class FriendStatus {
     @PrimaryGeneratedColumn()
     id : number;
 
-    @ManyToOne(() => Friend, friend => friend.id)
+    @ManyToOne(() => Friend, friend => friend.friendStatuses)
     friend : Friend;
 
-    @Column()
-    status: number;
+    @Column({ default: 'pending' })
+    status: string;
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     createdAt: Date;
