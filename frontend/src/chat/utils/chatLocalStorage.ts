@@ -1,4 +1,4 @@
-export function saveMessageToLocalStorage(channelId: string, message: string) {
+export function addMessageToLocalStorage(channelId: string, message: string) {
   const key = `channel-${channelId}-messages`;
   const storedMessages = localStorage.getItem(key);
   const existingMessages = storedMessages ? JSON.parse(storedMessages) : [];

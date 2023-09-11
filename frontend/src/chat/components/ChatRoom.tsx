@@ -3,6 +3,7 @@ import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import SendMessageButton from './SendMessageButton';
 import { SocketContext } from '@/context/socket';
+import { getMessagesFromLocalStorage, addMessageToLocalStorage } from '../utils/chatLocalStorage';
 
 function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: string, selectedChannel: { title: string }, onLeaveChannel: () => void }) {
   const [messages, setMessages] = useState<string[]>([]);
@@ -10,16 +11,30 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: s
   const [channelUsers, setChannelUsers] = useState<string[]>([]);
   const socket = useContext(SocketContext);
 
+  // 방이 눌렸을때 처리
   useEffect(() => {
-    socket.on('chat-new-message', (message) => {
-      console.log('chat-new-message message 실행됨', message);
-      setMessages(prevMessages => [...prevMessages, message]);
+    console.log('ChatRoom.tsx useEffect channelId', channelId);
+    const loadedMessages = getMessagesFromLocalStorage(channelId);
+    setMessages(loadedMessages);
+  }, [channelId]);
+
+  useEffect(() => {
+    socket.on('chat-new-message', (data) => {
+      const { message, channelId: receivedChannelId } = data;
+
+      // 메시지를 받은 채널의 localStorage에 메시지를 추가합니다.
+      addMessageToLocalStorage(receivedChannelId, message);
+
+      // 현재 선택된 채널이 메시지를 받은 채널과 같다면, 상태도 업데이트합니다.
+      if (channelId === receivedChannelId) {
+        setMessages(prevMessages => [...prevMessages, message]);
+      }
     });
 
     return () => {
       socket.off('chat-new-message');
     };
-  }, []);
+  }, [channelId]);
 
   useEffect(() => {
     socket.on('chat-update-users', (users) => {
@@ -33,7 +48,9 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: s
 
   const handleSendMessage = () => {
     if (inputMessage.trim() !== '') {
-      setMessages([...messages, inputMessage]);
+      const newMessages = [...messages, inputMessage];
+      setMessages(newMessages);
+      addMessageToLocalStorage(channelId, inputMessage);
       socket.emit('chat-message-in-channel', { channelId, message: inputMessage });
       setInputMessage('');
     }
