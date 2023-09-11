@@ -7,6 +7,7 @@ import { User } from 'src/entity/User';
 import { JwtModule } from '@nestjs/jwt';
 import { UserService } from 'src/user.service';
 import { UserModule } from 'src/user.module';
+import { GameApiService } from './game.api.service';
 
 @Module({
   imports: [
@@ -18,5 +19,6 @@ import { UserModule } from 'src/user.module';
     }),
     UserModule],
   providers: [GameService, GameGateway],
+  providers: [GameService, GameApiService, GameGateway, UserService],
 })
 export class GameModule {}

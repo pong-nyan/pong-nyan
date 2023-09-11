@@ -30,6 +30,12 @@ export type MatchingQueue = QueueInfo[];
 
 export type PlayerNumber = 'player1' | 'player2';
 
+export enum GameModeEnum {
+  Normal,
+  Rank
+}
+
+
 export type BallInfo = {
   position: { x: number, y: number },
   velocity: { x: number, y: number }

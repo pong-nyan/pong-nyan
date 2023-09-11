@@ -16,9 +16,6 @@ export class Game {
     @Column()
     gameMode: number;
 
-    @Column()
-    rankScore: number;
-
     @Column({ type: 'jsonb' })
     gameInfo: JSON;
 

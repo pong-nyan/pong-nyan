@@ -10,6 +10,7 @@ import {
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { BallInfo, PlayerNumber, Score, GameInfo } from 'src/type/gameType';
+import { GameApiService } from './game.api.service';
 import { UseGuards } from '@nestjs/common';
 import { UserService } from 'src/user.service';
 import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
@@ -25,6 +26,7 @@ import { GameStatus } from 'src/type/gameType';
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly gameService: GameService,
+              private readonly gameApiService: GameApiService,
               private readonly userService: UserService) {}
 
   @WebSocketServer() server: Server;
