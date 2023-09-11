@@ -106,6 +106,57 @@ export class FriendsService {
         return friend;
     }
 
-
+    // 입력받은 intraId 와 10명 의  친구를 생성한다.
+    // 5명은 accepted, 5명은 pending 상태로 생성한다.
+    async generateMockFriends(intraId: number): Promise<Friend[]> {
+        const user = await this.userRepository.findOne({ where: { intraId } });
+        if (!user) throw new Error('No user found');
+        const friends = [];
+        for (let i = 0; i < 5; i++) {
+            const randomIntraId = Math.floor(Math.random() * 100000);
+            const randomIntraNickname = Math.floor(Math.random() * 100000).toString() + 'intra_nickname';
+            const randomNickname = Math.floor(Math.random() * 1000000).toString() + 'nickname';
+            const randomAvatar = Math.floor(Math.random() * 1000000).toString() + 'avatar';
+            const randomEmail = Math.floor(Math.random() * 1000000).toString() + '@gmail.com';
+            const friend = await this.userRepository.create({
+                intraId: randomIntraId,
+                intraNickname: randomIntraNickname,
+                nickname: randomNickname,
+                avatar: randomAvatar,
+                google2faEnable: false,
+                email: randomEmail,
+            });
+            await this.userRepository.save(friend);
+            const newFriend = await this.friendRepository.create({ requestUser: user, addressUser: friend });
+            await this.friendRepository.save(newFriend);
+            const newFriendStatus = this.friendStatusRepository.create({ friend: newFriend, specificUser: user });
+            await this.friendStatusRepository.save(newFriendStatus);
+            friends.push(newFriend);
+        }
+        for (let i = 0; i < 5; i++) {
+            const randomIntraId = Math.floor(Math.random() * 100000);
+            const randomIntraNickname = Math.floor(Math.random() * 100000).toString() + 'intra_nickname';
+            const randomNickname = Math.floor(Math.random() * 1000000).toString() + 'nickname';
+            const randomAvatar = Math.floor(Math.random() * 1000000).toString() + 'avatar';
+            const randomEmail = Math.floor(Math.random() * 1000000).toString() + '@gmail.com';
+            const friend = await this.userRepository.create({
+                intraId: randomIntraId,
+                intraNickname: randomIntraNickname,
+                nickname: randomNickname,
+                avatar: randomAvatar,
+                google2faEnable: false,
+                email: randomEmail,
+            });
+            await this.userRepository.save(friend);
+            const newFriend = await this.friendRepository.create({ requestUser: friend, addressUser: user });
+            await this.friendRepository.save(newFriend);
+            const newFriendStatus = this.friendStatusRepository.create({ friend: newFriend, specificUser: friend });
+            await this.friendStatusRepository.save(newFriendStatus);
+            const acceptedFriendStatus = await this.friendStatusRepository.create({ friend: newFriend, specificUser: user, status: 'accepted' });
+            await this.friendStatusRepository.save(acceptedFriendStatus);
+            friends.push(acceptedFriendStatus);
+        }
+        return friends;
+    }
 }
 
