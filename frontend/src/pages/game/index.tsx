@@ -4,7 +4,6 @@ import End from '@/game/components/End';
 import { PlayerNumber, Score, GameStatus } from '@/type/gameType';
 import { useState } from 'react';
 
-
 export default function Game(): JSX.Element {
   // TODO: start game button
   // FIXME: game status

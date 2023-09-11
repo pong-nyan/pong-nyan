@@ -15,15 +15,8 @@ export class GameService {
     private readonly userRepository: Repository<User>
   ) { }
 
-  // TODO: matchingQueue 확인해야함
-  matchingQueue: QueueInfo[] = [];
-  // TODO: 적절하게  recentBallInfo 메모리 관리해야함.
-  // IDEA: 게임이 끝나면 삭제하는 방법
-  recentBallInfoMap = new Map<RoomName, BallInfo>();
-  gameMap = new Map<RoomName, GameInfo>();
-
-
-  match(client: Socket, nickname: string) {
+  public match(client: Socket, nickname: string) {
+    // this.matchingList[gameStatusIndex].push({client, nickname});
     this.matchingQueue.push({client, nickname});
     if (this.matchingQueue.length > 1) {
       const player1 = this.matchingQueue.shift();
@@ -49,8 +42,7 @@ export class GameService {
     return [ undefined, undefined, undefined ];
   }
 
-
-  getGameRoom(client: Socket) {
+  public getGameRoom(client: Socket) {
     //refactor: for문을 사용하지 않고 찾는 방법
     let roomName = '';
     for (const value of client.rooms) {
@@ -64,11 +56,11 @@ export class GameService {
     return roomName;
   }
 
-  getGameInfo(roomName: RoomName) {
+  public getGameInfo(roomName: RoomName) {
     return this.gameMap.get(roomName);
   }
 
-  isReadyScoreCheck(gameInfo: GameInfo, playerNumber: PlayerNumber, score: Score): boolean {
+  public isReadyScoreCheck(gameInfo: GameInfo, playerNumber: PlayerNumber, score: Score): boolean {
     if (!gameInfo.waitList.some(item => item.playerNumber === playerNumber)) {
       console.log('INFO: 점수 체크 준비', playerNumber, score);
       gameInfo.waitList.push({playerNumber, score: score});
@@ -77,16 +69,15 @@ export class GameService {
     return true;
   }
 
-  checkCorrectScoreWhoWinner(gameInfo: GameInfo) {
+  public checkCorrectScoreWhoWinner(gameInfo: GameInfo) {
     console.log('INFO: 점수 체크 준비 완료', gameInfo.waitList);
     if ((gameInfo.waitList[0].score.p1 !== gameInfo.waitList[1].score.p1)
-        || (gameInfo.waitList[0].score.p2 !== gameInfo.waitList[1].score.p2)) { return ''; }
+      || (gameInfo.waitList[0].score.p2 !== gameInfo.waitList[1].score.p2)) { return ''; }
     return gameInfo.waitList[0].score.p1 - gameInfo.score.p1 === 1 ? gameInfo.nickname.p1
       : gameInfo.waitList[0].score.p2 - gameInfo.score.p2 === 1 ? gameInfo.nickname.p2 : '';
   }
 
-
-  reconcilateBallInfo(roomName: RoomName, ballInfo: BallInfo) : BallInfo | undefined {
+  public reconcilateBallInfo(roomName: RoomName, ballInfo: BallInfo) : BallInfo | undefined {
     const recentBallInfo = this.recentBallInfoMap.get(roomName);
     // TODO: 적절한 acceptableDiff를 찾아야 함
     const accepableDiff = 0.1;
@@ -105,12 +96,12 @@ export class GameService {
     return undefined;
   }
 
-  removeMatchingClient(client: Socket) {
+  public removeMatchingClient(client: Socket) {
     this.matchingQueue = this.matchingQueue.filter(item => item.client.id !== client.id);
     console.log(this.matchingQueue.length);
   }
 
-  async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
+  public async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
     if (!winner || !loser) return;
     const winnerUser = await this.userRepository.findOne( { where: { intraId: winner } });
     const loserUser = await this.userRepository.findOne({ where: { intraId: loser } });
@@ -122,14 +113,20 @@ export class GameService {
     await this.gameRepository.save({ winner: winnerUser, loser: loserUser, gameMode, rankScore, gameInfo });
   }
 
-  async getMyGameInfo(intraId: number) {
-      if (!intraId) return null;
-      const user = await this.userRepository.findOne( { where: { intraId }, relations: ['winnerGames', 'loserGames'] } );
-      if (!user) return null;
-      const winnerGames = user.winnerGames;
-      const loserGames = user.loserGames;
-      return { winnerGames, loserGames };
-    }
+  public async getMyGameInfo(intraId: number) {
+    if (!intraId) return null;
+    const user = await this.userRepository.findOne( { where: { intraId }, relations: ['winnerGames', 'loserGames'] } );
+    if (!user) return null;
+    const winnerGames = user.winnerGames;
+    const loserGames = user.loserGames;
+    return { winnerGames, loserGames };
+  }
 
+  /* -------------------------------------------------------------------- */
+
+  private matchingQueue: QueueInfo[] = [];
+  // TODO: 적절하게  recentBallInfo 메모리 관리해야함.
+  // IDEA: 게임이 끝나면 삭제하는 방법
+  private recentBallInfoMap = new Map<RoomName, BallInfo>();
+  private gameMap = new Map<RoomName, GameInfo>();
 }
-

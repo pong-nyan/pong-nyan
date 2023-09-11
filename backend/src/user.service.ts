@@ -2,15 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { UserInfo, IntraId} from 'src/type/userType';
 import { SocketId, Socket } from 'src/type/socketType';
 import { JwtService } from '@nestjs/jwt';
-import { PnPayloadDto } from 'src/chat/channel.dto';
+import { PnPayloadDto } from 'src/dto/pnPayload.dto';
 import * as cookie from 'cookie';
 
 @Injectable()
 export class UserService {
     constructor(private readonly jwtService: JwtService) {}
 
-    userMap = new Map<number, UserInfo>();
+    userMap = new Map<IntraId, UserInfo>();
     idMap = new Map<SocketId, IntraId>();
+
+    getIntraId(clientId: SocketId) { return this.idMap.get(clientId); }
+    getUserInfo(intraId: number) { return this.userMap.get(intraId); }
 
     checkPnJwt(client: Socket) {
       console.log('in the checktPnJwt');
@@ -50,10 +53,41 @@ export class UserService {
       console.log('setIdMap idMap', this.idMap);
     }
 
-    // deleteIdMap(clientId: SocketId) {
-    //   console.log('deleteIdMap', clientId);
-    //   this.idMap.delete(clientId);
-    // }
+    setUserInfoChatRoomList(intraId: IntraId, channelId: string) {
+      console.log('setUserInfoChatRoomList', intraId, channelId);
+      const userInfo = this.getUser(intraId);
+      console.log('setUserInfoChatRoomList userInfo', userInfo);
+      if (!userInfo) {
+        console.error(`User with intraId ${intraId} not found.`);
+        return ;
+      }
+      if (!userInfo.chatRoomList) {
+        userInfo.chatRoomList = [];
+      }
+
+      if (!userInfo.chatRoomList.includes(channelId)) {
+        userInfo.chatRoomList.push(channelId);
+      }
+      this.setUserMap(intraId, userInfo);
+      console.log('setUserInfoChatRoomList userMap', this.userMap);
+    }
+
+    deleteUserInfoChatRoomList(intraId: IntraId, channelId: string) {
+      console.log('deleteUserInfoChatRoomList', intraId, channelId);
+      const userInfo = this.getUser(intraId);
+      if (!userInfo) {
+        console.error(`User with intraId ${intraId} not found.`);
+        return ;
+      }
+      if (!userInfo.chatRoomList || userInfo.chatRoomList.length === 0) {
+        console.warn(`User with intraId ${intraId} has no chat rooms to delete.`);
+        return;
+      }
+
+      userInfo.chatRoomList = userInfo.chatRoomList.filter((remainChannelId) => remainChannelId !== channelId);
+      this.setUserMap(intraId, userInfo);
+      console.log('deleteUserInfoChatRoomList userMap', this.userMap);
+    }
 
     deleteIdMap(clientId: SocketId) {
       console.log('deleteIdMap', clientId);
@@ -64,7 +98,6 @@ export class UserService {
       }
     }
 
-
     deleteUserMap(clientId: SocketId) {
       // TODO: 다시 생각해보기
       console.log('deleteUserMap', clientId);
@@ -73,20 +106,19 @@ export class UserService {
       // this.userService.deleteUserMap(intraId);
     }
 
-    getIntraId(clientId: SocketId) {
-      console.log('getIntraId clientId', clientId);
-      console.log('getIntraId', this.idMap.get(clientId));
-      console.log('getIntraId idMap', this.idMap);
-
-      return this.idMap.get(clientId);
+    leaveGameRoom(intraId: IntraId) {
+      const userInfo = this.userMap.get(intraId);
+      if (!userInfo) return ;
+      userInfo.gameRoom = '';
     }
 
-    getUserInfo(clientId: SocketId) {
-      const intraId = this.getIntraId(clientId);
-      return this.getUser(intraId);
-    }
 
-    getUser(intraId: number) {
+    getUser(intraId: IntraId) {
         return this.userMap.get(intraId);
     }
+
+    getUserInfoChatRoomList(intraId: IntraId) {
+      return this.getUser(intraId).chatRoomList;
+    }
+
 }

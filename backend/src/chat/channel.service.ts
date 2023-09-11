@@ -8,7 +8,7 @@ export class ChannelService {
   channelMap = new Map<string, Channel>();
 
   // 사용자가 채널을 추가
-  addChannel(channelInfo: ChannelInfo, client: Socket, intraId: number) {
+  addChannel(channelInfo: ChannelInfo, client: Socket, intraId: number) : string {
     console.log('service addChannel, channelInfo', channelInfo);
     const channelId = uuidv4();
     const newChannel = {
@@ -21,6 +21,7 @@ export class ChannelService {
     client.join(channelId);
     this.channelMap.set(channelId, newChannel);
     console.log('channel List :', this.channelMap);
+    return channelId;
   }
 
   // 채널이 사용자를 추가

@@ -3,8 +3,8 @@ import { ChannelService } from './channel.service';
 import { ChannelInfo } from 'src/type/chatType';
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
-import { ChannelGuard } from './channel.guard';
-import { PnJwtPayload, PnPayloadDto } from 'src/chat/channel.dto';
+import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
+import { PnJwtPayload, PnPayloadDto } from 'src/dto/pnPayload.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as cookie from 'cookie';
 import { UserService } from 'src/user.service';
@@ -14,7 +14,7 @@ import { UserService } from 'src/user.service';
   path: '/socket/',
   cookie: true,
 })
-@UseGuards(ChannelGuard)
+@UseGuards(Gateway2faGuard)
 export class ChannelGateway {
   constructor(private readonly channelService: ChannelService,
     private readonly jwtService: JwtService,
@@ -26,41 +26,43 @@ export class ChannelGateway {
 
   @SubscribeMessage('chat-channel-make')
   handleMakeChannel(@ConnectedSocket() client: Socket, @MessageBody() channelInfo: ChannelInfo, @PnJwtPayload() payload: PnPayloadDto) {
-    this.channelService.addChannel(channelInfo, client, payload.intraId);
+    const channelId = this.channelService.addChannel(channelInfo, client, payload.intraId);
+    this.userService.setUserInfoChatRoomList(payload.intraId, channelId);
     const updatedChannelList = Array.from(this.channelService.getChannelMap().values());
     this.server.emit('chat-update-channel-list', updatedChannelList);
     console.log('chat-ch-make, updatedChList', updatedChannelList);
   }
 
   @SubscribeMessage('chat-join-channel')
-  handleJoinChannel(@ConnectedSocket() client: Socket, @MessageBody() payload: { channelId: string, password?: string }, @PnJwtPayload() pnPayload: PnPayloadDto) {
-    const channel = this.channelService.getChannel(payload.channelId);
-    console.log('chat-join-channel, payload', payload);
+  handleJoinChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, password?: string }, @PnJwtPayload() payload: PnPayloadDto) {
+    const channel = this.channelService.getChannel(payloadEmit.channelId);
+    console.log('chat-join-channel, payload', payloadEmit);
     console.log('chat-join-channel, channel', channel);
     if (!channel) {
       client.emit('chat-join-error', '채널이 존재하지 않습니다.');
       return ;
     }
     if (channel.channelType === 'private') {
-      if (!channel.invitedUsers.includes(pnPayload.intraId)) {
+      if (!channel.invitedUsers.includes(payload.intraId)) {
         client.emit('chat-join-error', '이 채널에는 초대받지 않은 사용자는 접속할 수 없습니다.');
         return;
       }
     } else if (channel.channelType === 'protected') {
-      if (channel.password !== payload.password) {
+      if (channel.password !== payloadEmit.password) {
         console.log('비번 일치안함');
         client.emit('chat-join-error', '비밀번호가 잘못되었습니다.');
         return ;
       }
     }
     client.emit('chat-join-success');
-    client.join(payload.channelId);
-    this.channelService.joinChannel(payload.channelId, pnPayload.intraId);
-    const users = this.channelService.getChannelUsers(payload.channelId);
-    console.log('chat-join-channel, channelId, users', payload.channelId, users);
+    client.join(payloadEmit.channelId);
+    this.channelService.joinChannel(payloadEmit.channelId, payload.intraId);
+    this.userService.setUserInfoChatRoomList(payload.intraId, payloadEmit.channelId);
+    const users = this.channelService.getChannelUsers(payloadEmit.channelId);
+    console.log('chat-join-channel, channelId, users', payloadEmit.channelId, users);
 
     // 해당 채널의 유저 목록 업데이트
-    this.server.to(payload.channelId).emit('chat-update-users', users);
+    this.server.to(payloadEmit.channelId).emit('chat-update-users', users);
 
     // 전체 채널 목록 업데이트
     const updatedChannelList = Array.from(this.channelService.getChannelMap().values());
@@ -79,8 +81,8 @@ export class ChannelGateway {
   @SubscribeMessage('chat-leave-channel')
   handleLeaveChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string, @PnJwtPayload() payload: PnPayloadDto) {
       client.leave(channelId);
-      //TODO
       this.channelService.leaveChannel(channelId, payload.intraId);
+      this.userService.deleteUserInfoChatRoomList(payload.intraId, channelId);
       const users = this.channelService.getChannelUsers(channelId);
       this.server.to(channelId).emit('chat-update-users', users);
   }
@@ -96,16 +98,14 @@ export class ChannelGateway {
 
     if (!this.userService.checkPnJwt(client))
     {
-      //
       return ;
     }
     // F5또는 새로고침 이런식으로 새로 접속하지만 pn-jwt가 있을 경우
-    // TODO: 이전 채널에 접속
+    // TODO: 이전에 접속했던 채널에 다시 접속시켜주기
     // const userInfo = this.userService.getUserInfo(client.id);
     // if (!userInfo) return ;
     // const intraId = this.userService.getIntraId(client.id);
     // const userInfo = this.userService.getUser(intraId);
-
   }
 }
 
