@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ProfileProps, ProfileData } from '@/type/profileType';
+import RecentGame from './RecentGame';
 
 const Profile = ({ nickname }: ProfileProps) => {
   const [user, setUser] = useState<ProfileData | null>(null);
@@ -20,8 +21,9 @@ const Profile = ({ nickname }: ProfileProps) => {
       <h2>{user?.nickname ?? 'who R U'}</h2>
       <h3>래더 스코어</h3>
       <p>{user?.rankScore ?? 'zero'}</p>
-      <h3>최근 경기</h3>
-      {/* TODO: 최근 경기 표시 */}
+      <RecentGame game={user?.winnerGames ?? []} />
+      <br />
+      <RecentGame game={user?.loserGames ?? []} />
     </div>
   );
 };
