@@ -15,3 +15,7 @@ socket.on('auth-set-map-payload', () => {
   socket.emit('auth-set-map', { intraId: item.intraId });
 });
 
+socket.on('add-tab', () => {
+  alert('새로운 탭이 열렸습니다.');
+  window.close();
+});
