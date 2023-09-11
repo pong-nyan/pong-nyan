@@ -6,7 +6,6 @@ import useAuth from '@/context/useAuth';
 import { ProfileProps, ProfileData } from '@/type/profileType';
 
 const Profile = ({ nickname }: ProfileProps) => {
-  useAuth();
   const [user, setUser] = useState<ProfileData | null>(null);
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/profile/${nickname}`).then((res) => {
