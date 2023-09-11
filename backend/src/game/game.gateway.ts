@@ -43,8 +43,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
-    console.log('[INFO] handleDisconnect :', );
-    //
+    console.log('[GameGateway] Disconnection', client.id);
+    if (!this.userService.checkPnJwt(client)) return ;
     const intraId = this.userService.getIntraId(client.id);
     const userInfo = this.userService.getUserInfo(intraId);
     if (!userInfo.gameRoom) {
