@@ -28,9 +28,9 @@ const Profile = ({ nickname }: ProfileProps) => {
       '상대의 게임접속을 기다리는 중...' :
       <div className={styles.profile}>
         <Image src={user?.avatar ?? '/pongNyan.png'} alt={user?.nickname ?? 'Pong nyan'} width={100} height={100} />
-        <h2>{user?.nickname ?? 'who R U'}</h2>
+        <h2>{user?.nickname ?? 'no data'}</h2>
         <h3>래더 스코어</h3>
-        <p>{user?.rankScore ?? 'zero'}</p>
+        <p>{user?.rankScore ?? 'no data'}</p>
         <RecentGame game={user?.winnerGames ?? []} />
         <br />
         <RecentGame game={user?.loserGames ?? []} />
