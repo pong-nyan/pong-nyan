@@ -77,6 +77,19 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   //   const [ roomName, player1Id, player2Id ] = this.gameService.match(client, payload.nickname);
   // }
 
+  @SubscribeMessage('game-friendStart')
+  handleFriendStart(@ConnectedSocket() client: Socket, @MessageBody() data: any, @PnJwtPayload() payload: PnPayloadDto) {
+    const userInfo = this.userService.getUserInfo(payload.intraId);
+    if (!userInfo) return ;
+    console.log('data', data);
+    console.log('friendNickname', data.friendNickname);
+    console.log('nickname', payload.nickname);
+    const [ roomName, player1Id, player2Id ] = this.gameService.friendMatch(client, payload.nickname, data.friendNickname);
+    if (!roomName) this.server.to(client.id).emit('game-loading');
+    if (!player1Id || !player2Id) return;
+    this.server.to(roomName).emit('game-friendStart', {player1Id, player2Id});
+  }
+
   @SubscribeMessage('game-start')
   handleStartGame(@ConnectedSocket() client: Socket, @MessageBody() data: any, @PnJwtPayload() payload: PnPayloadDto) {
     const userInfo = this.userService.getUserInfo(payload.intraId);

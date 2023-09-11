@@ -42,6 +42,41 @@ export class GameService {
     return [ undefined, undefined, undefined ];
   }
 
+  public friendMatch(client: Socket, nickname: string, friendNickname: string) {
+    const friendIndex = this.findNicknameMatchingQueue(friendNickname);
+    this.friendMatchingQueue.push({client, nickname});
+    console.log('frindMatch');
+    // 이미 친구가 매칭큐에 있다면 매칭시켜줌
+    if (friendIndex !== -1) {
+      console.log('INFO: 친구 매칭 성공');
+      const meIndex = this.findNicknameMatchingQueue(nickname);
+      const player1 = this.friendMatchingQueue[friendIndex];
+      const player2 = this.friendMatchingQueue[meIndex];
+      // 매칭큐에서 두 유저 삭제
+      this.friendMatchingQueue = this.friendMatchingQueue.filter(item => item.nickname !== nickname);
+      this.friendMatchingQueue = this.friendMatchingQueue.filter(item => item.nickname !== friendNickname);
+      const roomName = 'game-' + player1.nickname + ':' + player2.nickname;
+      player1.client.join(roomName);
+      player2.client.join(roomName);
+      const player1Id = player1.client.id;
+      const player2Id = player2.client.id;
+      this.gameMap.set(roomName, {
+        roomName,
+        clientId: { p1: player1.client.id, p2: player2.client.id },
+        score: { p1: 0, p2: 0 },
+        nickname: { p1: player1.nickname, p2: player2.nickname },
+        waitList: [],
+        ballInfo: {
+          position: { x: 0, y: 0 },
+          velocity: { x: 0, y: 0 },
+        },
+      });
+      return [ roomName, player1Id, player2Id ];
+    }
+    return [ undefined, undefined, undefined ];
+  }
+
+
   public getGameRoom(client: Socket) {
     //refactor: for문을 사용하지 않고 찾는 방법
     let roomName = '';
@@ -124,7 +159,12 @@ export class GameService {
 
   /* -------------------------------------------------------------------- */
 
+  private findNicknameMatchingQueue(friendNickname: string) {
+    return this.friendMatchingQueue.findIndex(item => item.nickname === friendNickname);
+  }
+
   private matchingQueue: QueueInfo[] = [];
+  private friendMatchingQueue: QueueInfo[] = [];
   // TODO: 적절하게  recentBallInfo 메모리 관리해야함.
   // IDEA: 게임이 끝나면 삭제하는 방법
   private recentBallInfoMap = new Map<RoomName, BallInfo>();
