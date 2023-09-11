@@ -17,6 +17,7 @@ export class Gateway2faGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     console.log('[Gateway2faGuard] activate');
+
     const client = context.switchToWs().getClient();
     const cookies = client.handshake.headers.cookie;
     const pnJwtCookie = cookie.parse(cookies)['pn-jwt'];
@@ -26,6 +27,7 @@ export class Gateway2faGuard implements CanActivate {
       return false;
     }
     console.log('[Gateway2faGuard] YES pnJwtCookie');
+    if (!pnJwtCookie) return false;
     try {
       const payload = this.jwtService.verify<PnPayloadDto>(pnJwtCookie);
       // payload 의 exp  < 현재시간 이면 false

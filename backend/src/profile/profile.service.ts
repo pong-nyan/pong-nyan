@@ -1,13 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from 'src/entity/User';
 
 @Injectable()
 export class ProfileService {
-  // constructor( ) {}
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
+  ) {}
 
-  // TODO: after table setting, change this code
-  // async getInfo(intraId: number): Promise<Profile | null> {
-  //   // TODO: after table setting, change this code
-  //   const profile = await this.profileRepository.findOne({ where: { intraId } });
-  //   return profile;
-  // }
+  async getInfo(nickname: string): Promise<User | null> {
+    const profile = await this.userRepository.findOne({
+      select: ['id', 'intraId', 'nickname', 'avatar', 'rankScore', 'winnerGames', 'loserGames'],
+      where: { nickname },
+      relations: ['winnerGames', 'loserGames'],
+    });
+    return profile;
+  }
 }

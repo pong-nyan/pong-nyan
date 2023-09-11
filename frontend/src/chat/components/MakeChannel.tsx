@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { socket } from '@/context/socket';
+import React, { useContext, useState } from 'react';
+import { SocketContext } from '@/context/socket';
 import { ChannelType } from '@/type/chatType';
 import Modal from '@/chat/components/Modal';
 
@@ -9,6 +9,7 @@ const MakeChannel = ({ isOpen, onClose }) => {
   const [channelPassword, setChannelPassword] = useState('');
   const [maxUsers, setMaxUser] = useState('');
   const [channelType, setChannelType] = useState<ChannelType>('public');
+  const socket = useContext(SocketContext);
 
   const handleCreateChannel = () => {
     let channelMaxUsers = 21;

@@ -16,6 +16,7 @@ import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
 import { PnJwtPayload, PnPayloadDto } from 'src/dto/pnPayload.dto';
 import { GameStatus } from 'src/type/gameType';
 
+
 @UseGuards(Gateway2faGuard)
 @WebSocketGateway({
   cors: { origin: '*' },

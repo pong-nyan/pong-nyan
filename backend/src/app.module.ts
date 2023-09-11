@@ -11,9 +11,10 @@ import { ChannelModule } from './chat/channel.module';
 import { RankModule } from './rank/rank.module';
 import { UserModule } from './user.module';
 import { ProfileModule } from './profile/profile.module';
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), GameModule, DatabaseModule, ChatModule, ChannelModule, UserModule, RankModule, ProfileModule, AuthModule],
+  imports: [ConfigModule.forRoot(), GameModule, DatabaseModule, ChatModule, ChannelModule, RankModule, UserModule, ProfileModule, FriendsModule, AuthModule],
   controllers: [AppController],
   providers: [AppService, AppGateway],
 })

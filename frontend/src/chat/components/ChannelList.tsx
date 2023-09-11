@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { socket } from '@/context/socket';
+import React, { useState, useEffect, useContext } from 'react';
+import { SocketContext } from '@/context/socket';
 import { Channel } from '@/type/chatType';
 
 const ChannelList = ({ onChannelSelect }) => {
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
+  const socket = useContext(SocketContext);
 
   const handleChannelSelect = (channel: Channel) => {
     const currentChannel = channelList.find(ch => ch.id === channel.id);
