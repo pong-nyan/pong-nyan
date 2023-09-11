@@ -5,9 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Game } from 'src/entity/Game';
 import { User } from 'src/entity/User';
 import { JwtModule } from '@nestjs/jwt';
-import { UserService } from 'src/user.service';
 import { UserModule } from 'src/user.module';
-import { GameApiService } from './game.api.service';
 
 @Module({
   imports: [
@@ -19,6 +17,5 @@ import { GameApiService } from './game.api.service';
     }),
     UserModule],
   providers: [GameService, GameGateway],
-  providers: [GameService, GameApiService, GameGateway, UserService],
 })
 export class GameModule {}

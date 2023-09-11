@@ -51,13 +51,11 @@ export class GameService {
     return [ undefined, undefined, undefined ];
   }
 
-  public friendMatch(client: Socket, nickname: string, friendNickname: string) {
+  public friendMatch(client: Socket, gameStatusIndex: number, intraId: IntraId, nickname: string, friendNickname: string) {
     const friendIndex = this.findNicknameMatchingQueue(friendNickname);
-    this.friendMatchingQueue.push({client, nickname});
-    console.log('frindMatch');
+    this.friendMatchingQueue.push({client, nickname, intraId});
     // 이미 친구가 매칭큐에 있다면 매칭시켜줌
     if (friendIndex !== -1) {
-      console.log('INFO: 친구 매칭 성공');
       const meIndex = this.findNicknameMatchingQueue(nickname);
       const player1 = this.friendMatchingQueue[friendIndex];
       const player2 = this.friendMatchingQueue[meIndex];
@@ -71,6 +69,7 @@ export class GameService {
       const player2Id = player2.client.id;
       this.gameMap.set(roomName, {
         roomName,
+        gameStatus: gameStatusIndex + 1,
         clientId: { p1: player1.client.id, p2: player2.client.id },
         score: { p1: 0, p2: 0 },
         nickname: { p1: player1.nickname, p2: player2.nickname },

@@ -10,7 +10,6 @@ import {
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { BallInfo, PlayerNumber, Score, GameInfo } from 'src/type/gameType';
-import { GameApiService } from './game.api.service';
 import { UseGuards } from '@nestjs/common';
 import { UserService } from 'src/user.service';
 import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
@@ -26,7 +25,6 @@ import { GameStatus } from 'src/type/gameType';
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly gameService: GameService,
-              private readonly gameApiService: GameApiService,
               private readonly userService: UserService) {}
 
   @WebSocketServer() server: Server;
@@ -91,13 +89,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   //
 
   @SubscribeMessage('game-friendStart')
-  handleFriendStart(@ConnectedSocket() client: Socket, @MessageBody() data: any, @PnJwtPayload() payload: PnPayloadDto) {
-    const userInfo = this.userService.getUserInfo(payload.intraId);
+  handleFriendStart(@ConnectedSocket() client: Socket, @MessageBody() payload: { gameStatus: GameStatus, friendNickname: string}, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.getUserInfo(pnPayload.intraId);
     if (!userInfo) return ;
-    console.log('data', data);
-    console.log('friendNickname', data.friendNickname);
-    console.log('nickname', payload.nickname);
-    const [ roomName, player1Id, player2Id ] = this.gameService.friendMatch(client, payload.nickname, data.friendNickname);
+    const [ roomName, player1Id, player2Id ] = this.gameService.friendMatch(client, payload.gameStatus - 1, pnPayload.intraId, pnPayload.nickname, payload.friendNickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;
     this.server.to(roomName).emit('game-friendStart', {player1Id, player2Id});
