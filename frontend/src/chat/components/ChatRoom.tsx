@@ -4,9 +4,10 @@ import MessageInput from './MessageInput';
 import SendMessageButton from './SendMessageButton';
 import { SocketContext } from '@/context/socket';
 import { getMessagesFromLocalStorage, addMessageToLocalStorage } from '../utils/chatLocalStorage';
+import { Message } from '@/type/chatType';
 
 function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: string, selectedChannel: { title: string }, onLeaveChannel: () => void }) {
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [channelUsers, setChannelUsers] = useState<string[]>([]);
   const socket = useContext(SocketContext);
@@ -24,16 +25,12 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: s
 
       const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
       const loggedInUserId = loggedInUser.intraId;
-
       if (sender === loggedInUserId) return;
-
       addMessageToLocalStorage(receivedChannelId, message);
-
       if (channelId === receivedChannelId) {
         setMessages(prevMessages => [...prevMessages, message]);
       }
     });
-
     return () => {
       socket.off('chat-new-message');
     };
@@ -51,10 +48,14 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: s
 
   const handleSendMessage = () => {
     if (inputMessage.trim() !== '') {
-      const newMessages = [...messages, inputMessage];
-      setMessages(newMessages);
-      addMessageToLocalStorage(channelId, inputMessage);
-      socket.emit('chat-message-in-channel', { channelId, message: inputMessage, sender: 'self' }); // sender 정보 추가
+      const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const newMessage = {
+        content: inputMessage,
+        nickname: loggedInUser.nickname
+      };
+      setMessages(prevMessages => [...prevMessages, newMessage]);
+      addMessageToLocalStorage(channelId, newMessage);
+      socket.emit('chat-message-in-channel', { channelId, message: newMessage });
       setInputMessage('');
     }
   };

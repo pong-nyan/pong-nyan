@@ -1,4 +1,6 @@
-export function addMessageToLocalStorage(channelId: string, message: string) {
+import { Message } from '@/type/chatType';
+
+export function addMessageToLocalStorage(channelId: string, message: Message) {
   const key = `channel-${channelId}-messages`;
   const storedMessages = localStorage.getItem(key);
   const existingMessages = storedMessages ? JSON.parse(storedMessages) : [];
