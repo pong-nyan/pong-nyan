@@ -1,10 +1,10 @@
-import Profile from "@/profile/components/Profile";
+import Profile from '@/profile/components/Profile';
 
 const ProfilePage = () => {
   return (
     <div>
       <h1>Profile Page</h1>
-      <Profile intraId="juha" />
+      <Profile nickname="seongyle" />
     </div>
   );
 

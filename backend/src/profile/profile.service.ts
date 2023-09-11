@@ -12,7 +12,7 @@ export class ProfileService {
 
   async getInfo(nickname: string): Promise<User | null> {
     const profile = await this.userRepository.findOne({
-      select: ['intraId', 'nickname', 'avatar', 'rankScore', 'winnerGames', 'loserGames'],
+      select: ['id', 'intraId', 'nickname', 'avatar', 'rankScore', 'winnerGames', 'loserGames'],
       where: { nickname },
       relations: ['winnerGames', 'loserGames'],
     });
