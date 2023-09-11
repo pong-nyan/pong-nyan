@@ -1,63 +1,48 @@
 import styles from '@/friends/styles/Friends.module.css';
-import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import Friend from './Friend';
+import { FriendProps } from '@/type/friendType';
 
 // TODO: type 분리 해야함!!!!!
-type FriendsProps = {
-  intraId: number;
-};
 
-type FriendsData = {
-  intraId: number;
-  nickname: string;
-  status: number;
-  avatar: string;
-  rankScore: number;
-}
-
-function checkFriends(element: FriendsData, intraId: number): boolean {
-  return (element.intraId === intraId);
-}
-
-const Friends = ({ intraId } : FriendsProps) => {
-  const [ friends, setFriends ] = useState<FriendsData[] | null>(null);
+const Friends = () => {
+  const [friends, setFriends] = useState([]);
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const intraId = user.intraId;
+  //친구 정보를 불러온다.
+  // ---- //
   
   useEffect(() => {
-    if (friends?.length && friends?.some(checkFriends)) {
-      axios.get(`${process.env.NEXT_PUBLIC_API_URL}/friends?intraId=${intraId}`).then((res) => {
-        setFriends([friends, res.data]);
-      }).catch((err) => {
-        console.log(err);
-      });
-    }
-  }, [ intraId ]);
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/friends?intraId=${intraId}`).then((res) => {
+      setFriends(res.data);
+    }).catch((err) => {
+      void err;
+      return <div>친구 정보를 불러오는데 실패했습니다.</div>;
+    });
+  }, []);
+  
+  if (!friends.length) return (
+    <div>
+      <h1 className={styles.profile}>Friends List</h1>
+      <div className={styles.profile}>you don't have friends</div>
+    </div>
+  );
+  
+  //make friend component
+  // ---- //
 
-  if (friends === null) {
-    return (
-      <div className={styles.friends}>
-        <h1>너 친구도 없냐? ㅋㅋㅋ</h1>
-      </div>
-    );
-  }
 
   //친구를 출력한다. 
   // ---- //
   return (
     <>
-      <h1>친구</h1>
-      <ol>
-        {friends.map((friend) => (
-          <li key={friend.intraId}>
-            <div className={styles.friend}>
-              <img src={friend.avatar} alt="avatar" />
-              <div className={styles.friendInfo}>
-                <h2>{friend.nickname}</h2>
-                <p>{friend.rankScore}</p>
-              </div>
-            </div>
-          </li>
+      <h1 className={styles.profile}>Friends List</h1>
+      <div className={styles.profile}>
+        {friends.map((friend: FriendProps) => (
+          <Friend key={friend.intraId} {...friend} />
         ))}
-      </ol>
+      </div>
     </>
   );
 };
