@@ -38,6 +38,13 @@ export class FriendsController {
         const intraId = pnPayload.intraId;
         return await this.friendsService.getAcceptedFriends(intraId);
     }
+    @Get('/me/accepted/test')
+    @ApiTags('friends')
+    @ApiOperation({ summary: 'get accepted friends', description: '테스트용. 인트라 id 직접 입력. 입력한 intraId 와의 수락된 친구 목록을 가져온다.' })
+    async testGetAcceptedFriends(@Query() query: GetIntraIdDto) {
+        const intraId = query.intraId;
+        return await this.friendsService.getAcceptedFriends(intraId);
+    }
 
     @Post('/')
     @ApiTags('friends')
@@ -48,10 +55,9 @@ export class FriendsController {
         return await this.friendsService.addFriend(intraId, friendIntraId);
     }
 
-
     @Post('/test')
     @ApiTags('friends')
-    @ApiOperation({ summary: 'request friend', description: '테스트용. 인트라 id 직접 입력 친구 요청을 보낸다. 본인만 가능' })
+    @ApiOperation({ summary: 'request friend', description: '테스트용. 인트라 id 를 입력해서 친구 요청을 보낸다' })
     async testRequestFriend(@Query() query: GetIntraIdDto, @Body() { friendIntraId }: PostFriendDto) {
         const intraId = query.intraId;
         return await this.friendsService.addFriend(intraId, friendIntraId);
