@@ -1,18 +1,18 @@
 import { Dispatch, SetStateAction } from 'react';
+import { Body, Engine, Runner } from 'matter-js';
 import { socket } from '@/context/socket';
 import { KeyEventMessage, PlayerNumber, Score, GameInfo, CanvasSize, GameStatus } from '@/type/gameType';
-import { Body, Engine } from 'matter-js';
+import { Socket } from '@/type/socketType';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
 import { movePlayer, movePaddle } from '@/game/matterEngine/player';
-import { resumeGame } from '@/game/logic/resumeGame';
-
+import { resumeGame, waitPlayer } from '@/game/logic/resumeGame';
 
 /**
  * 게임 시작을 서버로 전송합니다.
  * @param gameStatus: GameStatus
  * @returns
  */
-export const socketEmitGameStartEvent = (gameStatus: GameStatus) => {
+export const socketEmitGameStartEvent = (socket: Socket, gameStatus: GameStatus) => {
   socket.emit('game-start', {
     gameStatus,
   });
@@ -122,16 +122,20 @@ export const socketOnGameScoreEvent = (sceneSize: CanvasSize, engine: Engine | u
 
 export const socketEmitGameDisconnectEvent = () => {
   socket.emit('game-disconnect');
-
 }
 
-export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
+export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>, setGameStatus: Dispatch<SetStateAction<GameStatus>>) => {
   socket.on('game-disconnect', ( { disconnectNickname, gameInfo } : { disconnectNickname: string, gameInfo: GameInfo } ) => {
-    if (!engine || !engine.world) return;
+    if (!engine || !engine.world || !runner) return;
+    Runner.stop(runner);
+    alert(`${disconnectNickname}님이 나가셨습니다.`);
     console.log('game-disconnect', disconnectNickname, gameInfo);
-    setScore({ p1: gameInfo.score.p1, p2: gameInfo.score.p2 });
-    resumeGame(sceneSize, engine, 5, `${disconnectNickname}이(가) 나갔습니다.`);
+    setGameStatus(GameStatus.End);
+    setScore({ p1: gameInfo.score.p2, p2: gameInfo.score.p2 });
   });
 };
+
+
+
 
 

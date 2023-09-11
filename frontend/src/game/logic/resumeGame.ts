@@ -1,7 +1,7 @@
 import { setStartBall } from '@/game/matterEngine/matterJsSet';
 import { Engine, Body } from 'matter-js';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
-import { CanvasSize } from '@/type/gameType';
+import { CanvasSize, Timer } from '@/type/gameType';
 
 export const resumeGame = (sceneSize: CanvasSize, engine: Engine, timer: number, infoText: string) => {
   // 미리 공을 세팅해놓고 3초 뒤에 공을 움직이게 함. 순서 바꾸면 벽이 뚫리는 버그 발생
@@ -24,6 +24,9 @@ export const resumeGame = (sceneSize: CanvasSize, engine: Engine, timer: number,
     } else {
       countdown.innerText = '';  // 카운트 다운 초기화
       clearInterval(countdownInterval);  // 간격 중지
+      if (timer === Timer.First) {
+        console.log('socketEmitGameEnd');
+      }
     }
     --count;
   }, 1000);  // 1초 간격

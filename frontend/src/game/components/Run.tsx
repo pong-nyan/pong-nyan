@@ -9,8 +9,8 @@ import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent, so
     
 import styles from '@/game/styles/Run.module.css';
 
-export default function Run({ setGameStatus, playerNumber, opponentId, score, setScore }
-  : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber | undefined, opponentId: string | undefined, score: Score, setScore: Dispatch<SetStateAction<Score>>}) {
+const Run = ({ setGameStatus, playerNumber, opponentId, score, setScore}
+  : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber | undefined, opponentId: string | undefined, score: Score, setScore: Dispatch<SetStateAction<Score>>}) => {
   const scene = useRef<HTMLDivElement>(null);
   const engine = useRef<Engine>();
   const render = useRef<Render>();
@@ -96,8 +96,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     socketOnGameKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
     socketOnGameBallEvent(engine.current);  // 공 위치, 속도 동기화
     socketOnGameScoreEvent(sceneSize, engine.current, setScore);
-    socketOnGameDisconnectEvent(sceneSize, engine.current, setScore);
-
+    socketOnGameDisconnectEvent(sceneSize, engine.current, runner.current, setScore, setGameStatus);
     // run the engine
     Runner.run(runner.current, engine.current);
     Render.run(render.current);
@@ -111,7 +110,7 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
       render.current.canvas.remove();
       render.current.textures = {};
     };
-  }, [playerNumber, opponentId, setScore]);
+  }, [playerNumber, opponentId, setScore, setGameStatus]);
 
   useEffect(() => {
     if (!playerNumber) return;
@@ -137,3 +136,5 @@ export default function Run({ setGameStatus, playerNumber, opponentId, score, se
     </div>
   );
 }
+
+export default Run;

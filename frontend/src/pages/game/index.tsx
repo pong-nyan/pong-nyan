@@ -5,6 +5,7 @@ import { PlayerNumber, Score, GameStatus } from '@/type/gameType';
 import { useState, useEffect } from 'react';
 import { socket } from '@/context/socket';
 import useAuth from '@/context/useAuth';
+import { resumeGame } from '@/game/logic/resumeGame';
 
 export default function Game(): JSX.Element {
   useAuth();
@@ -14,13 +15,6 @@ export default function Game(): JSX.Element {
   const [playerNumber, setPlayerNumber] = useState<PlayerNumber>();
   const [opponentId, setOpponentId] = useState<string>();
   const [score, setScore] = useState<Score>({p1: 0, p2: 0});
-
-  useEffect(() => {
-    socket.on('game-reconnect', () => {
-      alert('이전 게임 방 접속합니다.');
-      // setGameStatus(GameStatus.RankPnRun);
-    });
-  }, []);
 
   switch (gameStatus) {
   case GameStatus.Start:

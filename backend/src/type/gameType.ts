@@ -17,7 +17,8 @@ export enum GameStatus {
 
 export type QueueInfo = {
   client: Socket,
-  nickname: string
+  nickname: string,
+  intraId: number
 }
 
 export type MatchingQueue = QueueInfo[];
@@ -50,7 +51,7 @@ export type ClientId = {
 }
 
 export type GameInfo = {
-  roomName: RoomName,
+  gameStatus: GameStatus,
   clientId: ClientId,
   score: Score,
   nickname: Nickname,

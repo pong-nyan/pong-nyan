@@ -14,25 +14,33 @@ const GameStartWrapper = ({ gameStatus } : { gameStatus: GameStatus }) => {
     <div className={styles.buttonWrapper}>
       <div className={styles.buttonOption}>
         <CatButton
-          onClickFunction={() => { socketEmitGameStartEvent(gameStatus); }}
+          onClickFunction={() => {
+            socketEmitGameStartEvent(socket, gameStatus); 
+          }}
           text="rank pn"
           width={buttonWidth}
           height={buttonHeight}
         />
         <CatButton
-          onClickFunction={() => { socketEmitGameStartEvent(gameStatus); }}
+          onClickFunction={() => {
+            socketEmitGameStartEvent(socket, gameStatus);
+          }}
           text="normal pn"
           width={buttonWidth}
           height={buttonHeight}
         />
         <CatButton
-          onClickFunction={() => { socketEmitGameStartEvent(gameStatus); }}
+          onClickFunction={() => {
+            socketEmitGameStartEvent(socket, gameStatus);
+          }}
           text="rank origin"
           width={buttonWidth}
           height={buttonHeight}
         />
         <CatButton
-          onClickFunction={() => { socketEmitGameStartEvent(gameStatus); }}
+          onClickFunction={() => {
+            socketEmitGameStartEvent(socket, gameStatus);
+          }}
           text="normal origin"
           width={buttonWidth}
           height={buttonHeight}

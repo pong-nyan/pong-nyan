@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState, useEffect } from 'react';
 import { SocketContext } from '@/context/socket';
-import { PlayerNumber, GameStatus } from '@/type/gameType';
+import { PlayerNumber, GameStatus, RoomName } from '@/type/gameType';
 import GameStartWrapper from './GameStartWrapper';
 
 export default function Start({ gameStatus, setGameStatus, setPlayerNumber, setOpponentId }
@@ -9,7 +9,7 @@ export default function Start({ gameStatus, setGameStatus, setPlayerNumber, setO
   const [ loading, setLoading ] = useState(false);
 
   // TODO: 추후 rank - origin, normal - origin 의 경우의 수에 따라 socket.on 을 추가해야 함
-  socket.on('game-start', ({player1Id, player2Id}: {player1Id: string, player2Id: string}) => {
+  socket.on('game-start', ({ player1Id, player2Id }: {roomName: RoomName, player1Id: string, player2Id: string}) => {
     if (socket.id === player1Id) { 
       setPlayerNumber('player1');
       setOpponentId(player2Id);

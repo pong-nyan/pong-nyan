@@ -1,10 +1,11 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import Run from './Run';
 import CountDown from './CountDown';
 import { PlayerNumber, Score } from '@/type/gameType';
 
 const RunWrapper = ({ setGameStatus, playerNumber, opponentId, score, setScore}
     : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber | undefined, opponentId: string | undefined, score: Score, setScore: Dispatch<SetStateAction<Score>> } ) => {
+
   return (
     <div style={{ position: 'relative' }}>
       <Run setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} />

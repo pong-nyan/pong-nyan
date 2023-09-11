@@ -4,7 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Socket, RoomName } from 'src/type/socketType';
 import { BallInfo, GameInfo, QueueInfo, PlayerNumber, Score } from 'src/type/gameType';
+import { IntraId, UserInfo } from 'src/type/userType';
 import { User } from 'src/entity/User';
+import { UserService } from 'src/user.service';
 
 @Injectable()
 export class GameService {
@@ -12,22 +14,28 @@ export class GameService {
     @InjectRepository(Game)
     private readonly gameRepository: Repository<Game>,
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private readonly userService: UserService,
   ) { }
 
-  public match(client: Socket, gameStatusIndex: number, nickname: string) {
+  public match(client: Socket, gameStatusIndex: number, intraId: IntraId, nickname: string) {
+    const userInfo = this.userService.getUserInfo(intraId);
+    if (!userInfo) return ;
+    console.log('userInfo', userInfo);
     // this.matchingList[gameStatusIndex].push({client, nickname});
-    this.matchingQueue.push({client, nickname});
+    this.matchingQueue.push({client, nickname, intraId});
     if (this.matchingQueue.length > 1) {
       const player1 = this.matchingQueue.shift();
       const player2 = this.matchingQueue.shift();
       const roomName = 'game-' + player1.nickname + ':' + player2.nickname;
       player1.client.join(roomName);
       player2.client.join(roomName);
+      this.userService.setGameRoom(player1.intraId, roomName);
+      this.userService.setGameRoom(player2.intraId, roomName);
       const player1Id = player1.client.id;
       const player2Id = player2.client.id;
       this.gameMap.set(roomName, {
-        roomName,
+        gameStatus: gameStatusIndex + 1,
         clientId: { p1: player1.client.id, p2: player2.client.id },
         score: { p1: 0, p2: 0 },
         nickname: { p1: player1.nickname, p2: player2.nickname },
@@ -56,7 +64,7 @@ export class GameService {
     return roomName;
   }
 
-  public getGameInfo(roomName: RoomName) {
+  public getGameInfo(roomName: RoomName): GameInfo {
     return this.gameMap.get(roomName);
   }
 

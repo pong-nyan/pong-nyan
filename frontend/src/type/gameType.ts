@@ -15,6 +15,12 @@ export enum GameStatus {
 	End
 }
 
+export enum Timer {
+  First = 5,
+  Score = 3,
+  Disconnect = 10,
+}
+
 export type PlayerNumber = 'player1' | 'player2';
 
 /*

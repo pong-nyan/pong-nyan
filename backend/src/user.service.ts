@@ -39,7 +39,9 @@ export class UserService {
     }
 
     public setUserMap(intraId : IntraId, userInfo: UserInfo) {
+      console.log('(Before) setUserMap : ', this.userMap);
       this.userMap.set(intraId, userInfo);
+      console.log('(After) setUserMap : ', this.userMap);
     }
 
     public setIdMap(clientId: SocketId, intraId: IntraId) {
@@ -62,14 +64,22 @@ export class UserService {
       console.log('(After) deleteIdMap : ', this.idMap);
     }
 
-    public leaveGameRoom(intraId: IntraId) {
+    public setGameRoom(intraId: IntraId, roomName: string) {
+      const userInfo = this.userMap.get(intraId);
+      if (!userInfo) return ;
+      userInfo.gameRoom = roomName;
+      console.log('[userService] setGameRoom', this.userMap);
+    }
+
+    public deleteGameRoom(intraId: IntraId) {
       const userInfo = this.userMap.get(intraId);
       if (!userInfo) return ;
       userInfo.gameRoom = '';
+      console.log('[userService] deleteGameRoom', this.userMap);
     }
 
     /* -------------------------------------------------------------------- */
 
-    private userMap = new Map<number, UserInfo>();
+    private userMap = new Map<IntraId, UserInfo>();
     private idMap = new Map<SocketId, IntraId>();
 }
