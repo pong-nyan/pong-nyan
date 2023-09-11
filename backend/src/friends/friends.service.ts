@@ -31,7 +31,19 @@ export class FriendsService {
             .where('fs2.createdAt IS NULL');
         }, 'fs', 'fs."friendId" = friend.id')
         .where('requestUser.id = :userId OR addressUser.id = :userId', { userId: user.id })
+        .andWhere('friendStatuses.status = :status', { status: 'accepted' })
         .getMany();
+
+        // friends 의 friendStatuses 를 friendStatus 의 createdAt 이 마지막인 것만 남긴다.
+        const refineFriends = friends.map(friend => {
+            const newFriend = friend;
+            newFriend.friendStatuses = friend.friendStatuses.filter(friendStatus => {
+                return friendStatus.createdAt === friend.friendStatuses.reduce((a, b) => {
+                    return a.createdAt > b.createdAt ? a : b;
+                }).createdAt;
+            });
+            return newFriend;
+        });
         return friends;
     }
 
@@ -52,7 +64,17 @@ export class FriendsService {
         .where('requestUser.id = :userId OR addressUser.id = :userId', { userId: user.id })
         .andWhere('friendStatuses.status = :status', { status: 'accepted' })
         .getMany();
-        return friends;
+                // friends 의 friendStatuses 를 friendStatus 의 createdAt 이 마지막인 것만 남긴다.
+        const refineFriends = friends.map(friend => {
+            const newFriend = friend;
+            newFriend.friendStatuses = friend.friendStatuses.filter(friendStatus => {
+                return friendStatus.createdAt === friend.friendStatuses.reduce((a, b) => {
+                    return a.createdAt > b.createdAt ? a : b;
+                }).createdAt;
+            });
+            return newFriend;
+        });
+        return refineFriends;
     }
 
     async addFriend(intraId: number, friendIntraId: number): Promise<Friend> {
@@ -79,6 +101,7 @@ export class FriendsService {
 
     async validateAcceptFriend(intraId: number, friendId: number): Promise<Friend> {
         const friend = await this.friendRepository.findOne({ where: { id: friendId }, relations: ['addressUser'] });
+        console.log(intraId, friend);
         if (friend.addressUser.intraId !== intraId) throw new Error('No friend found');
         return friend;
     }
