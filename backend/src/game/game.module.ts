@@ -18,6 +18,7 @@ import { GameApiService } from './game.api.service';
       signOptions: { expiresIn: '1d'}
     }),
     UserModule],
+  providers: [GameService, GameGateway],
   providers: [GameService, GameApiService, GameGateway, UserService],
 })
 export class GameModule {}

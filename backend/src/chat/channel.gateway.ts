@@ -93,7 +93,7 @@ export class ChannelGateway {
   }
 
   handleConnection(@ConnectedSocket() client: Socket) {
-    console.log('in cha handleConnection');
+    console.log('[ChannelGateway] Connection', client.id);
 
     if (!this.userService.checkPnJwt(client))
     {

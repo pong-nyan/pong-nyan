@@ -14,20 +14,18 @@ import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
 export class Google2faGateway {
   constructor(private readonly userService: UserService) {}
 
+  handleConnection(@ConnectedSocket() client: Socket) {
+    console.log('[Gateway2faGuard] Connection ', client.id);
+  }
+
+  handleDisconnect(@ConnectedSocket() client: Socket) {
+    console.log('[Gateway2faGuard] Disconnection ', client.id);
+    this.userService.deleteIdMap(client.id);
+  }
+
   @SubscribeMessage('auth-set-map')
   handleAuthSetMap(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
     console.log('handleAuthSetMap client.id intraId', client.id, payload.intraId);
     this.userService.setIdMap(client.id, payload.intraId);
   }
-
-  // @SubscribeMessage('auth-set-map-payload')
-  // handleAuthSetMapPayload(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
-  //   console.log('handleAuthSetMapPayload client.id', client.id);
-  //   if (!payload) {
-  //     console.log('payload null', payload);
-  //     return ;
-  //   }
-  //   console.log('handleAuthSetMapPayload client.id intraId', client.id, payload.intraId);
-  //   this.userService.setIdMap(client.id, payload.intraId);
-  // }
 }

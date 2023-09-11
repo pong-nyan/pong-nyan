@@ -1,9 +1,11 @@
 import { useContext } from 'react';
 import CatButton from '@/_components/CatButton';
 import { SocketContext } from '@/context/socket';
+import { GameStatus } from '@/type/gameType';
 import styles from '../styles/Start.module.css';
+import { socketEmitGameStartEvent } from '@/context/socketGameEvent';
 
-const GameStartWrapper = () => {
+const GameStartWrapper = ({ gameStatus } : { gameStatus: GameStatus }) => {
   const socket = useContext(SocketContext);
   const buttonWidth = 100;
   const buttonHeight = 80;
@@ -13,7 +15,7 @@ const GameStartWrapper = () => {
       <div className={styles.buttonOption}>
         <CatButton
           onClickFunction={() => {
-            socket.emit('game-randomStart-rank-pn');
+            socketEmitGameStartEvent(GameStatus.RankPnRun); 
           }}
           text="rank pn"
           width={buttonWidth}
@@ -21,7 +23,7 @@ const GameStartWrapper = () => {
         />
         <CatButton
           onClickFunction={() => {
-            socket.emit('game-randomStart-normal-pn');
+            socketEmitGameStartEvent(GameStatus.NormalPnRun);
           }}
           text="normal pn"
           width={buttonWidth}
@@ -29,7 +31,7 @@ const GameStartWrapper = () => {
         />
         <CatButton
           onClickFunction={() => {
-            socket.emit('game-randomStart-rank-origin');
+            socketEmitGameStartEvent(GameStatus.RankOriginRun);
           }}
           text="rank origin"
           width={buttonWidth}
@@ -37,7 +39,7 @@ const GameStartWrapper = () => {
         />
         <CatButton
           onClickFunction={() => {
-            socket.emit('game-randomStart-normal-origin');
+            socketEmitGameStartEvent(GameStatus.NormalOriginRun);
           }}
           text="normal origin"
           width={buttonWidth}

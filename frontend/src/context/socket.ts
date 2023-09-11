@@ -4,10 +4,6 @@ import { createContext } from 'react';
 export const socket = socketIOClient({ path: '/socket/'});
 export const SocketContext = createContext(socket);
 
-// type Item = {
-//   intraId: number;
-// }
-
 socket.on('auth-set-map-payload', () => {
   const user = localStorage.getItem('user');
   if (!user) {
@@ -18,3 +14,4 @@ socket.on('auth-set-map-payload', () => {
   console.log('auth-set-map-payload item', item);
   socket.emit('auth-set-map', { intraId: item.intraId });
 });
+
