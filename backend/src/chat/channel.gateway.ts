@@ -6,7 +6,6 @@ import { UseGuards } from '@nestjs/common';
 import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
 import { PnJwtPayload, PnPayloadDto } from 'src/dto/pnPayload.dto';
 import { JwtService } from '@nestjs/jwt';
-import * as cookie from 'cookie';
 import { UserService } from 'src/user.service';
 
 @WebSocketGateway({
@@ -70,12 +69,12 @@ export class ChannelGateway {
   }
 
   @SubscribeMessage('chat-message-in-channel')
-  handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payload: { channelId: string, message: string }) {
+  handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, message: string }, @PnJwtPayload() payload: PnPayloadDto) {
     // 해당 채널의 모든 사용자에게 메시지 전송
-    console.log('chat-message-in-channel, payload', payload);
-    const chTest = this.channelService.getChannel(payload.channelId);
+    console.log('chat-message-in-channel, payload', payloadEmit);
+    const chTest = this.channelService.getChannel(payloadEmit.channelId);
     console.log('chat-message-in-channel, chTest', chTest);
-    this.server.to(payload.channelId).emit('chat-new-message', payload.message);
+    this.server.to(payloadEmit.channelId).emit('chat-new-message', { channelId: payloadEmit.channelId, message: payloadEmit.message, sender: payload.intraId });
   }
 
   @SubscribeMessage('chat-leave-channel')

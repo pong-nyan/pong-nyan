@@ -20,12 +20,15 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: s
 
   useEffect(() => {
     socket.on('chat-new-message', (data) => {
-      const { message, channelId: receivedChannelId } = data;
+      const { message, channelId: receivedChannelId, sender } = data;
 
-      // 메시지를 받은 채널의 localStorage에 메시지를 추가합니다.
+      const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const loggedInUserId = loggedInUser.intraId;
+
+      if (sender === loggedInUserId) return;
+
       addMessageToLocalStorage(receivedChannelId, message);
 
-      // 현재 선택된 채널이 메시지를 받은 채널과 같다면, 상태도 업데이트합니다.
       if (channelId === receivedChannelId) {
         setMessages(prevMessages => [...prevMessages, message]);
       }
@@ -51,7 +54,7 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: s
       const newMessages = [...messages, inputMessage];
       setMessages(newMessages);
       addMessageToLocalStorage(channelId, inputMessage);
-      socket.emit('chat-message-in-channel', { channelId, message: inputMessage });
+      socket.emit('chat-message-in-channel', { channelId, message: inputMessage, sender: 'self' }); // sender 정보 추가
       setInputMessage('');
     }
   };
