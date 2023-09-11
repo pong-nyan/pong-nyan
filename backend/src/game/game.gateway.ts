@@ -47,6 +47,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!this.userService.checkPnJwt(client)) return ;
     const intraId = this.userService.getIntraId(client.id);
     const userInfo = this.userService.getUserInfo(intraId);
+
+    // 먼저 userInfo가 undefined인지 확인합니다.
+    if (!userInfo) {
+      console.log('[ERROR] 유저 정보가 없습니다.');
+      return;
+    }
+
     if (!userInfo.gameRoom) {
       console.log('[INFO] 게임 방이 없습니다.');
       this.gameService.removeMatchingClient(client);
