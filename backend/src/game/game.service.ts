@@ -27,6 +27,10 @@ export class GameService {
     if (this.matchingQueue.length > 1) {
       const player1 = this.matchingQueue.shift();
       const player2 = this.matchingQueue.shift();
+      if (player1.nickname === player2.nickname) {
+        this.matchingQueue.push(player1);
+        return [ undefined, undefined, undefined ];
+      }
       const roomName = 'game-' + player1.nickname + ':' + player2.nickname;
       player1.client.join(roomName);
       player2.client.join(roomName);
