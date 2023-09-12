@@ -1,11 +1,14 @@
 export type PendingFriend = {
-    nickname: string,
-    createdAt: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  requestUser: any;
+  nickname: string,
+  id: number,
+  createdAt: string,
 }
 
 export type PendingFriendProps = {
-    pendingFriend: PendingFriend,
-    key: number,
+  pendingFriend: PendingFriend,
+  key: number,
 }
 
 export enum FriendStatus {

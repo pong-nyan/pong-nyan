@@ -4,12 +4,16 @@ import { SocketId, Socket } from 'src/type/socketType';
 import { JwtService } from '@nestjs/jwt';
 import { PnPayloadDto } from 'src/dto/pnPayload.dto';
 import * as cookie from 'cookie';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entity/User';
+import { In, Repository } from 'typeorm';
 
 
 @Injectable()
 export class UserService {
     constructor(
       private readonly jwtService: JwtService,
+      @InjectRepository(User) private readonly userRepository: Repository<User>,
       ) {}
 
     private userMap = new Map<IntraId, UserInfo>();
@@ -132,10 +136,9 @@ export class UserService {
       if (!intraIdList) return [];
       const userNicknameList = [];
       for (const intraId of intraIdList) {
+        if (!this.userMap.has(intraId)) continue;
         userNicknameList.push((this.userMap.get(intraId)).nickname);
       }
-
+      return userNicknameList;
     }
-
-
 }

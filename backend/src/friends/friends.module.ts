@@ -7,10 +7,11 @@ import Friend from 'src/entity/Friend';
 import { User } from 'src/entity/User';
 import { UserService } from 'src/user.service';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { FriendsGateway } from './friends.gateway';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Friend, FriendStatus, User])],
   controllers: [FriendsController],
-  providers: [ FriendsService, UserService, AuthGuard ]
+  providers: [ FriendsService, UserService, AuthGuard, FriendsGateway ]
 })
 export class FriendsModule {}

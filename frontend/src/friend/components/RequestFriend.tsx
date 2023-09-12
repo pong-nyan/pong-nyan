@@ -1,5 +1,6 @@
 import styles from '@/friend/styles/RequestFriend.module.css';
 import { useState } from 'react';
+import axios from 'axios';
 
 const RequestFriend = () => {
   const [nickname, setNickname] = useState('');
@@ -9,7 +10,17 @@ const RequestFriend = () => {
       alert('친구요청할 친구의 nickname을 입력해주세요.');
       return;
     }
-    // TODO: request friend using axios
+    axios.post(`${process.env.NEXT_PUBLIC_API_URL}/friends/request`,
+      {
+        friendNickname: nickname
+      }).then(() => {
+      alert('친구요청을 성공했습니다.');
+      setNickname('');
+    }).
+      catch((error) => {
+        alert('친구요청을 실패했습니다.');
+        console.error(error);
+      });
   };
 
   return (
