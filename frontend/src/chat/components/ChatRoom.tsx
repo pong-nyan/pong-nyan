@@ -18,21 +18,7 @@ function ChatRoom({ onLeaveChannel }: { onLeaveChannel: () => void }) {
   const { channelId } = router.query;
 
   useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === `chat-${channelId}`) {
-        const loadedMessages = getMessagesFromLocalStorage(channelId as string);
-        setMessages(loadedMessages);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
-  useEffect(() => {
+    console.log('[Chat] 처음 접속시 localStorage에서 메시지 불러옴');
     const loadedMessages = getMessagesFromLocalStorage(channelId as string);
     setMessages(loadedMessages);
   }, []);
@@ -67,7 +53,7 @@ function ChatRoom({ onLeaveChannel }: { onLeaveChannel: () => void }) {
 
   // 페이지에서 채팅의 내용을 바꾸기 위해
   useEffect(() => {
-    socket.on('chat-new-message-recei', (data) => {
+    socket.on('chat-new-message', (data) => {
       const { message, channelId: receivedChannelId } = data;
 
       if (channelId === receivedChannelId) {
@@ -78,7 +64,7 @@ function ChatRoom({ onLeaveChannel }: { onLeaveChannel: () => void }) {
     return () => {
       socket.off('chat-new-message');
     };
-  }, [channelId]);
+  }, [socket, channelId]);
 
   const handleSendMessage = () => {
     if (inputMessage.trim() !== '') {
