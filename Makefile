@@ -1,4 +1,4 @@
-.PHONY: all iclean cclean dclean aclean are re up down
+.PHONY: all build backend up up_d downiclean cclean dclean aclean are re 
 
 MAKE := make -i
 
@@ -8,6 +8,9 @@ all:
 
 build:
 	docker compose build
+
+backend:
+	docker compose logs -f nestjs
 
 up: 
 	docker compose up
