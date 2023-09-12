@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FriendsService } from './friends.service';
 import { PnPayloadDto } from 'src/dto/pnPayload.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { GetIntraIdDto, PostFriendDto, PostFriendStatusDto } from './friends.dto';
+import { GetIntraIdDto, PostFriendDto, PostFriendStatusDto, PostFriendNicknameDto } from './friends.dto';
 import { PnJwtPayload } from 'src/dto/pnPayload.dto';
 import Friend from 'src/entity/Friend';
 
@@ -47,6 +47,7 @@ export class FriendsController {
         return await this.friendsService.getPendingFriends(intraId);
     }
 
+
     @Get('/me/accepted/test')
     @ApiTags('friends')
     @ApiOperation({ summary: 'get accepted friends', description: '테스트용. 인트라 id 직접 입력. 입력한 intraId 와의 수락된 친구 목록을 가져온다.' })
@@ -63,6 +64,16 @@ export class FriendsController {
         const intraId = pnPayload.intraId;
         return await this.friendsService.addFriend(intraId, friendIntraId);
     }
+
+    @Post('/request')
+    @ApiTags('friends')
+    @ApiOperation({ summary: 'request friend', description: '친구 요청을 보낸다. 본인만 가능 친구의 닉네임으로 요청을 보낸다.' })
+    @ApiResponse({ status: 200, description: '친구 요청 성공', type: Friend })
+    async requestFriendByNickname(@PnJwtPayload() pnPayload: PnPayloadDto, @Body() { friendNickname }: PostFriendNicknameDto) {
+        const intraId = pnPayload.intraId;
+        return await this.friendsService.addFriendByNickname(intraId, friendNickname);
+    }
+
 
     @Post('/test')
     @ApiTags('friends')

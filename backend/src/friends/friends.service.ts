@@ -116,6 +116,16 @@ export class FriendsService {
         return newFriend;
     }
 
+    async addFriendByNickname(intraId: number, friendNickname: string): Promise<Friend> {
+        const user = await this.userRepository.findOne({ where: { intraId } });
+        const friend = await this.userRepository.findOne({ where: { nickname: friendNickname } });
+        const newFriend = await this.friendRepository.create({ requestUser: user, addressUser: friend });
+        await this.friendRepository.save(newFriend);
+        const newFriendStatus = this.friendStatusRepository.create({ friend: newFriend, specificUser: user });
+        await this.friendStatusRepository.save(newFriendStatus);
+        return newFriend;
+    }
+
     async updateFriendStatus(intraId: number, friend: Friend, status: string): Promise<FriendStatus> {
         const user = await this.userRepository.findOne({ where: { intraId } });
         const newFriendStatus = await this.friendStatusRepository.create({ friend, status, specificUser: user });
