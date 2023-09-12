@@ -106,6 +106,7 @@ export class FriendsService {
         });
         return refineFriends;
     }
+
     async addFriend(intraId: number, friendIntraId: number): Promise<Friend> {
         const user = await this.userRepository.findOne({ where: { intraId } });
         const friend = await this.userRepository.findOne({ where: { intraId: friendIntraId } });
