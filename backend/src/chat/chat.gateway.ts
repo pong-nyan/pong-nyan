@@ -120,8 +120,7 @@ export class ChatGateway {
     for (const room of userChatRooms) {
         const chatInfo = this.chatService.getChannel(room);
         if (!chatInfo) continue;
-
-        client.join(room); // 해당 채팅방에 다시 연결
+        client.join(room);
         console.log('[ChatGateway] reconnected to room', room);
     }
   }
