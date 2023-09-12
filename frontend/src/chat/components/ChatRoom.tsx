@@ -30,12 +30,12 @@ function ChatRoom({ onLeaveChannel }: { onLeaveChannel: () => void }) {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [channelId]);
+  }, []);
 
   useEffect(() => {
     const loadedMessages = getMessagesFromLocalStorage(channelId as string);
     setMessages(loadedMessages);
-  }, [channelId]);
+  }, []);
 
   useEffect(() => {
     socket.on('chat-update-users', (users) => {
@@ -65,8 +65,9 @@ function ChatRoom({ onLeaveChannel }: { onLeaveChannel: () => void }) {
     }
   }, [channelId]);
 
+  // 페이지에서 채팅의 내용을 바꾸기 위해
   useEffect(() => {
-    socket.on('chat-new-message', (data) => {
+    socket.on('chat-new-message-recei', (data) => {
       const { message, channelId: receivedChannelId } = data;
 
       if (channelId === receivedChannelId) {

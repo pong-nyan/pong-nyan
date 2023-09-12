@@ -21,6 +21,7 @@ socket.on('auth-set-map-payload', () => {
 //   addMessageToLocalStorage(channelId, message);
 // });
 
+// 메시지를 받아서 로컬 스토리지에 저장
 socket.on('chat-new-message', (data) => {
   console.log('[Chat] chat-new-message', data);
   const { message, channelId: receivedChannelId, sender } = data;
