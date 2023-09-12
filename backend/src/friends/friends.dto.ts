@@ -14,7 +14,7 @@ export class PostFriendDto {
     readonly friendIntraId: number;
 }
 
-export class PostFriendDtoNickname {
+export class PostFriendNicknameDto {
     @ApiProperty({
         description: '친구의 닉네임',
         example: 'seongyle',
@@ -22,7 +22,7 @@ export class PostFriendDtoNickname {
     })
     @IsNotEmpty()
     @IsString()
-    readonly friendNick: string;
+    readonly friendNickname: string;
 }
 
 export class PostFriendStatusDto {
