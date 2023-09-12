@@ -82,8 +82,7 @@ export class ChatGateway {
   handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, message: string }, @PnJwtPayload() payload: PnPayloadDto) {
     // 해당 채널의 모든 사용자에게 메시지 전송
     console.log('chat-message-in-channel, payload', payloadEmit);
-    const chTest = this.chatService.getChannel(payloadEmit.channelId);
-    console.log('chat-message-in-channel, chTest', chTest);
+
     this.server.to(payloadEmit.channelId).emit('chat-new-message', { channelId: payloadEmit.channelId, message: payloadEmit.message, sender: payload.intraId });
   }
 

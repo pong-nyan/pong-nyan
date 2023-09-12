@@ -6,22 +6,19 @@ import { SocketContext } from '@/context/socket';
 import { getMessagesFromLocalStorage, addMessageToLocalStorage } from '../utils/chatLocalStorage';
 import { Message } from '@/type/chatType';
 import { Channel } from '@/type/chatType';
-import { useRouter } from 'next/router';
 
-function ChatRoom({ onLeaveChannel }: { onLeaveChannel: () => void }) {
+function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveChannel: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [channelUsers, setChannelUsers] = useState<string[]>([]);
   const [channel, setChannel] = useState<Channel | null>(null);
   const socket = useContext(SocketContext);
-  const router = useRouter();
-  const { channelId } = router.query;
 
   useEffect(() => {
     console.log('[Chat] 처음 접속시 localStorage에서 메시지 불러옴');
     const loadedMessages = getMessagesFromLocalStorage(channelId as string);
     setMessages(loadedMessages);
-  }, []);
+  }, [socket, channelId]);
 
   useEffect(() => {
     socket.on('chat-update-users', (users) => {
@@ -31,9 +28,10 @@ function ChatRoom({ onLeaveChannel }: { onLeaveChannel: () => void }) {
     return () => {
       socket.off('chat-update-users');
     };
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
+    console.log('[Chat] 채널 정보를 서버에 요청함');
     if (channelId) {
       socket.emit('chat-request-channel-info', { channelId });
 
@@ -49,18 +47,31 @@ function ChatRoom({ onLeaveChannel }: { onLeaveChannel: () => void }) {
         socket.off('chat-response-channel-info');
       };
     }
-  }, [channelId]);
+  }, [socket, channelId]);
 
   // 페이지에서 채팅의 내용을 바꾸기 위해
   useEffect(() => {
     socket.on('chat-new-message', (data) => {
-      const { message, channelId: receivedChannelId } = data;
+      const message = data.message;
+      const receivedChannelId = data.channelId;
+      const sender = data.sender;
+      console.log('[Chat] chat-new-message message, channelId, sender', message, channelId, sender);
+
+      const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+      if (!loggedInUser) {
+        return ;
+      }
+
+      const loggedInUserId = loggedInUser.intraId;
+      if (sender === loggedInUserId) {
+        console.log('[Chat] myMessage sender, loggedInUserId', sender, loggedInUserId);
+        return;
+      }
 
       if (channelId === receivedChannelId) {
         setMessages(prevMessages => [...prevMessages, message]);
       }
     });
-
     return () => {
       socket.off('chat-new-message');
     };

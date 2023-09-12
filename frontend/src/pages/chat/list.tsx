@@ -32,11 +32,6 @@ const ChannelListPage = () => {
         <MakeChannelButton onMakeChannel={handleOpenMakeChannel} />
         <NavButtonWrapper />
       </div>
-      {selectedChannel && (
-        <div style={{ flex: 2, overflowY: 'auto' }}>
-          <ChatRoom channelId={selectedChannel.id} onLeaveChannel={handleLeaveChannel} />
-        </div>
-      )}
     </div>
   );
 };

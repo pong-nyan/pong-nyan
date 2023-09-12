@@ -3,6 +3,7 @@ import { SocketContext } from '@/context/socket';
 import { Channel } from '@/type/chatType';
 import Link from 'next/link';
 
+// onChannelSelect: (channel: Channel) => void  // list.tsx에 선택될 채널을 넘겨줘야함
 const ChannelList = ({ onChannelSelect }) => {
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const socket = useContext(SocketContext);
@@ -26,6 +27,7 @@ const ChannelList = ({ onChannelSelect }) => {
     socket.emit('chat-request-channel-list');
 
     socket.on('chat-update-channel-list', (updatedList) => {
+      console.log('[Chat] on chat-update-channel-list');
       setChannelList(updatedList);
     });
 
