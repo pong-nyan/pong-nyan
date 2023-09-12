@@ -1,6 +1,7 @@
 import styles from '@/chat/styles/NavButtonWrapper.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 const HomeButton = () => {
   return (
@@ -16,7 +17,7 @@ const HomeButton = () => {
 const ListButton = () => {
   return (
     <button style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <Link href="/channel/list">
+      <Link href="/chat/list">
         <Image src="/assets/list-button.png" alt="list-button" fill style={{ objectFit: 'contain'}} />
       </Link>
     </button>
@@ -27,7 +28,7 @@ const ListButton = () => {
 const PublicChannelListButton = () => {
   return (
     <button style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <Link href="/channel/public-channel-list">
+      <Link href="/chat/public-channel-list">
         <Image src="/assets/public-room-button.png" alt="public-room-button" fill style={{ objectFit: 'contain' }} />
       </Link>
     </button>
@@ -45,9 +46,13 @@ const GameButton = () => {
 };
 
 const FriendsButton = () => {
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const intraId = user.intraId;
-  const redirection = `/friends/${intraId}`;
+  const [redirection, setRedirection] = useState<string>('');
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const intraId = user.intraId;
+    setRedirection(`/friends/${intraId}`);
+  }, []);
 
   return (
     <button style={{ position: 'relative', width: '100%', height: '100%' }}>
