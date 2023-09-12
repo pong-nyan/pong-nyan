@@ -38,6 +38,15 @@ export class FriendsController {
         const intraId = pnPayload.intraId;
         return await this.friendsService.getAcceptedFriends(intraId);
     }
+
+    @Get('/me/pending')
+    @ApiTags('friends')
+    @ApiOperation({ summary: 'get pending friends', description: '나와의 대기중인 친구 목록을 가져온다.' })
+    async getPendingFriends(@PnJwtPayload() pnPayload: PnPayloadDto) {
+        const intraId = pnPayload.intraId;
+        return await this.friendsService.getPendingFriends(intraId);
+    }
+
     @Get('/me/accepted/test')
     @ApiTags('friends')
     @ApiOperation({ summary: 'get accepted friends', description: '테스트용. 인트라 id 직접 입력. 입력한 intraId 와의 수락된 친구 목록을 가져온다.' })
