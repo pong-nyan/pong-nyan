@@ -4,9 +4,9 @@ import styles from '@/styles/FeatureLinkList.module.css';
 const FeatureLinkList = () => {
   const features = [{ id: 1, name: 'Rank', path: '/rank' },
     { id: 2, name: 'Game', path: '/game' },
-    { id: 3, name: 'Chat', path: '/channel/list' },  
+    { id: 3, name: 'Chat', path: '/chat/list' },
   ];
-    
+
   return (
     <div className={styles.container}>
       <ul className={styles.linkList}>
