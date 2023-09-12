@@ -17,7 +17,7 @@ export const socketEmitGameStartEvent = (gameStatus: GameStatus) => {
   socket.emit('game-start', {
     gameStatus,
   });
-}
+};
 
 /**
  * 게임 키 이벤트를 서버로 전송합니다. 
@@ -136,13 +136,12 @@ export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engin
     user.nickname == disconnectNickname ? alert('비정상적인 행동을 감지했습니다.') 
       : alert(`${disconnectNickname}이(가) 나갔습니다.`);
     console.log('game-disconnect', disconnectNickname, gameInfo);
-    setGameStatus(GameStatus.End);
     setScore({ p1: gameInfo.score.p2, p2: gameInfo.score.p2 });
+    setGameStatus(GameStatus.End);
   });
 };
 
 export const socketOnGameStartEvent = (setGameStatus: Dispatch<SetStateAction<GameStatus>>, setPlayerNumber: Dispatch<SetStateAction<PlayerNumber>>, setOpponentId: Dispatch<SetStateAction<SocketId>>) => {
-  if (!socket) return;
   socket.on('game-start', ({ player1Id, player2Id }: {roomName: RoomName, player1Id: string, player2Id: string}) => {
     if (socket.id === player1Id) { 
       setPlayerNumber('player1');
@@ -154,12 +153,28 @@ export const socketOnGameStartEvent = (setGameStatus: Dispatch<SetStateAction<Ga
     }
     setGameStatus(GameStatus.RankPnRun);
   });
-}
+};
 
 export const socketOnGameLoadingEvent = (setLoading: Dispatch<SetStateAction<boolean>>) => {
-  if (!socket) return;
   socket.on('game-loading', () => {
     setLoading(true);
   });
-}
+};
 
+export const socketOnGameEnd = () => {
+  socket.on('game-end', ({ winnerNickname, gameInfo } : { winnerNickname: Nickname, gameInfo: GameInfo}) => {
+    console.log('game-end', winnerNickname, gameInfo);
+    setScore({ p1: gameInfo.score.p2, p2: gameInfo.score.p2 });
+    setGameStatus(GameStatus.End);
+  });
+};
+
+export const socketOffGameAllEvent = () => {
+  socket.off('game-keyEvent');
+  socket.off('game-ball');
+  socket.off('game-score');
+  socket.off('game-disconnect');
+  socket.off('game-start');
+  socket.off('game-loading');
+  socket.off('game-end');
+};

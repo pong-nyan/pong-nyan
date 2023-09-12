@@ -28,14 +28,11 @@ export type PlayerNumber = 'player1' | 'player2';
 * below type
 */
 
+export type Nickname = string
+
 export type BallInfo = {
   position: { x: number, y: number },
   velocity: { x: number, y: number }
-}
-
-export type Nickname = {
-  p1: string,
-  p2: string
 }
 
 export type Score = {

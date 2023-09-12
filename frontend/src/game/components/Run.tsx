@@ -6,7 +6,15 @@ import { movePlayer, movePaddle, getOwnTarget } from '@/game/matterEngine/player
 import { eventOnCollisionStart, eventOnCollisionEnd, eventOnBeforeUpdate } from '@/game/matterEngine/matterJsGameEvent';
 import { PlayerNumber, Score, CanvasSize } from '@/type/gameType';
 import { ScoreBoard } from '@/game/components/ScoreBoard';
-import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent, socketOnGameScoreEvent, socketEmitGameScoreEvent, socketOnGameDisconnectEvent } from '@/context/socketGameEvent';
+import { 
+  socketEmitGameKeyEvent,
+  socketOnGameBallEvent, 
+  socketOnGameKeyEvent, 
+  socketOnGameScoreEvent, 
+  socketEmitGameScoreEvent, 
+  socketOnGameDisconnectEvent,
+  socketOffGameAllEvent
+} from '@/context/socketGameEvent';
     
 import styles from '@/game/styles/Run.module.css';
 
@@ -110,14 +118,15 @@ const Run = ({ gameStatus, setGameStatus, playerNumber, opponentId, score, setSc
       Engine.clear(engine.current);
       render.current.canvas.remove();
       render.current.textures = {};
+      socketOffGameAllEvent();
     };
-  }, []);
+  }, [gameStatus, setGameStatus, playerNumber, opponentId, setScore]);
 
   useEffect(() => {
     if (!playerNumber) return;
     console.log('INFO: game-score', score);
     socketEmitGameScoreEvent(playerNumber, score);
-  }, [socket, playerNumber, score]);
+  }, [playerNumber, score]);
 
   return (
     <div
@@ -136,6 +145,6 @@ const Run = ({ gameStatus, setGameStatus, playerNumber, opponentId, score, setSc
       </div>
     </div>
   );
-}
+};
 
 export default Run;
