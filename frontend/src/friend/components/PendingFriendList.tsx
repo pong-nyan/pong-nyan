@@ -1,21 +1,18 @@
 import { useEffect, useState } from 'react';
 import PendingFreind from '@/friend/components/PendingFriend';
 import { PendingFriend } from '@/type/friendType';
+import axios from 'axios';
 
 const PendingFriendList = () => {
   const [pendingFriends, setPendingFriends] = useState<PendingFriend[]>([]);
 
   useEffect(() => {
-    setPendingFriends([
-      {
-        nickname: 'seongyle',
-        createdAt: '2023-01-12',
-      },
-      {
-        nickname: 'jimin',
-        createdAt: '2022-02-11'
-      }
-    ]);
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL}/friends/me/pending`).then((res) => {
+      setPendingFriends(res.data);
+      // TODO: check res.data
+    }).catch((err) => {
+      console.log(err);
+    });
   }, []);
   return (
     <div>
