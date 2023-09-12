@@ -10,9 +10,9 @@ const RequestFriend = () => {
       alert('친구요청할 친구의 nickname을 입력해주세요.');
       return;
     }
-    axios.post(`${process.env.NEXT_PUBLIC_API_URL}/friends`,
+    axios.post(`${process.env.NEXT_PUBLIC_API_URL}/friends/request`,
       {
-        nickname
+        friendNickname: nickname
       }).catch((error) => {
       console.error(error);
     });

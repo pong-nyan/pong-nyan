@@ -101,10 +101,10 @@ export class FriendsController {
         return await this.friendsService.updateFriendStatus(intraId, friend, status);
     }
 
-    @Post('/backdoor')
-    @ApiTags('friends')
-    @ApiOperation({ summary: 'backdoor', description: '5명은 pending, 5명은 accepted 상대로 mock friends를 생성한다.' })
-    async backdoor(@Body() { intraId }: GetIntraIdDto) {
-        return await this.friendsService.generateMockFriends(intraId);
-    }
+    // @Post('/backdoor')
+    // @ApiTags('friends')
+    // @ApiOperation({ summary: 'backdoor', description: '5명은 pending, 5명은 accepted 상대로 mock friends를 생성한다.' })
+    // async backdoor(@Body() { intraId }: GetIntraIdDto) {
+    //     return await this.friendsService.generateMockFriends(intraId);
+    // }
 }

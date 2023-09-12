@@ -91,7 +91,7 @@ export class FriendsService {
             .leftJoin(FriendStatus, 'fs2', 'fs1.friendId = fs2.friendId AND fs1.createdAt < fs2.createdAt')
             .where('fs2.createdAt IS NULL');
         }, 'fs', 'fs."friendId" = friend.id')
-        .where('requestUser.id = :userId OR addressUser.id = :userId', { userId: user.id })
+        .where('addressUser.id = :userId', { userId: user.id })
         .andWhere('friendStatuses.status = :status', { status: 'pending' })
         .getMany();
                 // friends 의 friendStatuses 를 friendStatus 의 createdAt 이 마지막인 것만 남긴다.
@@ -119,6 +119,8 @@ export class FriendsService {
     async addFriendByNickname(intraId: number, friendNickname: string): Promise<Friend> {
         const user = await this.userRepository.findOne({ where: { intraId } });
         const friend = await this.userRepository.findOne({ where: { nickname: friendNickname } });
+        if (!friend) throw new Error('No friend found');
+        if (!user) throw new Error('No User found');
         const newFriend = await this.friendRepository.create({ requestUser: user, addressUser: friend });
         await this.friendRepository.save(newFriend);
         const newFriendStatus = this.friendStatusRepository.create({ friend: newFriend, specificUser: user });

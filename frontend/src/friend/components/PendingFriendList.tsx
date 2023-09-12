@@ -8,8 +8,8 @@ const PendingFriendList = () => {
 
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/friends/me/pending`).then((res) => {
-      setPendingFriends(res.data);
-      // TODO: check res.data
+      const requestUser = res.data.map((friend: PendingFriend) => friend.requestUser);
+      setPendingFriends(requestUser);
     }).catch((err) => {
       console.log(err);
     });
