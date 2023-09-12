@@ -68,6 +68,16 @@ export class ChatGateway {
     this.server.emit('chat-update-channel-list', updatedChannelList);
   }
 
+  @SubscribeMessage('chat-request-channel-info')
+  handleChannelInfoRequest(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }) {
+      const channel = this.chatService.getChannel(payloadEmit.channelId);
+      if (!channel) {
+        client.emit('chat-response-channel-info', { error: '채널이 존재하지 않습니다.' });
+        return;
+      }
+      client.emit('chat-response-channel-info', { channel });
+  }
+
   @SubscribeMessage('chat-message-in-channel')
   handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, message: string }, @PnJwtPayload() payload: PnPayloadDto) {
     // 해당 채널의 모든 사용자에게 메시지 전송

@@ -5,35 +5,36 @@ import SendMessageButton from './SendMessageButton';
 import { SocketContext } from '@/context/socket';
 import { getMessagesFromLocalStorage, addMessageToLocalStorage } from '../utils/chatLocalStorage';
 import { Message } from '@/type/chatType';
+import { Channel } from '@/type/chatType';
+import { useRouter } from 'next/router';
 
-function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: string, selectedChannel: { title: string }, onLeaveChannel: () => void }) {
+function ChatRoom({ onLeaveChannel }: { onLeaveChannel: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [channelUsers, setChannelUsers] = useState<string[]>([]);
+  const [channel, setChannel] = useState<Channel | null>(null);
   const socket = useContext(SocketContext);
+  const router = useRouter();
+  const { channelId } = router.query;
 
-  // 방이 눌렸을때 처리
   useEffect(() => {
-    console.log('ChatRoom.tsx useEffect channelId', channelId);
-    const loadedMessages = getMessagesFromLocalStorage(channelId);
-    setMessages(loadedMessages);
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === `chat-${channelId}`) {
+        const loadedMessages = getMessagesFromLocalStorage(channelId as string);
+        setMessages(loadedMessages);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [channelId]);
 
   useEffect(() => {
-    socket.on('chat-new-message', (data) => {
-      const { message, channelId: receivedChannelId, sender } = data;
-
-      const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
-      const loggedInUserId = loggedInUser.intraId;
-      if (sender === loggedInUserId) return;
-      addMessageToLocalStorage(receivedChannelId, message);
-      if (channelId === receivedChannelId) {
-        setMessages(prevMessages => [...prevMessages, message]);
-      }
-    });
-    return () => {
-      socket.off('chat-new-message');
-    };
+    const loadedMessages = getMessagesFromLocalStorage(channelId as string);
+    setMessages(loadedMessages);
   }, [channelId]);
 
   useEffect(() => {
@@ -46,6 +47,38 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: s
     };
   }, []);
 
+  useEffect(() => {
+    if (channelId) {
+      socket.emit('chat-request-channel-info', { channelId });
+
+      socket.on('chat-response-channel-info', (response) => {
+        if (response.error) {
+          alert(response.error);
+        } else {
+          setChannel(response.channel);
+        }
+      });
+
+      return () => {
+        socket.off('chat-response-channel-info');
+      };
+    }
+  }, [channelId]);
+
+  useEffect(() => {
+    socket.on('chat-new-message', (data) => {
+      const { message, channelId: receivedChannelId } = data;
+
+      if (channelId === receivedChannelId) {
+        setMessages(prevMessages => [...prevMessages, message]);
+      }
+    });
+
+    return () => {
+      socket.off('chat-new-message');
+    };
+  }, [channelId]);
+
   const handleSendMessage = () => {
     if (inputMessage.trim() !== '') {
       const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -54,7 +87,7 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: s
         nickname: loggedInUser.nickname
       };
       setMessages(prevMessages => [...prevMessages, newMessage]);
-      addMessageToLocalStorage(channelId, newMessage);
+      addMessageToLocalStorage(channelId as string, newMessage);
       socket.emit('chat-message-in-channel', { channelId, message: newMessage });
       setInputMessage('');
     }
@@ -69,7 +102,7 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: s
     <div style={{ display: 'flex', justifyContent: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
-          <strong>Current Channel:</strong> {selectedChannel.title}
+          <strong>Current Channel:</strong> {channel?.title ? channel.title : 'No Channel Selected'}
           <button onClick={handleLeaveChannel}>Leave Channel</button>
         </div>
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>

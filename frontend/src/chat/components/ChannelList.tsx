@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { SocketContext } from '@/context/socket';
 import { Channel } from '@/type/chatType';
+import Link from 'next/link';
 
 const ChannelList = ({ onChannelSelect }) => {
   const [channelList, setChannelList] = useState<Channel[]>([]);
-  const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const socket = useContext(SocketContext);
 
   const handleChannelSelect = (channel: Channel) => {
@@ -19,7 +19,6 @@ const ChannelList = ({ onChannelSelect }) => {
 
     socket.once('chat-join-success', () => {
       onChannelSelect(currentChannel);
-      console.log('handleChannelSelect 채널제목눌림 222', currentChannel);
     });
   };
 
@@ -27,12 +26,11 @@ const ChannelList = ({ onChannelSelect }) => {
     socket.emit('chat-request-channel-list');
 
     socket.on('chat-update-channel-list', (updatedList) => {
-      console.log('chat-update-ch-list', updatedList);
       setChannelList(updatedList);
     });
 
     socket.on('chat-join-error', (errorMessage) => {
-      alert(errorMessage);  // 간단하게 alert를 사용하여 사용자에게 알림을 제공
+      alert(errorMessage);
     });
 
     return () => {
@@ -46,15 +44,10 @@ const ChannelList = ({ onChannelSelect }) => {
       <h2>Channel list</h2>
       <ul>
         {channelList.map(channel => (
-          <li
-            key={channel.id}
-            onClick={() => handleChannelSelect(channel)}
-            style={{
-              cursor: 'pointer',
-              backgroundColor: selectedChannel?.id === channel.id ? 'lightgray' : 'transparent'
-            }}
-          >
-            {channel.title}
+          <li key={channel.id} style={{ cursor: 'pointer' }}>
+            <Link href={`/chat/${channel.id}`}>
+              <span onClick={() => handleChannelSelect(channel)}>{channel.title}</span>
+            </Link>
           </li>
         ))}
       </ul>
