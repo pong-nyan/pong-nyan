@@ -102,18 +102,28 @@ export class ChatGateway {
   }
 
   handleConnection(@ConnectedSocket() client: Socket) {
-    console.log('[ChannelGateway] Connection', client.id);
+    console.log('[ChatGateway] Connection', client.id);
 
-    if (!this.userService.checkPnJwt(client))
-    {
-      return ;
+    if (!this.userService.checkPnJwt(client)) return;
+    // intraId 검색
+    const intraId = this.userService.getIntraId(client.id);
+    if (!intraId) return;
+
+    // 사용자 정보 검색
+    const userInfo = this.userService.getUserInfo(intraId);
+    if (!userInfo) return;
+
+    // 사용자가 이전에 접속했던 채팅방 목록
+    const userChatRooms = userInfo.chatRoomList;
+
+    // 사용자가 이전에 접속했던 모든 채팅방에 다시 연결
+    for (const room of userChatRooms) {
+        const chatInfo = this.chatService.getChannel(room);
+        if (!chatInfo) continue;
+
+        client.join(room); // 해당 채팅방에 다시 연결
+        console.log('[ChatGateway] reconnected to room', room);
     }
-    // F5또는 새로고침 이런식으로 새로 접속하지만 pn-jwt가 있을 경우
-    // TODO: 이전에 접속했던 채널에 다시 접속시켜주기
-    // const userInfo = this.userService.getUserInfo(client.id);
-    // if (!userInfo) return ;
-    // const intraId = this.userService.getIntraId(client.id);
-    // const userInfo = this.userService.getUser(intraId);
   }
 }
 

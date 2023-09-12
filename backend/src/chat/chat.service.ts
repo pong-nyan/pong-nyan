@@ -5,7 +5,7 @@ import { Channel, ChannelInfo } from 'src/type/chatType';
 
 @Injectable()
 export class ChatService {
-  channelMap = new Map<string, Channel>();
+  private channelMap = new Map<string, Channel>();
 
   // 사용자가 채널을 추가
   addChannel(channelInfo: ChannelInfo, client: Socket, intraId: number) : string {

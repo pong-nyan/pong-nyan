@@ -22,6 +22,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
 
   useEffect(() => {
     socket.on('chat-update-users', (users) => {
+      console.log('[Chat] chat-update-users users', users);
       setChannelUsers(users);
     });
 
