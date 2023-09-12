@@ -92,9 +92,9 @@ export class FriendsService {
             .where('fs2.createdAt IS NULL');
         }, 'fs', 'fs."friendId" = friend.id')
         .where('addressUser.id = :userId', { userId: user.id })
-        .andWhere('friendStatuses.status = :status', { status: 'pending' })
         .getMany();
-                // friends 의 friendStatuses 를 friendStatus 의 createdAt 이 마지막인 것만 남긴다.
+
+        // friends 의 friendStatuses 를 friendStatus 의 createdAt 이 마지막인 것만 남긴다.
         const refineFriends = friends.map(friend => {
             const newFriend = friend;
             newFriend.friendStatuses = friend.friendStatuses.filter(friendStatus => {
@@ -104,7 +104,11 @@ export class FriendsService {
             });
             return newFriend;
         });
-        return refineFriends;
+        // accepted 되거나 rejected된 친구들은 거르기
+        const onlyPendingFriend = refineFriends.filter(friend => {
+            return friend.friendStatuses[0].status === 'pending';
+        });
+        return onlyPendingFriend;
     }
 
     async addFriend(intraId: number, friendIntraId: number): Promise<Friend> {
