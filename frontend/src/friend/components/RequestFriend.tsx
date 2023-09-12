@@ -13,9 +13,14 @@ const RequestFriend = () => {
     axios.post(`${process.env.NEXT_PUBLIC_API_URL}/friends/request`,
       {
         friendNickname: nickname
-      }).catch((error) => {
-      console.error(error);
-    });
+      }).then(() => {
+      alert('친구요청을 성공했습니다.');
+      setNickname('');
+    }).
+      catch((error) => {
+        alert('친구요청을 실패했습니다.');
+        console.error(error);
+      });
   };
 
   return (
