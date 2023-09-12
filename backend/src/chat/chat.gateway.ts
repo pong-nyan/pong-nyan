@@ -25,6 +25,9 @@ export class ChatGateway {
 
   @SubscribeMessage('chat-channel-make')
   handleMakeChannel(@ConnectedSocket() client: Socket, @MessageBody() channelInfo: ChannelInfo, @PnJwtPayload() payload: PnPayloadDto) {
+    // TODO : minsuki2주장 제일 최신 소켓만 작동하게 함
+    // const userInfo = this.userService.getUserInfo(payload.intraId);
+    // if (client.id !== userInfo.clientId) return ;
     const channelId = this.chatService.addChannel(channelInfo, client, payload.intraId);
     this.userService.setUserInfoChatRoomList(payload.intraId, channelId);
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
