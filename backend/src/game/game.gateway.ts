@@ -59,7 +59,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // console.log('[GameGateway] reconnect', userInfo.gameRoom);
   }
 
-
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     console.log('[GameGateway] Disconnection', client.id);
 
@@ -136,7 +135,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const winnerNickname = this.gameService.checkCorrectScoreWhoWinner(gameInfo);
       console.log('INFO: 승자 발견', winnerNickname);
       gameInfo.score = winnerNickname === '' ? gameInfo.score : gameInfo.waitList[0].score;
-
       if (gameInfo.score.p1 < 5 && gameInfo.score.p2 < 5) {
         console.log('INFO: 게임 스코어');
         this.server.to(userInfo.gameRoom).emit('game-score', { realScore: gameInfo.score, winnerNickname });
@@ -148,8 +146,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             // 랭킹에 저장
             console.log('INFO: 랭킹 업데이트');
         }
+        this.server.to(userInfo.gameRoom).emit('game-end', { winnerNickname, gameInfo });
       }
-      this.server.to(userInfo.gameRoom).emit('game-end');
+      console.log('[GameGateway] ', gameInfo.score);
       gameInfo.waitList = [];
     }
   }
