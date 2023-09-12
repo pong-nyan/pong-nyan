@@ -86,7 +86,7 @@ export class AuthController {
     @Get('backdoor')
     async backdoor(@Req() request: Request, @Res() response: Response) {
         console.log('backdoor');
-        for (let i = 0; i < 42; i++) {
+        for (let i = 0; i < 10; i++) {
             const randomIntraId = Math.floor(Math.random() * 100000);
             const randomIntraNickname = Math.floor(Math.random() * 100000).toString() + 'intra_nickname';
             const randomNickname = Math.floor(Math.random() * 1000000).toString() + 'nickname';

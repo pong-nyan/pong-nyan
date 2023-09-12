@@ -11,5 +11,6 @@ export type UserInfo = {
     intraId: number,
     nickname: string,
     chatRoomList: RoomName[],
-    gameRoom: RoomName
+    gameRoom: RoomName,
+    online: boolean,
 }
