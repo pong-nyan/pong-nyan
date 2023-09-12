@@ -125,11 +125,16 @@ export const socketOnGameScoreEvent = (sceneSize: CanvasSize, engine: Engine | u
 //   socket.emit('game-disconnect');
 // }
 
-export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>, setGameStatus: Dispatch<SetStateAction<GameStatus>>) => {
+export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>, gameStatus: GameStatus, setGameStatus: Dispatch<SetStateAction<GameStatus>>) => {
   socket.on('game-disconnect', ( { disconnectNickname, gameInfo } : { disconnectNickname: string, gameInfo: GameInfo } ) => {
     if (!engine || !engine.world || !runner) return;
     Runner.stop(runner);
-    alert(`${disconnectNickname}님이 나가셨습니다.`);
+    if (gameStatus === GameStatus.Start || gameStatus === GameStatus.End) return;
+    const userString = localStorage.getItem('user');
+    if (!userString) return;
+    const user = JSON.parse(userString);
+    user.nickname == disconnectNickname ? alert('비정상적인 행동을 감지했습니다.') 
+      : alert(`${disconnectNickname}이(가) 나갔습니다.`);
     console.log('game-disconnect', disconnectNickname, gameInfo);
     setGameStatus(GameStatus.End);
     setScore({ p1: gameInfo.score.p2, p2: gameInfo.score.p2 });

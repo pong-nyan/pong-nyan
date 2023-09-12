@@ -34,11 +34,11 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
      */
     const userInfo = this.userService.getUserInfo(pnPayload.intraId);
     if (userInfo) {
-      console.log('>>> [AppGateway] userInfo is not null');
+      console.log('>>> [AppGateway] YES userInfo');
       this.userService.setUserMap(pnPayload.intraId, { ...userInfo, online: true });
       return;
     }
-    console.log('>>> [AppGateway] setUserMap');
+    console.log('[AppGateway] new setUserMap');
     this.userService.setUserMap(pnPayload.intraId, {
       nickname: pnPayload.nickname,
       chatRoomList: [],

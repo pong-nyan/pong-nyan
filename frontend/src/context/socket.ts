@@ -16,11 +16,6 @@ socket.on('auth-set-map-payload', () => {
   socket.emit('auth-set-map', { intraId: item.intraId });
 });
 
-// socket.on('chat-new-message', (data) => {
-//   const { message, channelId } = data;
-//   addMessageToLocalStorage(channelId, message);
-// });
-
 // 메시지를 받아서 로컬 스토리지에 저장
 socket.on('chat-new-message', (data) => {
   console.log('[Chat] chat-new-message', data);
@@ -33,4 +28,9 @@ socket.on('chat-new-message', (data) => {
     return;
   }
   addMessageToLocalStorage(receivedChannelId, message);
+});
+
+socket.on('add-tab', () => {
+  alert('새로운 탭이 열렸습니다.');
+  window.close();
 });
