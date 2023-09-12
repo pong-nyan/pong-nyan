@@ -135,6 +135,10 @@ export class FriendsService {
         return friend;
     }
 
-
+    async findFreindNicknameByIntraId(intraId: number): Promise<string | null> {
+        const user = await this.userRepository.findOne({ where: { intraId } });
+        if (!user) return null;
+        return user.nickname;
+    }
 }
 
