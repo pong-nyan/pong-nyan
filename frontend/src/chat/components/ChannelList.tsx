@@ -1,30 +1,31 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { SocketContext } from '@/context/socket';
 import { Channel } from '@/type/chatType';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 // onChannelSelect: (channel: Channel) => void  // list.tsx에 선택될 채널을 넘겨줘야함
 const ChannelList = () => {
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const socket = useContext(SocketContext);
+  const router = useRouter();
 
   const handleChannelSelect = (channel: Channel) => {
     console.log('[Chat] handleChannelSelect', channel);
-    const currentChannel = channelList.find(ch => ch.id === channel.id);
-    if (!currentChannel) return;
+    const seletedChannel = channelList.find(ch => ch.id === channel.id);
 
+    if (!seletedChannel) return;
     let password;
-    if (currentChannel.password) {
+    if (seletedChannel.password) {
       password = prompt('이 채널은 비밀번호로 보호되어 있습니다. 비밀번호를 입력하세요.');
       if (!password) return ;
-      if (password !== currentChannel.password) {
+      if (password !== seletedChannel.password) {
         alert('비밀번호가 틀렸습니다.');
         return ;
       }
     }
+    socket.emit('chat-join-channel', { channelId: seletedChannel.id, password });
 
-    socket.emit('chat-join-channel', { channelId: currentChannel.id, password });
-
+    router.push(`/chat/${seletedChannel.id}`);
   };
 
   useEffect(() => {
@@ -51,9 +52,7 @@ const ChannelList = () => {
       <ul>
         {channelList.map(channel => (
           <li key={channel.id} style={{ cursor: 'pointer' }}>
-            <Link href={`/chat/${channel.id}`}>
-              <span onClick={() => handleChannelSelect(channel)}>{channel.title}</span>
-            </Link>
+            <span onClick={() => handleChannelSelect(channel)}>{channel.title}</span>
           </li>
         ))}
       </ul>

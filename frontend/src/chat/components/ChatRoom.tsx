@@ -41,7 +41,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   }, [socket, channelId]);
 
   useEffect(() => {
-    console.log('[Chat] 채널 정보를 서버에 요청함');
+    console.log('[Chat] 접속해있는 URL의 channelId가 바뀔때마다 채널 정보를 서버에 요청함');
     if (channelId) {
       socket.emit('chat-request-channel-info', { channelId });
       socket.on('chat-response-channel-info', (response) => {

@@ -44,6 +44,11 @@ export class ChatGateway {
       client.emit('chat-join-error', '채널이 존재하지 않습니다.');
       return ;
     }
+
+    if (channel.maxUsers < channel.userList.length) {
+      client.emit('chat-join-error', '채널이 가득 찼습니다.');
+      return ;
+    }
     if (channel.channelType === 'private') {
       if (!channel.invitedUsers.includes(payload.intraId)) {
         client.emit('chat-join-error', '이 채널에는 초대받지 않은 사용자는 접속할 수 없습니다.');
@@ -59,14 +64,13 @@ export class ChatGateway {
     // client.emit('chat-join-success');
     client.join(payloadEmit.channelId);
     this.chatService.joinChannel(payloadEmit.channelId, payload.intraId);
-    this.userService.setUserInfoChatRoomList(payload.intraId, payloadEmit.channelId);
     const users = this.chatService.getChannelUsers(payloadEmit.channelId);
     console.log('chat-join-channel, channelId, users', payloadEmit.channelId, users);
 
     // 해당 채널의 유저 목록 업데이트
     this.server.to(payloadEmit.channelId).emit('chat-update-users', users);
 
-    // 전체 채널 목록 업데이트
+    // 프론트의 전체 채널 목록 업데이트
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
     this.server.emit('chat-update-channel-list', updatedChannelList);
   }
