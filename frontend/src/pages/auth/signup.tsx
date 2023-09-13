@@ -25,6 +25,10 @@ const SignUp = () => {
     }
 
     const output = await postFetchData();
+    if (!output) {
+      alert('Sign Up Failed, 입력값을 확인해주세요.');
+      return;
+    }
     setRedirectUrl(output);
   };
 

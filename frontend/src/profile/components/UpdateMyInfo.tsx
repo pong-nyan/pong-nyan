@@ -36,7 +36,7 @@ const UpDateMyInfo = () => {
       location.href = '/';
     }).catch((err) => {
       console.error(err);
-      alert(err.response.data.message);
+      alert(err?.response?.data?.message || '서버와 통신에 실패했습니다.');
     });
   };  
 

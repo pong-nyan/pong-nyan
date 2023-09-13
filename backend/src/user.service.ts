@@ -152,6 +152,10 @@ export class UserService {
       console.log('[userService] After deleteGameRoom', this.userMap);
     }
 
+    public checkPossibleNickname(nickname: string) {
+      return this.userRepository.findOne({ where: { nickname } });
+    }
+
     /* -------------------------------------------------------------------- */
 
     public getUserInfoByIntraIdList(intraIdList: IntraId[]) {
