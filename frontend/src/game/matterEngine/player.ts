@@ -1,5 +1,5 @@
 import { Constraint, Body, Engine } from 'matter-js';
-import { stopper, hinge, paddle, findTargetAll } from './matterJsUnit';
+import { stopper, hinge, paddle, bar, findTargetAll } from './matterJsUnit';
 import { CollisionEvent, KeyDownEvent, KeyUpEvent, PlayerNumber } from '@/type/gameType';
 import { socket } from '@/context/socket';
 
@@ -20,6 +20,14 @@ export const makePaddle = (middleX: number, offsetX: number, baseY:number, hinge
   Body.setCentre(paddleLeft, { x: -paddleWidth / 2, y: 0}, true);
   Body.setCentre(paddleRight, { x: paddleWidth / 2, y: 0}, true);
   return [ paddleLeft, paddleRight ];
+}
+
+export const makeBar= (middleX: number, offsetX: number, baseY:number, hingeGroupRef:number) => {
+  // const paddleWidth = 0.15 * cw;
+  const barWidth = 50;
+  const barHeight = 20;
+  const barMiddle = bar(middleX, baseY, barWidth, barHeight, 'Bar', hingeGroupRef);
+  return barMiddle;
 };
 
 export const makeStopper = (playerNumber:PlayerNumber, middleX: number, baseY:number, nonCollisionGroupRef: number) => {

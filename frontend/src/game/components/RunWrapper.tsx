@@ -5,8 +5,10 @@ import { PlayerNumber, Score, GameStatus } from '@/type/gameType';
 import { SocketId } from '@/type/socketType';
 import { Nickname } from '@/type/userType';
 import { socketOnGameEnd } from '@/context/socketGameEvent';
+import OriginPongRun from './OriginPongRun';
 
-const RunWrapper = ({ setGameStatus, playerNumber, opponentId, score, setScore, setNickname }: { 
+const RunWrapper = ({ gameStatus, setGameStatus, playerNumber, opponentId, score, setScore, setNickname }: {
+    gameStatus: GameStatus,
     setGameStatus: Dispatch<SetStateAction<GameStatus>>, 
     playerNumber: PlayerNumber,
     opponentId: SocketId,
@@ -19,14 +21,30 @@ const RunWrapper = ({ setGameStatus, playerNumber, opponentId, score, setScore, 
     socketOnGameEnd(setScore, setNickname, setGameStatus);
   }, [setScore, setGameStatus, setNickname]);
 
-  return ( 
-    <div style={{ position: 'relative' }}>
-      <Run setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} />
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1}}>
-        <CountDown />
+
+  switch (gameStatus) {
+  case GameStatus.RankPnRun:
+  case GameStatus.NormalPnRun:
+    return ( 
+      <div style={{ position: 'relative' }}>
+        <Run setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} />
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1}}>
+          <CountDown />
+        </div>
       </div>
-    </div>
-  );
+    );
+  case GameStatus.RankOriginRun:
+  case GameStatus.NormalOriginRun:
+    console.log('gameStatus', gameStatus);
+    return ( 
+      <div style={{ position: 'relative' }}>
+        <OriginPongRun setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} />
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1}}>
+          <CountDown />
+        </div>
+      </div>
+    );
+  }
 };
 
 export default RunWrapper;

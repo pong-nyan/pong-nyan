@@ -1,8 +1,8 @@
 import Matter, { World, Body } from 'matter-js';
 import { boundary, ball, sensor, findTarget } from './matterJsUnit';
-import { makeHinge, makePaddle, makeStopper, makeJoint } from '@/game/matterEngine/player';
+import { makeHinge, makePaddle, makeStopper, makeJoint, makeBar } from '@/game/matterEngine/player';
 import { PlayerNumber } from '@/type/gameType';
-import { Player } from '@/game/gameType';
+import { Player, OriginPongPlayer } from '@/game/gameType';
 
 export const initWorld = (world: World, cw: number, ch: number, nonCollisionGroupRef: number, hingeGroupRef:number) => {
   nonCollisionGroupRef = Body.nextGroup(true);
@@ -16,6 +16,20 @@ export const initWorld = (world: World, cw: number, ch: number, nonCollisionGrou
     ...Object.values(initPlayer('player2', cw, ch, nonCollisionGroupRef, hingeGroupRef))
   ]);
   // start moving ball
+  setStartBall(world, 'player1');
+};
+
+export const initOriginPongWorld = (world: World, cw: number, ch: number, nonCollisionGroupRef: number, hingeGroupRef:number) => {
+  nonCollisionGroupRef = Body.nextGroup(true);
+  hingeGroupRef= Body.nextGroup(true);
+  const ballRadius = cw / 10;
+  World.add(world, [
+    ...boundaryList(cw, ch),
+    ...sensorList(cw, ch),
+    ball(cw / 2, ch / 2, ballRadius, nonCollisionGroupRef),
+    initOriginPongPlayer('player1', cw, ch, nonCollisionGroupRef, hingeGroupRef),
+    initOriginPongPlayer('player2', cw, ch, nonCollisionGroupRef, hingeGroupRef)
+  ]);
   setStartBall(world, 'player1');
 };
 
@@ -40,6 +54,15 @@ export function initPlayer(playerNumber:PlayerNumber, cw: number, ch: number, no
   const [ stopperLeftBottom, stopperRightBottom, stopperLeftTop, stopperRightTop ] = makeStopper(playerNumber, middleX, yScale * ch, nonCollisionGroupRef);
   const [ jointLeft, joinRight ] = makeJoint(hingeLeft, hingeRight, paddleLeft, paddleRight);
   return { hingeLeft, hingeRight, paddleLeft, paddleRight, stopperLeftTop, stopperLeftBottom, stopperRightTop, stopperRightBottom, jointLeft, joinRight};
+}
+
+export function initOriginPongPlayer(playerNumber:PlayerNumber, cw: number, ch: number, nonCollisionGroupRef: number, hingeGroupRef: number) : OriginPongPlayer {
+  //TODO: Run 수정해야함
+  const yScale = playerNumber === 'player1' ? 0.9 : 0.1;
+  const offsetX = 70;
+  const middleX = cw / 2;
+  const barMiddle = makeBar(middleX, offsetX, yScale * ch, hingeGroupRef);
+  return barMiddle;
 }
 
 export const boundaryList = (cw: number, ch: number) => {

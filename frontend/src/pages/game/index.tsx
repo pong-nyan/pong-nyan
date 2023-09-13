@@ -20,15 +20,15 @@ const Game = () => {
 
   switch (gameStatus) {
   case GameStatus.Start:
-    return (<Start gameStatus={gameStatus} setGameStatus={setGameStatus} setPlayerNumber={setPlayerNumber} setOpponentId={setOpponentId} />);
+    return (<Start setGameStatus={setGameStatus} setPlayerNumber={setPlayerNumber} setOpponentId={setOpponentId} />);
   case GameStatus.RankPnRun:
-    return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} setNickname={setNickname} />);
+    return (<RunWrapper gameStatus={gameStatus} setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} setNickname={setNickname} />);
   case GameStatus.NormalPnRun:
-    return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} setNickname={setNickname} />);
+    return (<RunWrapper gameStatus={gameStatus} setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} setNickname={setNickname} />);
   case GameStatus.RankOriginRun:
-    return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} setNickname={setNickname} />);
+    return (<RunWrapper gameStatus={gameStatus} setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} setNickname={setNickname} />);
   case GameStatus.NormalOriginRun:
-    return (<RunWrapper setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} setNickname={setNickname} />);
+    return (<RunWrapper gameStatus={gameStatus} setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} setNickname={setNickname} />);
   case GameStatus.End:
     return (<End setGameStatus={setGameStatus} score={score} setScore={setScore} nickname={nickname} />);
   default:

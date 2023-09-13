@@ -13,6 +13,27 @@ export const hinge = (x: number, y: number, radius: number, label: string, group
   });
 };
 
+export const bar = (x: number, y: number, width: number, height: number, label: string, group: number) : Body => {
+  const assetWidth = 1731 / 2;
+  const assetHeight = 587;
+  return Bodies.rectangle(x, y, width, height, {
+    label,
+    isStatic: false,
+    density: 2,
+    render: {
+      sprite : {
+        texture : '/assets/flat-fish_orginal.png',
+        xScale: width / assetWidth,
+        yScale: height / assetHeight,
+      }
+    },
+    restitution: 0,
+    collisionFilter: {
+      group: group 
+    },
+  });
+};
+
 export const paddle = (x: number, y: number, width: number, height: number, label: string, group: number) : Body => {
   const assetWidth = 1731 / 2;
   // const assetHeight = 587;
