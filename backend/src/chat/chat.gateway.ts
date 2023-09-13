@@ -1,6 +1,6 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
-import { ChannelInfo, Message } from 'src/type/chatType';
+import { ChannelInfo, Message, Channel } from 'src/type/chatType';
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
 import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user.service';
 import { sha256 } from 'js-sha256';
 import { Controller2faGuard } from 'src/guard/controller2fa.guard';
+import { IntraId } from 'src/type/userType';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -66,12 +67,7 @@ export class ChatGateway {
     }
     client.join(payloadEmit.channelId);
     this.chatService.joinChannel(payloadEmit.channelId, payload.intraId);
-    const users = this.chatService.getChannelUsers(payloadEmit.channelId);
-    console.log('chat-join-channel, channelId, users', payloadEmit.channelId, users);
-
-    // 해당 채널의 유저 목록 업데이트
-    this.server.to(payloadEmit.channelId).emit('chat-update-users', users);
-
+    if (!this.syncAfterChannelChange(channel)) return ;
     // 프론트의 전체 채널 목록 업데이트
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
     this.server.emit('chat-update-channel-list', updatedChannelList);
@@ -80,12 +76,8 @@ export class ChatGateway {
   @SubscribeMessage('chat-request-channel-info')
   handleChannelInfoRequest(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }) {
       const channel = this.chatService.getChannel(payloadEmit.channelId);
-      if (!channel) {
-        client.emit('chat-response-channel-info', { error: '채널이 존재하지 않습니다.' });
-        return;
-      }
-      client.emit('chat-response-channel-info', { channel });
-  }
+      if (!this.syncAfterChannelChange(channel)) return ;
+    }
 
   // 메시지 보내기 버튼 누른 직후
   @SubscribeMessage('chat-message-in-channel')
@@ -98,12 +90,18 @@ export class ChatGateway {
 
   @SubscribeMessage('chat-leave-channel')
   handleLeaveChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string, @PnJwtPayload() payload: PnPayloadDto) {
+      const channel = this.chatService.getChannel(channelId);
       client.leave(channelId);
       const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
       this.chatService.leaveChannel(channelId, payload.intraId);
       this.userService.deleteUserInfoChatRoomList(payload.intraId, channelId);
-      const users = this.chatService.getChannelUsers(channelId);
-      this.server.to(channelId).emit('chat-update-users', users);
+      // 나간사람이 owner이면 채널 삭제
+      console.log('chat-leave-channel, channel.owner, payload.intraId', channel.owner, payload.intraId);
+      if (channel.owner === payload.intraId) {
+        console.log('chat-leave-channel, owner가 나감 channel.owner === payload.intraId');
+        this.chatService.getChannelMap().delete(channelId);
+      }
+      if (!this.syncAfterChannelChange(channel)) return ;
       this.server.emit('chat-update-channel-list', updatedChannelList);
   }
 
@@ -122,17 +120,36 @@ export class ChatGateway {
     this.server.to(payloadEmit.channelId).emit('chat-watch-new-message', { channelId: payloadEmit.channelId });
   }
 
-  // 처음 페이지에 들어왔을 때 user목록 요청
-  @SubscribeMessage('chat-request-users')
-  handleRequestUsers(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }) {
-    const users = this.chatService.getChannelUsers(payloadEmit.channelId);
-    client.emit('chat-update-users', users);
-  }
+  @SubscribeMessage('chat-grant-administrator')
+  handleGrantAdministrator(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, user: IntraId }, @PnJwtPayload() payload: PnPayloadDto) {
+    // 유효성검사
+    // admin정보 바꾸기 반영
+      // 같은 서버안에 클라에게 동기화요구
+    // 안 유효하면 emit보낸 client에게 에러메시지
+    const channel = this.chatService.getChannel(payloadEmit.channelId);
+    const grantedUserId = payloadEmit.user;
+    if (!channel) return;
+    // owner만 임명 가능
+    if (channel.owner !== payload.intraId) {
+      client.emit('chat-grant-error', '관리자 임명 권한이 없습니다.');
+      return ;
+    }
+    // 이미 administrator인 경우
+    if (channel.administrator.includes(grantedUserId)) {
+      client.emit('chat-grant-error', '이미 관리자입니다.');
+      return ;
+    }
+    console.log('[Chat] chat-grant-administrator, before channel', channel);
+    console.log('[Chat] chat-grant-administrator, grantedUserId', grantedUserId);
+    const grantedChannel = this.chatService.grantAdministrator(payloadEmit.channelId, grantedUserId);
+    console.log('[Chat] chat-grant-administrator, grantedChannel', grantedChannel);
+    this.syncAfterChannelChange(grantedChannel);
 
+    client.emit('chat-grant-administrator-finish', '관리자 임명에 성공했습니다.');
+  }
 
   handleConnection(@ConnectedSocket() client: Socket) {
     console.log('[ChatGateway] handleConnection', client.id);
-
     // pnJwt 검증
     if (!this.userService.checkPnJwt(client)) return;
     // intraId 검색
@@ -153,11 +170,19 @@ export class ChatGateway {
         if (!chatInfo) continue;
         client.join(room);
         console.log('[ChatGateway] reconnected to room', room);
-        const users = this.chatService.getChannelUsers(room);
-        this.server.to(room).emit('chat-update-users', users);
+        // TODO: 이거 제대로 반영될지 확인해보기
+        const channel = this.chatService.getChannel(room);
+        if (!this.syncAfterChannelChange(channel)) return ;
     }
   }
-}
 
-// TODO : setUserInfoChatRoomList 만들기
-// chatRoomList: RoomName[],
+  syncAfterChannelChange(channel:Channel) {
+    console.log('syncAfterChannelChange, channel.id', channel.id);
+    if (!channel) {
+      this.server.to(channel.id).emit('chat-response-channel-info', { error: '채널이 존재하지 않습니다.' });
+      return false;
+    }
+    this.server.to(channel.id).emit('chat-response-channel-info', { channel });
+    return true;
+  }
+}

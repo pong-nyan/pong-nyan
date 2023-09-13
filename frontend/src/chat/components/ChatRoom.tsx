@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, use } from 'react';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import SendMessageButton from './SendMessageButton';
@@ -11,16 +11,10 @@ import { IntraId } from '@/type/userType';
 function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveChannel: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
-  // TODO : 난 IntraId로 넣었는데 쓰는곳에 마우스올리면 number[]가 됨
-  const [channelUsers, setChannelUsers] = useState<IntraId[]>([]);
   const [channel, setChannel] = useState<Channel | null>(null);
+  // 선택한 유저 (선택될때마다 다시 렌더링이 필요해서 넣음) TODO : 다시생각해보기
+  // const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const socket = useContext(SocketContext);
-
-  // 처음 컴포넌트가 마운트될 때 사용자 목록을 요청
-  useEffect(() => {
-    console.log('[Chat] 유저 목록을 서버에 요청함');
-    socket.emit('chat-request-users', { channelId });
-  }, [socket, channelId]);
 
   useEffect(() => {
     console.log('[Chat] 처음 접속시 localStorage에서 메시지 불러옴');
@@ -28,20 +22,34 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     setMessages(loadedMessages);
   }, [socket, channelId]);
 
-  // 해당 채널에 들어와 있는 user의 목록을 받아옴
   useEffect(() => {
-    socket.on('chat-update-users', (users) => {
-      console.log('[Chat] chat-update-users users', users);
-      setChannelUsers(users);
-    });
-
-    return () => {
-      socket.off('chat-update-users');
-    };
+    console.log('[Chat] 처음 접속했을때 채널 정보를 서버에 요청함');
+    if (channelId) {
+      console.log('[Chat] 처음 접속했을때 channelId 존재함');
+      socket.emit('chat-request-channel-info', { channelId });
+    }
   }, [socket, channelId]);
 
   useEffect(() => {
     console.log('[Chat] 접속해있는 URL의 channelId가 바뀔때마다 채널 정보를 서버에 요청함');
+    if (channelId) {
+      socket.on('chat-response-channel-info', (response) => {
+        console.log('[Chat] chat-response-channel-info 받음', response);
+        if (response.error) {
+          alert(response.error);
+        } else {
+          setChannel(response.channel);
+        }
+      });
+
+      return () => {
+        socket.off('chat-response-channel-info');
+      };
+    }
+  }, [socket, channel, channelId]);
+
+  useEffect(() => {
+    console.log('[Chat] 채널 정보를 서버에 다시 요청함');
     if (channelId) {
       socket.emit('chat-request-channel-info', { channelId });
       socket.on('chat-response-channel-info', (response) => {
@@ -51,7 +59,6 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
           setChannel(response.channel);
         }
       });
-
       return () => {
         socket.off('chat-response-channel-info');
       };
@@ -88,6 +95,45 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     onLeaveChannel();
   };
 
+  const makeAdministrator = (grantedUser: IntraId) => {
+    // 서버에 업데이트된 목록을 보내는 로직 추가
+    socket.emit('chat-grant-administrator', { channelId, user: grantedUser });
+  };
+
+  // 선택된 사용자가 변경될 때마다 관리자로 임명하는 로직을 실행합니다.
+
+  // useEffect(() => {
+  //   console.log('[Chat] selectedUser 변경됨', selectedUser);
+  //   if (selectedUser) {
+  //     socket.emit('chat-grant-administrator', { channelId, user: selectedUser });
+  //   }
+  //   // TODO:
+  //   // 만약실패하면 chat-grant-error 보내야함
+  //   // emit이후 임명이후 channel의 상태가 바뀌었다고 서버쪽에서 다시 보내줘야함
+  //   socket.on('chat-grant-error', (errorMessage) => {
+  //     alert(errorMessage);
+  //   });
+
+  //   return () => {
+  //     socket.off('chat-grant-error');
+  //   };
+  // }, [selectedUser]);
+
+  useEffect(() => {
+    socket.on('chat-grant-administrator-finish', (finishMessage) => {
+      setChannel(channel);
+      alert(finishMessage);
+    });
+    socket.on('chat-grant-error', (errorMessage) => {
+      alert(errorMessage);
+    });
+
+    return () => {
+      socket.off('chat-grant-administrator-finish');
+      socket.off('chat-grant-error');
+    };
+  }, [socket]);
+
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', height: '100%', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
@@ -96,10 +142,30 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
           <button onClick={handleLeaveChannel}>Leave Channel</button>
         </div>
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
-          <h3>Users in Channel</h3>
+          <h3>Channel Members</h3>
+          <strong>Owner:</strong>
           <ul>
-            {channelUsers.map(user => (
-              <li key={user}>{user}</li>
+            <li>{channel?.owner}</li>
+          </ul>
+          <strong>Administrators:</strong>
+          <ul>
+            {channel?.administrator.map(admin => (
+              <li key={admin}>{admin}</li>
+            ))}
+          </ul>
+          <strong>Users:</strong>
+          <ul>
+            {channel?.userList.map(user => (
+              <li key={user}>
+                {user}
+                <button onClick={() => makeAdministrator(user)}>Make Administrator</button>
+              </li>
+            ))}
+          </ul>
+          <strong>Invited Users:</strong>
+          <ul>
+            {channel?.invitedUsers.map(invitedUser => (
+              <li key={invitedUser}>{invitedUser}</li>
             ))}
           </ul>
         </div>

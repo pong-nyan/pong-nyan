@@ -75,4 +75,13 @@ export class ChatService {
   deleteChannel(channelId: string) {
     return this.channelMap.delete(channelId);
   }
+
+  grantAdministrator(channelId: string, userId: number) {
+    const channel = this.channelMap.get(channelId);
+    if (channel) {
+      channel.administrator.push(userId);
+    }
+    return channel;
+  }
+
 }
