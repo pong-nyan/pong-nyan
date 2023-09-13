@@ -15,6 +15,7 @@ import { IntraId } from 'src/type/userType';
   cors: { origin: '*' },
   path: '/socket/',
   cookie: true,
+  namespace: '/chat',
 })
 @UseGuards(Gateway2faGuard)
 export class ChatGateway {
@@ -149,6 +150,8 @@ export class ChatGateway {
   }
 
   handleConnection(@ConnectedSocket() client: Socket) {
+    //TODO: chat client id update 하기
+
     console.log('[ChatGateway] handleConnection', client.id);
     // pnJwt 검증
     if (!this.userService.checkPnJwt(client)) return;

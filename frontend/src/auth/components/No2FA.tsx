@@ -5,7 +5,7 @@ import { useContext } from 'react';
 
 const No2FA = () => {
   useNotAuth();
-  const socket = useContext(SocketContext);
+  const { authNamespace } = useContext(SocketContext);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -14,7 +14,7 @@ const No2FA = () => {
         if (res.status === 202) {
           localStorage.setItem('user', JSON.stringify(res.data));
           console.log('Emitting auth-set-map');
-          socket.emit('auth-set-map');
+          authNamespace.emit('auth-set-map');
           location.replace('/');
         }
       }

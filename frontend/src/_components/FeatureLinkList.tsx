@@ -15,6 +15,8 @@ const FeatureLinkList = () => {
     setUserInfo({nickname : user.nickname, intraId : user.intraId});
   }, []);
 
+  if (!UserInfo.nickname || !UserInfo.intraId) return (<>forbidden</>);
+
   const features = [
     { id: 1, name: 'Chat', path: '/chat/list' },
     { id: 2, name: 'Game', path: '/game' },

@@ -5,7 +5,7 @@ import { useContext } from 'react';
 
 const Google2FA = () => {
   useNotAuth();
-  const socket = useContext(SocketContext);
+  const { authNamespace } = useContext(SocketContext);
 
   const handleSubmit =  async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -15,12 +15,12 @@ const Google2FA = () => {
         if (res.status === 202) {
           localStorage.setItem('user', JSON.stringify(res.data));
           console.log('Emitting auth-set-map');
-          socket.emit('auth-set-map');
+          authNamespace.emit('auth-set-map');
           location.replace('/');
         }
       })
       .catch((err) => {
-        if (err.response.status === 401) {
+        if (err.response?.status === 401) {
           alert('Enable failed. Please try again.');
         }
       }

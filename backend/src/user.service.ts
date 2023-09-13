@@ -53,19 +53,19 @@ export class UserService {
       // console.log('(After) setUserMap : ', this.userMap);
     }
 
-    public setUniqueValue(clientId: SocketId, intraId: IntraId) {
-      // 기존 Map을 훑어서 똑같은 value가 존재하는지 확인
-      for (const [existingKey, existingValue] of this.idMap) {
-        if (existingValue === intraId) {
-          // 같은 value를 가진 키를 찾았다면 그 키를 지운다.
-          this.idMap.delete(existingKey);
-        }
-      }
-    }
+    // public setUniqueValue(clientId: SocketId, intraId: IntraId) {
+    //   // 기존 Map을 훑어서 똑같은 value가 존재하는지 확인
+    //   for (const [existingKey, existingValue] of this.idMap) {
+    //     if (existingValue === intraId) {
+    //       // 같은 value를 가진 키를 찾았다면 그 키를 지운다.
+    //       this.idMap.delete(existingKey);
+    //     }
+    //   }
+    // }
 
     public setIdMap(clientId: SocketId, intraId: IntraId) {
       // console.log('(Before) setIdMap idMap : ', this.idMap);
-      this.setUniqueValue(clientId, intraId);
+      // this.setUniqueValue(clientId, intraId);
       this.idMap.set(clientId, intraId);
       // console.log('(After) setIdMap idMap : ', this.idMap);
     }

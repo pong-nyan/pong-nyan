@@ -7,7 +7,7 @@ import { sha256 } from 'js-sha256';
 // onChannelSelect: (channel: Channel) => void  // list.tsx에 선택될 채널을 넘겨줘야함
 const ChannelList = () => {
   const [channelList, setChannelList] = useState<Channel[]>([]);
-  const socket = useContext(SocketContext);
+  const { chatNamespace } = useContext(SocketContext);
   const router = useRouter();
 
   const handleChannelSelect = (channel: Channel) => {
@@ -34,27 +34,27 @@ const ChannelList = () => {
       }
     }
 
-    socket.emit('chat-join-channel', { channelId: seletedChannel.id, password: inputPassword });
+    chatNamespace.emit('chat-join-channel', { channelId: seletedChannel.id, password: inputPassword });
     router.push(`/chat/${seletedChannel.id}`);
   };
 
   useEffect(() => {
-    socket.emit('chat-request-channel-list');
+    chatNamespace.emit('chat-request-channel-list');
 
-    socket.on('chat-update-channel-list', (updatedList) => {
+    chatNamespace.on('chat-update-channel-list', (updatedList) => {
       console.log('[Chat] on chat-update-channel-list');
       setChannelList(updatedList);
     });
 
-    socket.on('chat-join-error', (errorMessage) => {
+    chatNamespace.on('chat-join-error', (errorMessage) => {
       alert(errorMessage);
     });
 
     return () => {
-      socket.off('chat-join-error');
-      socket.off('chat-update-channel-list');
+      chatNamespace.off('chat-join-error');
+      chatNamespace.off('chat-update-channel-list');
     };
-  }, [socket]);
+  }, [chatNamespace]);
 
   return (
     <div className="chat-room-list" style={{ flex: 1, overflowY: 'auto', borderRight: '1px solid gray' }}>
