@@ -159,7 +159,7 @@ export class ChatGateway {
     if (!channel) return;
     // owner만 변경 가능
     if (channel.owner !== payload.intraId) {
-      client.emit('chat-change-password-error', '비밀번호 변경 권한이 없습니다.');
+      client.emit('chat-catch-error-message', '비밀번호 변경 권한이 없습니다.');
       return ;
     }
     channel.password = payloadEmit.password;
@@ -167,7 +167,7 @@ export class ChatGateway {
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
     client.emit('chat-update-channel-list', updatedChannelList);
 
-    client.emit('chat-change-password-finish', '비밀번호 변경에 성공했습니다.');
+    client.emit('chat-finish-message', '비밀번호 변경에 성공했습니다.');
   }
 
   @SubscribeMessage('chat-remove-password')
@@ -176,12 +176,12 @@ export class ChatGateway {
     if (!channel) return;
     // owner만 변경 가능
     if (channel.owner !== payload.intraId) {
-      client.emit('chat-remove-password-error', '비밀번호 변경 권한이 없습니다.');
+      client.emit('chat-finish-message', '비밀번호 변경 권한이 없습니다.');
       return ;
     }
     channel.password = '';
     if (!this.syncAfterChannelChange(channel)) return ;
-    client.emit('chat-remove-password-finish', '비밀번호 변경에 성공했습니다.');
+    client.emit('chat-finish-message', '비밀번호 변경에 성공했습니다.');
   }
 
   async handleConnection(@ConnectedSocket() client: Socket) {

@@ -135,39 +135,6 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     };
   }, [chatNamespace]);
 
-  useEffect(() => {
-    chatNamespace.on('chat-change-password-finish', (finishMessage) => {
-      console.log('[Chat] chat-change-password-finish 받음 channel ', channel);
-      chatNamespace.emit('chat-request-channel-info', { channelId });
-      alert(finishMessage);
-    });
-    chatNamespace.on('chat-change-password-error', (errorMessage) => {
-      alert(errorMessage);
-    });
-
-    return () => {
-      chatNamespace.off('chat-change-password-finish');
-      chatNamespace.off('chat-change-password-error');
-    };
-  }, [chatNamespace]);
-
-  // TODO: 비번 변경이랑 합칠까?
-  useEffect(() => {
-    chatNamespace.on('chat-remove-password-finish', (finishMessage) => {
-      console.log('[Chat] chat-remove-password-finish 받음 channel ', channel);
-      chatNamespace.emit('chat-request-channel-info', { channelId });
-      alert(finishMessage);
-    });
-    chatNamespace.on('chat-remove-password-error', (errorMessage) => {
-      alert(errorMessage);
-    });
-
-    return () => {
-      chatNamespace.off('chat-remove-password-finish');
-      chatNamespace.off('chat-remove-password-error');
-    };
-  }, [chatNamespace]);
-
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', height: '100%', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
