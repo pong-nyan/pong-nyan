@@ -1,3 +1,5 @@
+import { IntraId } from './userType';
+
 declare module 'socket.io' {
   interface Socket {
     intraId?: string;
@@ -13,10 +15,10 @@ export type ChannelType = 'public' | 'private' | 'protected';
 
 export type Channel = ChannelInfo & {
   id: string,
-  owner: number,
-  administrator: number[],
-  userList: number[]
-  invitedUsers: number[]
+  owner: IntraId,
+  administrator: IntraId[],
+  userList: IntraId[]
+  invitedUsers: IntraId[]
 }
 
 export type ChannelInfo = {
@@ -25,6 +27,8 @@ export type ChannelInfo = {
   channelType: 'public' | 'private' | 'protected',
   maxUsers: number,
 }
+
+export type ChannelId = string;
 
 export type Message = {
   content: string;

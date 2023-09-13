@@ -6,13 +6,21 @@ import { SocketContext } from '@/context/socket';
 import { getMessagesFromLocalStorage } from '../utils/chatLocalStorage';
 import { Message } from '@/type/chatType';
 import { Channel } from '@/type/chatType';
+import { IntraId } from '@/type/userType';
 
 function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveChannel: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
-  const [channelUsers, setChannelUsers] = useState<string[]>([]);
+  // TODO : 난 IntraId로 넣었는데 쓰는곳에 마우스올리면 number[]가 됨
+  const [channelUsers, setChannelUsers] = useState<IntraId[]>([]);
   const [channel, setChannel] = useState<Channel | null>(null);
   const socket = useContext(SocketContext);
+
+  // 처음 컴포넌트가 마운트될 때 사용자 목록을 요청
+  useEffect(() => {
+    console.log('[Chat] 유저 목록을 서버에 요청함');
+    socket.emit('chat-request-users', { channelId });
+  }, [socket, channelId]);
 
   useEffect(() => {
     console.log('[Chat] 처음 접속시 localStorage에서 메시지 불러옴');
@@ -70,8 +78,6 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
         content: inputMessage,
         nickname: loggedInUser.nickname
       };
-      // setMessages(prevMessages => [...prevMessages, newMessage]);
-      // addMessageToLocalStorage(channelId as string, newMessage);
       socket.emit('chat-message-in-channel', { channelId, message: newMessage });
       setInputMessage('');
     }
@@ -84,7 +90,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', height: '100%', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
           <strong>Current Channel:</strong> {channel?.title ? channel.title : 'No Channel Selected'}
           <button onClick={handleLeaveChannel}>Leave Channel</button>

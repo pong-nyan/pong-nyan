@@ -4,23 +4,27 @@ import { Channel } from '@/type/chatType';
 import Link from 'next/link';
 
 // onChannelSelect: (channel: Channel) => void  // list.tsx에 선택될 채널을 넘겨줘야함
-const ChannelList = ({ onChannelSelect }) => {
+const ChannelList = () => {
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const socket = useContext(SocketContext);
 
   const handleChannelSelect = (channel: Channel) => {
+    console.log('[Chat] handleChannelSelect', channel);
     const currentChannel = channelList.find(ch => ch.id === channel.id);
     if (!currentChannel) return;
 
     let password;
     if (currentChannel.password) {
       password = prompt('이 채널은 비밀번호로 보호되어 있습니다. 비밀번호를 입력하세요.');
+      if (!password) return ;
+      if (password !== currentChannel.password) {
+        alert('비밀번호가 틀렸습니다.');
+        return ;
+      }
     }
+
     socket.emit('chat-join-channel', { channelId: currentChannel.id, password });
 
-    socket.once('chat-join-success', () => {
-      onChannelSelect(currentChannel);
-    });
   };
 
   useEffect(() => {

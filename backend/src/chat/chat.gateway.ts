@@ -56,7 +56,7 @@ export class ChatGateway {
         return ;
       }
     }
-    client.emit('chat-join-success');
+    // client.emit('chat-join-success');
     client.join(payloadEmit.channelId);
     this.chatService.joinChannel(payloadEmit.channelId, payload.intraId);
     this.userService.setUserInfoChatRoomList(payload.intraId, payloadEmit.channelId);
@@ -114,10 +114,18 @@ export class ChatGateway {
     this.server.to(payloadEmit.channelId).emit('chat-watch-new-message', { channelId: payloadEmit.channelId });
   }
 
+  // 처음 페이지에 들어왔을 때 user목록 요청
+  @SubscribeMessage('chat-request-users')
+  handleRequestUsers(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }) {
+    const users = this.chatService.getChannelUsers(payloadEmit.channelId);
+    client.emit('chat-update-users', users);
+  }
+
 
   handleConnection(@ConnectedSocket() client: Socket) {
-    console.log('[ChatGateway] Connection', client.id);
+    console.log('[ChatGateway] handleConnection', client.id);
 
+    // pnJwt 검증
     if (!this.userService.checkPnJwt(client)) return;
     // intraId 검색
     const intraId = this.userService.getIntraId(client.id);
@@ -129,6 +137,7 @@ export class ChatGateway {
 
     // 사용자가 이전에 접속했던 채팅방 목록
     const userChatRooms = userInfo.chatRoomList;
+    console.log('[ChatGateway] userChatRooms', userChatRooms);
 
     // 사용자가 이전에 접속했던 모든 채팅방에 다시 연결
     for (const room of userChatRooms) {
@@ -136,6 +145,8 @@ export class ChatGateway {
         if (!chatInfo) continue;
         client.join(room);
         console.log('[ChatGateway] reconnected to room', room);
+        const users = this.chatService.getChannelUsers(room);
+        this.server.to(room).emit('chat-update-users', users);
     }
   }
 }
