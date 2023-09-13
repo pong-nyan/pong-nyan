@@ -20,12 +20,12 @@ export class Google2faGateway {
 
   handleDisconnect(@ConnectedSocket() client: Socket) {
     console.log('[Gateway2faGuard] Disconnection ', client.id);
-    this.userService.deleteIdMap(client.id);
+    // this.userService.deleteIdMap(client.id);
   }
 
   @SubscribeMessage('auth-set-map')
   handleAuthSetMap(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
     console.log('handleAuthSetMap client.id intraId', client.id, payload.intraId);
-    this.userService.setIdMap(client.id, payload.intraId);
+    // this.userService.setIdMap(client.id, payload.intraId);
   }
 }

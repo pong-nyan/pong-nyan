@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Body, Engine, Runner } from 'matter-js';
 import { KeyEventMessage, PlayerNumber, Score, GameInfo, CanvasSize, GameStatus } from '@/type/gameType';
+import { Nickname } from '@/type/userType';
 import { SocketId, RoomName } from '@/type/socketType';
 import { socket } from '@/context/socket';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
@@ -17,7 +18,7 @@ export const socketEmitGameStartEvent = (gameStatus: GameStatus) => {
   socket.emit('game-start', {
     gameStatus,
   });
-}
+};
 
 /**
  * 게임 키 이벤트를 서버로 전송합니다. 
@@ -95,7 +96,7 @@ export const socketOnGameBallEvent = (engine: Engine | undefined) =>
  * @param playerNumber 전송하는 플레이어의 번호
  * @param 업데이트 된 score
  */
-export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, score: Score) => {
+export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, score: { p1: Score, p2: Score}) => {
   socket.emit('game-score', { 
     playerNumber,
     score,
@@ -107,9 +108,9 @@ export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, score: Scor
  * @param engine
  * @returns
  */
-export const socketOnGameScoreEvent = (sceneSize: CanvasSize, engine: Engine | undefined, setScore: Dispatch<SetStateAction<Score>>) => {
+export const socketOnGameScoreEvent = (sceneSize: CanvasSize, engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<{p1: Score, p2: Score}>>) => {
   socket.on('game-score', ( { realScore, winnerNickname } : { realScore: Score, winnerNickname: string }) => {
-    if (!engine || !engine.world) return;
+    if (!engine || !engine.world || !runner ) return;
     if (realScore.p1 === 0 && realScore.p2 === 0) {
       resumeGame(sceneSize, engine, 5, '게임 시작!');
     } else if (winnerNickname === '') {
@@ -125,19 +126,22 @@ export const socketOnGameScoreEvent = (sceneSize: CanvasSize, engine: Engine | u
 //   socket.emit('game-disconnect');
 // }
 
-export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<Score>>, setGameStatus: Dispatch<SetStateAction<GameStatus>>) => {
+export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<{p1: Score, p2: Score}>>, setGameStatus: Dispatch<SetStateAction<GameStatus>>) => {
   socket.on('game-disconnect', ( { disconnectNickname, gameInfo } : { disconnectNickname: string, gameInfo: GameInfo } ) => {
     if (!engine || !engine.world || !runner) return;
     Runner.stop(runner);
-    alert(`${disconnectNickname}님이 나가셨습니다.`);
+    const userString = localStorage.getItem('user');
+    if (!userString) return;
+    const user = JSON.parse(userString);
+    user.nickname == disconnectNickname ? alert('비정상적인 행동을 감지했습니다.') 
+      : alert(`${disconnectNickname}이(가) 나갔습니다.`);
     console.log('game-disconnect', disconnectNickname, gameInfo);
-    setGameStatus(GameStatus.End);
     setScore({ p1: gameInfo.score.p2, p2: gameInfo.score.p2 });
+    setGameStatus(GameStatus.End);
   });
 };
 
 export const socketOnGameStartEvent = (setGameStatus: Dispatch<SetStateAction<GameStatus>>, setPlayerNumber: Dispatch<SetStateAction<PlayerNumber>>, setOpponentId: Dispatch<SetStateAction<SocketId>>) => {
-  if (!socket) return;
   socket.on('game-start', ({ player1Id, player2Id }: {roomName: RoomName, player1Id: string, player2Id: string}) => {
     if (socket.id === player1Id) { 
       setPlayerNumber('player1');
@@ -149,12 +153,39 @@ export const socketOnGameStartEvent = (setGameStatus: Dispatch<SetStateAction<Ga
     }
     setGameStatus(GameStatus.RankPnRun);
   });
-}
+};
 
 export const socketOnGameLoadingEvent = (setLoading: Dispatch<SetStateAction<boolean>>) => {
-  if (!socket) return;
   socket.on('game-loading', () => {
     setLoading(true);
   });
-}
+};
 
+export const socketOnGameEnd = (
+  setScore: Dispatch<SetStateAction<{ p1: Score, p2: Score }>>,
+  setNickname: Dispatch<SetStateAction<{ p1: Nickname, p2: Nickname}>>,
+  setGameStatus: Dispatch<SetStateAction<GameStatus>>) => {
+  socket.on('game-end', ({ winnerNickname, gameInfo } : { winnerNickname: Nickname, gameInfo: GameInfo}) => {
+    console.log('game-end', winnerNickname, gameInfo);
+    getNickname() == winnerNickname ? alert('승리') : alert('패배');
+    setNickname({ p1: gameInfo.nickname.p1, p2: gameInfo.nickname.p2 });
+    setScore({ p1: gameInfo.score.p1, p2: gameInfo.score.p2 });
+    setGameStatus(GameStatus.End);
+  });
+};
+
+export const socketOffGameAllEvent = () => {
+  socket.off('game-keyEvent');
+  socket.off('game-ball');
+  socket.off('game-score');
+  socket.off('game-disconnect');
+  socket.off('game-start');
+  socket.off('game-loading');
+  socket.off('game-end');
+};
+
+const getNickname = () => {
+  const userString = localStorage.getItem('user');
+  if (!userString) return;
+  return JSON.parse(userString).nickname;
+}

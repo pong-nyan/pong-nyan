@@ -5,28 +5,70 @@ import SendMessageButton from './SendMessageButton';
 import { SocketContext } from '@/context/socket';
 import { getMessagesFromLocalStorage, addMessageToLocalStorage } from '../utils/chatLocalStorage';
 import { Message } from '@/type/chatType';
+import { Channel } from '@/type/chatType';
 
-function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: string, selectedChannel: { title: string }, onLeaveChannel: () => void }) {
+function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveChannel: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [channelUsers, setChannelUsers] = useState<string[]>([]);
+  const [channel, setChannel] = useState<Channel | null>(null);
   const socket = useContext(SocketContext);
 
-  // 방이 눌렸을때 처리
   useEffect(() => {
-    console.log('ChatRoom.tsx useEffect channelId', channelId);
-    const loadedMessages = getMessagesFromLocalStorage(channelId);
+    console.log('[Chat] 처음 접속시 localStorage에서 메시지 불러옴');
+    const loadedMessages = getMessagesFromLocalStorage(channelId as string);
     setMessages(loadedMessages);
-  }, [channelId]);
+  }, [socket, channelId]);
 
+  useEffect(() => {
+    socket.on('chat-update-users', (users) => {
+      console.log('[Chat] chat-update-users users', users);
+      setChannelUsers(users);
+    });
+
+    return () => {
+      socket.off('chat-update-users');
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    console.log('[Chat] 채널 정보를 서버에 요청함');
+    if (channelId) {
+      socket.emit('chat-request-channel-info', { channelId });
+
+      socket.on('chat-response-channel-info', (response) => {
+        if (response.error) {
+          alert(response.error);
+        } else {
+          setChannel(response.channel);
+        }
+      });
+
+      return () => {
+        socket.off('chat-response-channel-info');
+      };
+    }
+  }, [socket, channelId]);
+
+  // 페이지에서 채팅의 내용을 바꾸기 위해
   useEffect(() => {
     socket.on('chat-new-message', (data) => {
-      const { message, channelId: receivedChannelId, sender } = data;
+      const message = data.message;
+      const receivedChannelId = data.channelId;
+      const sender = data.sender;
+      console.log('[Chat] chat-new-message message, channelId, sender', message, channelId, sender);
 
       const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+      if (!loggedInUser) {
+        return ;
+      }
+
       const loggedInUserId = loggedInUser.intraId;
-      if (sender === loggedInUserId) return;
-      addMessageToLocalStorage(receivedChannelId, message);
+      if (sender === loggedInUserId) {
+        console.log('[Chat] myMessage sender, loggedInUserId', sender, loggedInUserId);
+        return;
+      }
+
       if (channelId === receivedChannelId) {
         setMessages(prevMessages => [...prevMessages, message]);
       }
@@ -34,17 +76,7 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: s
     return () => {
       socket.off('chat-new-message');
     };
-  }, [channelId]);
-
-  useEffect(() => {
-    socket.on('chat-update-users', (users) => {
-      setChannelUsers(users);
-    });
-
-    return () => {
-      socket.off('chat-update-users');
-    };
-  }, []);
+  }, [socket, channelId]);
 
   const handleSendMessage = () => {
     if (inputMessage.trim() !== '') {
@@ -54,7 +86,7 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: s
         nickname: loggedInUser.nickname
       };
       setMessages(prevMessages => [...prevMessages, newMessage]);
-      addMessageToLocalStorage(channelId, newMessage);
+      addMessageToLocalStorage(channelId as string, newMessage);
       socket.emit('chat-message-in-channel', { channelId, message: newMessage });
       setInputMessage('');
     }
@@ -69,7 +101,7 @@ function ChatRoom({ channelId, selectedChannel, onLeaveChannel }: { channelId: s
     <div style={{ display: 'flex', justifyContent: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
-          <strong>Current Channel:</strong> {selectedChannel.title}
+          <strong>Current Channel:</strong> {channel?.title ? channel.title : 'No Channel Selected'}
           <button onClick={handleLeaveChannel}>Leave Channel</button>
         </div>
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>

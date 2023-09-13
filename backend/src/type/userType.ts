@@ -8,7 +8,8 @@ import { RoomName } from './socketType';
 export type IntraId = number;
 
 export type UserInfo = {
-    nickname: string,
-    chatRoomList: RoomName[],
-    gameRoom: RoomName
+  nickname: string,
+  chatRoomList: RoomName[],
+  gameRoom: RoomName,
+  online: boolean,
 }

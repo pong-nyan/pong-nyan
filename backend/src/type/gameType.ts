@@ -1,5 +1,6 @@
 import { RoomName } from './socketType';
-import { Socket } from './socketType';
+import { Socket, SocketId } from './socketType';
+import { IntraId } from './userType';
 
 export type CanvasSize = {
   width: number,
@@ -41,15 +42,7 @@ export type BallInfo = {
   velocity: { x: number, y: number }
 }
 
-export type Nickname = {
-  p1: string,
-  p2: string
-}
-
-export type Score = {
-  p1: number,
-  p2: number
-}
+export type Nickname = string;
 
 export type ClientId = {
   p1: string,
@@ -57,12 +50,12 @@ export type ClientId = {
 }
 
 export type GameInfo = {
-  roomName: RoomName,
   gameStatus: GameStatus,
-  clientId: ClientId,
-  score: Score,
-  nickname: Nickname,
-  waitList: { playerNumber: PlayerNumber, score: Score }[],
+  clientId: { p1: SocketId, p2: SocketId },
+  intraId: { p1: IntraId, p2: IntraId },
+  score: { p1: number, p2: number },
+  nickname: { p1: Nickname, p2: Nickname },
+  waitList: { playerNumber: PlayerNumber, score: { p1: number, p2: number } }[],
   ballInfo: BallInfo
 }
 

@@ -1,18 +1,31 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useContext, KeyboardEvent} from 'react';
-import { SocketContext } from '@/context/socket';
-import { Engine, Render, World, Runner, Body } from 'matter-js';
+import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react';
+import { Engine, Render, World, Runner } from 'matter-js';
 import { initEngine, initWorld } from '@/game/matterEngine/matterJsSet';
 import { movePlayer, movePaddle, getOwnTarget } from '@/game/matterEngine/player';
 import { eventOnCollisionStart, eventOnCollisionEnd, eventOnBeforeUpdate } from '@/game/matterEngine/matterJsGameEvent';
 import { PlayerNumber, Score, CanvasSize } from '@/type/gameType';
+import { Nickname } from '@/type/userType';
 import { ScoreBoard } from '@/game/components/ScoreBoard';
-import { socketEmitGameKeyEvent, socketOnGameBallEvent, socketOnGameKeyEvent, socketOnGameScoreEvent, socketEmitGameScoreEvent, socketOnGameDisconnectEvent } from '@/context/socketGameEvent';
+import { 
+  socketEmitGameKeyEvent,
+  socketEmitGameScoreEvent, 
+  socketOnGameBallEvent, 
+  socketOnGameKeyEvent, 
+  socketOnGameScoreEvent, 
+  socketOnGameDisconnectEvent,
+  socketOnGameEnd,
+  socketOffGameAllEvent
+} from '@/context/socketGameEvent';
     
 import styles from '@/game/styles/Run.module.css';
 
-const Run = ({ setGameStatus, playerNumber, opponentId, score, setScore}
-  : { setGameStatus: Dispatch<SetStateAction<number>>, playerNumber: PlayerNumber | undefined, opponentId: string | undefined, score: Score, setScore: Dispatch<SetStateAction<Score>>}) => {
-  const socket = useContext(SocketContext);
+const Run = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
+  setGameStatus: Dispatch<SetStateAction<number>>,
+  playerNumber: PlayerNumber, 
+  opponentId: string | undefined, 
+  score: { p1: Score, p2: Score }, 
+  setScore: Dispatch<SetStateAction<{ p1: Score, p2: Score }>>
+  }) => {
   const scene = useRef<HTMLDivElement>(null);
   const engine = useRef<Engine>();
   const render = useRef<Render>();
@@ -95,7 +108,7 @@ const Run = ({ setGameStatus, playerNumber, opponentId, score, setScore}
     /* socket on event */
     socketOnGameKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
     socketOnGameBallEvent(engine.current);  // 공 위치, 속도 동기화
-    socketOnGameScoreEvent(sceneSize, engine.current, setScore);
+    socketOnGameScoreEvent(sceneSize, engine.current, runner.current, setScore);
     socketOnGameDisconnectEvent(sceneSize, engine.current, runner.current, setScore, setGameStatus);
     // run the engine
     Runner.run(runner.current, engine.current);
@@ -103,20 +116,21 @@ const Run = ({ setGameStatus, playerNumber, opponentId, score, setScore}
 
     return () => {
       // destroy Matter
-      if (!engine.current || !render.current) return;
+      if (!engine.current || !render.current || !runner.current) return;
+      Runner.stop(runner.current);
       Render.stop(render.current);
       World.clear(engine.current.world, false);
       Engine.clear(engine.current);
       render.current.canvas.remove();
       render.current.textures = {};
+      socketOffGameAllEvent();
     };
-  }, [socket, playerNumber, opponentId, setScore, setGameStatus]);
+  }, [setGameStatus, playerNumber, opponentId, setScore]);
 
   useEffect(() => {
     if (!playerNumber) return;
-    console.log('INFO: game-score', score);
     socketEmitGameScoreEvent(playerNumber, score);
-  }, [socket, playerNumber, score]);
+  }, [playerNumber, score]);
 
   return (
     <div
@@ -135,6 +149,6 @@ const Run = ({ setGameStatus, playerNumber, opponentId, score, setScore}
       </div>
     </div>
   );
-}
+};
 
 export default Run;

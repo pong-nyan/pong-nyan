@@ -1,14 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserInfo, IntraId} from 'src/type/userType';
 import { SocketId, Socket } from 'src/type/socketType';
 import { JwtService } from '@nestjs/jwt';
 import { PnPayloadDto } from 'src/dto/pnPayload.dto';
 import * as cookie from 'cookie';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entity/User';
+import { In, Repository } from 'typeorm';
 
 
 @Injectable()
 export class UserService {
-    constructor(private readonly jwtService: JwtService) {}
+    constructor(
+      private readonly jwtService: JwtService,
+      @InjectRepository(User) private readonly userRepository: Repository<User>,
+      ) {}
+
+    private userMap = new Map<IntraId, UserInfo>();
+    private idMap = new Map<SocketId, IntraId>();
 
     public getIntraId(clientId: SocketId) { return this.idMap.get(clientId); }
     public getUserInfo(intraId: number) { return this.userMap.get(intraId); }
@@ -39,17 +48,29 @@ export class UserService {
     }
 
     public setUserMap(intraId : IntraId, userInfo: UserInfo) {
-      console.log('(Before) setUserMap : ', this.userMap);
+      // console.log('(Before) setUserMap : ', this.userMap);
       this.userMap.set(intraId, userInfo);
-      console.log('(After) setUserMap : ', this.userMap);
+      // console.log('(After) setUserMap : ', this.userMap);
+    }
+
+    public setUniqueValue(clientId: SocketId, intraId: IntraId) {
+      // 기존 Map을 훑어서 똑같은 value가 존재하는지 확인
+      for (const [existingKey, existingValue] of this.idMap) {
+        if (existingValue === intraId) {
+          // 같은 value를 가진 키를 찾았다면 그 키를 지운다.
+          this.idMap.delete(existingKey);
+        }
+      }
     }
 
     public setIdMap(clientId: SocketId, intraId: IntraId) {
-      console.log('(Before) setIdMap idMap : ', this.idMap);
+      // console.log('(Before) setIdMap idMap : ', this.idMap);
+      this.setUniqueValue(clientId, intraId);
       this.idMap.set(clientId, intraId);
-      console.log('(After) setIdMap idMap : ', this.idMap);
+      // console.log('(After) setIdMap idMap : ', this.idMap);
     }
-    setUserInfoChatRoomList(intraId: IntraId, channelId: string) {
+
+    public setUserInfoChatRoomList(intraId: IntraId, channelId: string) {
       console.log('setUserInfoChatRoomList', intraId, channelId);
       const userInfo = this.getUserInfo(intraId);
       console.log('setUserInfoChatRoomList userInfo', userInfo);
@@ -85,18 +106,14 @@ export class UserService {
       console.log('deleteUserInfoChatRoomList userMap', this.userMap);
     }
 
-    deleteUserMap(clientId: SocketId) {
-      // TODO: 다시 생각해보기
-      console.log('deleteUserMap', clientId);
-      // const intraId = this.idMap.get(clientId);
-      // this.idMap.delete(clientId);
-      // this.userService.deleteUserMap(intraId);
-    }
+    // deleteUserMap(clientId: SocketId) {
+    //   // this.userService.deleteUserMap(intraId);
+    // }
 
     public deleteIdMap(clientId: SocketId) {
-      console.log('(Before) deleteIdMap : ', this.idMap);
+      // console.log('(Before) deleteIdMap : ', this.idMap);
       this.idMap.delete(clientId);
-      console.log('(After) deleteIdMap : ', this.idMap);
+      // console.log('(After) deleteIdMap : ', this.idMap);
     }
 
     public setGameRoom(intraId: IntraId, roomName: string) {
@@ -115,7 +132,13 @@ export class UserService {
 
     /* -------------------------------------------------------------------- */
 
-    private userMap = new Map<IntraId, UserInfo>();
-    private idMap = new Map<SocketId, IntraId>();
-
+    public getUserInfoByIntraIdList(intraIdList: IntraId[]) {
+      if (!intraIdList) return [];
+      const userNicknameList = [];
+      for (const intraId of intraIdList) {
+        if (!this.userMap.has(intraId)) continue;
+        userNicknameList.push((this.userMap.get(intraId)).nickname);
+      }
+      return userNicknameList;
+    }
 }

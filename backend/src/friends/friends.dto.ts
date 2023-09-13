@@ -14,6 +14,17 @@ export class PostFriendDto {
     readonly friendIntraId: number;
 }
 
+export class PostFriendNicknameDto {
+    @ApiProperty({
+        description: '친구의 닉네임',
+        example: 'seongyle',
+        required: true,
+    })
+    @IsNotEmpty()
+    @IsString()
+    readonly friendNickname: string;
+}
+
 export class PostFriendStatusDto {
     @ApiProperty({
         description: '친구 아이디. friend object 의 id를 넣으면 된다',

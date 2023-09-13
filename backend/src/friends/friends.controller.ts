@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FriendsService } from './friends.service';
 import { PnPayloadDto } from 'src/dto/pnPayload.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { GetIntraIdDto, PostFriendDto, PostFriendStatusDto } from './friends.dto';
+import { GetIntraIdDto, PostFriendDto, PostFriendStatusDto, PostFriendNicknameDto } from './friends.dto';
 import { PnJwtPayload } from 'src/dto/pnPayload.dto';
 import Friend from 'src/entity/Friend';
 
@@ -38,6 +38,16 @@ export class FriendsController {
         const intraId = pnPayload.intraId;
         return await this.friendsService.getAcceptedFriends(intraId);
     }
+
+    @Get('/me/pending')
+    @ApiTags('friends')
+    @ApiOperation({ summary: 'get pending friends', description: '나와의 대기중인 친구 목록을 가져온다.' })
+    async getPendingFriends(@PnJwtPayload() pnPayload: PnPayloadDto) {
+        const intraId = pnPayload.intraId;
+        return await this.friendsService.getPendingFriends(intraId);
+    }
+
+
     @Get('/me/accepted/test')
     @ApiTags('friends')
     @ApiOperation({ summary: 'get accepted friends', description: '테스트용. 인트라 id 직접 입력. 입력한 intraId 와의 수락된 친구 목록을 가져온다.' })
@@ -54,6 +64,16 @@ export class FriendsController {
         const intraId = pnPayload.intraId;
         return await this.friendsService.addFriend(intraId, friendIntraId);
     }
+
+    @Post('/request')
+    @ApiTags('friends')
+    @ApiOperation({ summary: 'request friend', description: '친구 요청을 보낸다. 본인만 가능 친구의 닉네임으로 요청을 보낸다.' })
+    @ApiResponse({ status: 200, description: '친구 요청 성공', type: Friend })
+    async requestFriendByNickname(@PnJwtPayload() pnPayload: PnPayloadDto, @Body() { friendNickname }: PostFriendNicknameDto) {
+        const intraId = pnPayload.intraId;
+        return await this.friendsService.addFriendByNickname(intraId, friendNickname);
+    }
+
 
     @Post('/test')
     @ApiTags('friends')
@@ -81,10 +101,10 @@ export class FriendsController {
         return await this.friendsService.updateFriendStatus(intraId, friend, status);
     }
 
-    @Post('/backdoor')
-    @ApiTags('friends')
-    @ApiOperation({ summary: 'backdoor', description: '5명은 pending, 5명은 accepted 상대로 mock friends를 생성한다.' })
-    async backdoor(@Body() { intraId }: GetIntraIdDto) {
-        return await this.friendsService.generateMockFriends(intraId);
-    }
+    // @Post('/backdoor')
+    // @ApiTags('friends')
+    // @ApiOperation({ summary: 'backdoor', description: '5명은 pending, 5명은 accepted 상대로 mock friends를 생성한다.' })
+    // async backdoor(@Body() { intraId }: GetIntraIdDto) {
+    //     return await this.friendsService.generateMockFriends(intraId);
+    // }
 }
