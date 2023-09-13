@@ -1,5 +1,6 @@
 import Profile from '@/profile/components/Profile';
 import Matching from '@/profile/components/Matching';
+import RequestFriendInProfile from '@/profile/components/RequestFriendInProfile';
 import { useRouter } from 'next/router';
 import NavButtonWrapper from '@/_components/NavButtonWrapper';
 import useAuth from '@/context/useAuth';
@@ -24,6 +25,9 @@ const ProfilePage = () => {
             <Link href={'/profile/update'}>
               Update Profile
             </Link>
+            <Link href={'/friend/manage'}>
+              Manage Friend
+            </Link>
             <NavButtonWrapper />
           </div>
         );
@@ -35,6 +39,7 @@ const ProfilePage = () => {
       <h1 className={styles.title}>Profile Page</h1>
       <Profile nickname={nickname as string} />
       <Matching nickname={nickname as string} />
+      <RequestFriendInProfile nickname={nickname as string} />
       <NavButtonWrapper />
     </div>
   );
