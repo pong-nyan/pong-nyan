@@ -32,7 +32,7 @@ export class GameService {
       const player2 = this.matchingQueueList[gameStatusIndex].shift();
       if (player1.nickname === player2.nickname) {
         this.matchingQueueList[gameStatusIndex].push(player1);
-        return [ undefined, undefined, undefined ];
+        return [ undefined, undefined, undefined, undefined ];
       }
       const roomName = 'game-' + player1.nickname + ':' + player2.nickname;
       player1.client.join(roomName);
