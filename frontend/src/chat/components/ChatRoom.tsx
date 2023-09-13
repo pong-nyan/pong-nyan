@@ -7,6 +7,7 @@ import { getMessagesFromLocalStorage } from '../utils/chatLocalStorage';
 import { Message } from '@/type/chatType';
 import { Channel } from '@/type/chatType';
 import { IntraId } from '@/type/userType';
+import { sha256 } from 'js-sha256';
 
 function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveChannel: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -43,9 +44,9 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
 
   const handleChangePassword = () => {
     const newPassword = prompt('새로운 비밀번호를 입력하세요.');
-    if (newPassword) {
-      chatNamespace.emit('chat-change-password', { channelId, newPassword });
-    }
+    if (!newPassword) return;
+    const hasedInputPassword = sha256(newPassword);
+    chatNamespace.emit('chat-change-password', { channelId, password : hasedInputPassword });
   };
 
   const handleRemovePassword = () => {

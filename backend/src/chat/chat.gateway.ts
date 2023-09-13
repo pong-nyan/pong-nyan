@@ -65,9 +65,6 @@ export class ChatGateway {
     client.join(payloadEmit.channelId);
     this.chatService.joinChannel(payloadEmit.channelId, payload.intraId);
     if (!this.syncAfterChannelChange(channel)) return ;
-    // 프론트의 전체 채널 목록 업데이트
-    // const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
-    // this.server.emit('chat-update-channel-list', updatedChannelList);
   }
 
   @SubscribeMessage('chat-request-channel-info')
@@ -89,7 +86,6 @@ export class ChatGateway {
   handleLeaveChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string, @PnJwtPayload() payload: PnPayloadDto) {
       const channel = this.chatService.getChannel(channelId);
       client.leave(channelId);
-      const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
       this.chatService.leaveChannel(channelId, payload.intraId);
       this.userService.deleteUserInfoChatRoomList(payload.intraId, channelId);
       // 나간사람이 owner이면 채널 삭제
@@ -97,6 +93,7 @@ export class ChatGateway {
         this.chatService.getChannelMap().delete(channelId);
       }
       if (!this.syncAfterChannelChange(channel)) return ;
+      const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
       this.server.emit('chat-update-channel-list', updatedChannelList);
   }
 
@@ -157,6 +154,7 @@ export class ChatGateway {
 
   @SubscribeMessage('chat-change-password')
   handleChangePassword(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, password: string }, @PnJwtPayload() payload: PnPayloadDto) {
+    console.log('chat-change-password, payloadEmit', payloadEmit);
     const channel = this.chatService.getChannel(payloadEmit.channelId);
     if (!channel) return;
     // owner만 변경 가능
@@ -164,9 +162,10 @@ export class ChatGateway {
       client.emit('chat-change-password-error', '비밀번호 변경 권한이 없습니다.');
       return ;
     }
-
-    channel.password = sha256(payloadEmit.password);
+    channel.password = payloadEmit.password;
     if (!this.syncAfterChannelChange(channel)) return ;
+    const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
+    client.emit('chat-update-channel-list', updatedChannelList);
 
     client.emit('chat-change-password-finish', '비밀번호 변경에 성공했습니다.');
   }
