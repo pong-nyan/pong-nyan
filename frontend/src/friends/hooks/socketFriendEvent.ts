@@ -12,7 +12,6 @@ export const socketEmitFriendOnlineListEvent = (friends: FriendProps[] | undefin
 
 export const socketOnFriendOnlineListEvent = (setFriendOnlineList: React.Dispatch<React.SetStateAction<UserInfo[] | undefined>>) => {
   socket.on('friend-online-list', (userInfoList: UserInfo[]) => {
-    console.log('[socketOnFriendOnlineListEvent] friend-online-list', userInfoList);
     setFriendOnlineList(userInfoList);
   });
 };
