@@ -7,13 +7,13 @@ import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
 export class RedirectDto {
     @ApiProperty({
         description: '리디렉션 경로',
-        example: '/auth/signup | /auth/signin | /auth/qr',
+        example: '/auth/signup | /auth/signin | /auth/qr | /auth/no-2fa-signin',
         required: true,
     })
     redirectUrl: RedirectUrl;
 }
 
-export type RedirectUrl = '/auth/signup' | '/auth/signin' | '/auth/qr';
+export type RedirectUrl = '/auth/signup' | '/auth/signin' | '/auth/qr' | '/auth/no-2fa-signin';
 
 export class DefaultDto {
     @ApiProperty({

@@ -1,0 +1,31 @@
+import axios from 'axios';
+import useNotAuth from '@/context/useNotAuth';
+import { SocketContext } from '@/context/socket';
+import { useContext } from 'react';
+
+const No2FA = () => {
+  useNotAuth();
+  const socket = useContext(SocketContext);
+
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/no2fa-signin`, {}, { withCredentials: true }).then(
+      (res) => {
+        if (res.status === 202) {
+          localStorage.setItem('user', JSON.stringify(res.data));
+          console.log('Emitting auth-set-map');
+          socket.emit('auth-set-map');
+          location.replace('/');
+        }
+      }
+    ).catch((err) => {
+      console.error(err);
+    });
+  };
+
+  return (
+    <button onClick={ handleSubmit }>2차 인증없이 로그인</button>
+  );
+};
+
+export default No2FA;

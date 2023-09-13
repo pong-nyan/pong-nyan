@@ -1,15 +1,19 @@
-import { Controller, Get, Post, Query, Res, Req, Body, ConsoleLogger, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Res, Req, Body, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from './auth.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { RedirectDto, DefaultDto, CodeDto, CookieValue, SignupDto } from './auth.dto';
+import { UserService } from 'src/user.service';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService, private readonly jwtService: JwtService) {
+    constructor(
+        private readonly authService: AuthService,
+        private readonly jwtService: JwtService,
+        private readonly userService: UserService) {
     }
 
     /**
@@ -28,17 +32,15 @@ export class AuthController {
         const result = await this.authService.getToken(codeDto.code);
         response.cookie('oauth-token', result, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
         // chceck if user already exists
-        // TODO: getUserInfo MUST call OUR DATABASE to check if user exists
-        //  getUserInfoFromFt function change
         const ftUser = await this.authService.getUserInfoFromToken(result.access_token);
         if (!ftUser) throw new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
         const user = await this.authService.findUser(ftUser.intraId);
 
-        //  user 가 없으면 회원가입하러 signin 으로
+        //  user 가 없으면 회원가입하러 signup 으로
         if (!user) return { redirectUrl: '/auth/signup' };
-        //  2fa 가 등록되어 있지 않으면 2fa 등록하러 qr 으로
-        if (!user.google2faEnable) return { redirectUrl: '/auth/qr' };
-        //  2fa 가 활성화 되어있으면 signin 으로
+        //  2fa 가 등록되어 있지 않고 사용자가 2fa 를 활성화했으면  2fa 등록하러 qr 으로
+        if (user.google2faOption && !user.google2faEnable) return { redirectUrl: '/auth/qr' };
+        //  2fa 가 enable 되어있으면 signin 으로 이동
         return { redirectUrl: '/auth/signin' };
     }
 
@@ -57,27 +59,33 @@ export class AuthController {
     }
     @Get('signin')
     @ApiOperation({ summary: 'signin', description: '로그인을 진행한다.' })
-    @ApiResponse({ status: HttpStatus.OK, type: RedirectDto, description: '로그인 성공. 2fa 인증하러 이동'})
+    @ApiResponse({ status: HttpStatus.OK, type: RedirectDto, description: '로그인 성공. if (2fa option true) 2fa 인증하러 이동 else 로그인'})
     async signIn(@CookieValue() accessToken: string) {
         const userInfo = await this.authService.getUserInfoFromToken(accessToken);
         if (!userInfo) return new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
         const { intraId } = userInfo;
         const user = await this.authService.findUser(intraId);
         if (!user) return new HttpException('User not found', HttpStatus.NOT_FOUND);
-        return { redirectUrl: '/auth/google-2fa-verify'};
+        // 2차 인증 활성화한 유저는 2차인증후 로그인(pn-jwt)를 박아줌
+        if (user.google2faOption && user.google2faEnable) return { redirectUrl: '/auth/google-2fa-verify' };
+        if (user.google2faOption && !user.google2faEnable) return { redirectUrl: '/auth/qr' };
+        // 2차 인증 비활성화한 유저는 바로 로그인(pn-jwt)를 박아줌
+        return { redirectUrl: '/auth/no-2fa-signin' };
     }
 
-    @UseGuards(AuthGuard)
-    @Get('mypage')
-    async myPage(@Req() request: Request, @Res() response: Response) {
-        console.log('mypage');
-        // const userInfo = await this.authService.getUserInfoFromCookie(request);
-        // if (!userInfo) return response.status(HttpStatus.UNAUTHORIZED).send('unauthorized');
-        // const { intraId, intraNickname } = userInfo;
-        // const user = await this.authService.findUser(intraId);
-        // if (!user) return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send('signin failed');
-        // return response.status(HttpStatus.OK).send(user);
-        return response.status(HttpStatus.OK).send('mypage auth sucess');
+
+    @Post('no2fa-signin')
+    async no2faSignIn(@Res() response: Response, @CookieValue() accessToken: string) {
+        const userInfo = await this.authService.getUserInfoFromToken(accessToken);
+        if (!userInfo) return new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
+        const { intraId } = userInfo;
+        const user = await this.authService.findUser(intraId);
+        if (!user) return new HttpException('User not found', HttpStatus.NOT_FOUND);
+        const jwt = await this.authService.createJwt(intraId, user.intraNickname, user.nickname);
+        const decodedJwt = JSON.parse(JSON.stringify(this.jwtService.decode(jwt)));
+        response.cookie('pn-jwt', jwt, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
+        this.userService.setUserMap(intraId, { nickname: user.nickname, chatRoomList: [], gameRoom: '', online: false});
+        return response.status(HttpStatus.ACCEPTED).send({ exp: decodedJwt.exp, nickname: decodedJwt.nickname, intraId: decodedJwt.intraId });
     }
 
     // backdoor for testing
