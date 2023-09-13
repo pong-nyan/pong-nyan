@@ -65,7 +65,7 @@ const SignUp = () => {
         {avatar && <img src={avatar} alt="avatar" className={styles.signUpImage} />}
         <label className={styles.signUpLabel} htmlFor="email">Email</label>
         <input
-          type="text"
+          type="email"
           id="email"
           className={styles.signUpInput}
           value={email}
