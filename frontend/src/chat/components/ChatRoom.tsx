@@ -96,14 +96,30 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
           <button onClick={handleLeaveChannel}>Leave Channel</button>
         </div>
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
-          <h3>Users in Channel</h3>
+          <h3>Channel Members</h3>
+          <strong>Owner:</strong>
           <ul>
-            {channelUsers.map(user => (
+            <li>{channel?.owner}</li>
+          </ul>
+          <strong>Administrators:</strong>
+          <ul>
+            {channel?.administrator.map(admin => (
+              <li key={admin}>{admin}</li>
+            ))}
+          </ul>
+          <strong>Users:</strong>
+          <ul>
+            {channel?.userList.map(user => (
               <li key={user}>{user}</li>
             ))}
           </ul>
-        </div>
-        <MessageList messages={messages} />
+          <strong>Invited Users:</strong>
+          <ul>
+            {channel?.invitedUsers.map(invitedUser => (
+              <li key={invitedUser}>{invitedUser}</li>
+            ))}
+          </ul>
+        </div>        <MessageList messages={messages} />
         <div style={{ display: 'flex', marginTop: 'auto' }}>
           <MessageInput value={inputMessage} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)} />
           <SendMessageButton onClick={handleSendMessage} />

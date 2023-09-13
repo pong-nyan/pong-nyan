@@ -29,14 +29,12 @@ const ChannelList = () => {
         }
       }
       if (seletedChannel.maxUsers <= seletedChannel.userList.length) {
-      // userList안에 내가 들어가 있으면 그냥 넘어감
         alert('채널이 가득 찼습니다.');
         return ;
       }
     }
 
     socket.emit('chat-join-channel', { channelId: seletedChannel.id, password: inputPassword });
-
     router.push(`/chat/${seletedChannel.id}`);
   };
 

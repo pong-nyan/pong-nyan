@@ -20,6 +20,8 @@ export type ChannelInfo = {
   maxUsers: number,
 }
 
+export type ChannelId = string;
+
 export type Message = {
   content: string;
   nickname: string;
