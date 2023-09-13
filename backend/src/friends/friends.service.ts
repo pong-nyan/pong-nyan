@@ -86,6 +86,7 @@ export class FriendsService {
         onlyFriends.forEach(friend => {
             friend.socketInfo = this.userService.getUserInfo(friend.intraId);
         });
+        // console.log(onlyFriends);
         return onlyFriends;
     }
 
