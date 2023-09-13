@@ -1,6 +1,8 @@
 import styles from '@/chat/styles/NavButtonWrapper.module.css';
+import useAuth from '@/context/useAuth';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 const HomeButton = () => {
@@ -43,6 +45,24 @@ const GameButton = () => {
   );
 };
 
+const ProfileButton = () => {
+  const [redirection, setRedirection] = useState<string>('');
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const nickname = user.nickname;
+    setRedirection(`/profile/${nickname}`);
+  }, []);
+  
+  return (
+    <button style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <Link href={redirection}>
+        <Image src="/assets/profile.png" alt="profile button" fill style={{ objectFit: 'contain' }} />
+      </Link>
+    </button>
+  );
+};
+
 const FriendsButton = () => {
   const [redirection, setRedirection] = useState<string>('');
 
@@ -68,6 +88,7 @@ const NavButtonWrapper = () => {
       <ListButton />
       <GameButton />
       <FriendsButton />
+      <ProfileButton />
       <RankButton />
     </nav>
   );

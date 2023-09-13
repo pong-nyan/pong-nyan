@@ -2,7 +2,7 @@ import MakeChannelButton from '@/chat/components/MakeChannelButton';
 import MakeChannel from '@/chat/components/MakeChannel';
 import ChannelList from '@/chat/components/ChannelList';
 import { useState } from 'react';
-import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
+import NavButtonWrapper from '@/_components/NavButtonWrapper';
 import useAuth from '@/context/useAuth';
 
 const ChannelListPage = () => {

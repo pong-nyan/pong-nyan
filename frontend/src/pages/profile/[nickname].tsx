@@ -1,7 +1,7 @@
 import Profile from '@/profile/components/Profile';
 import Matching from '@/profile/components/Matching';
 import { useRouter } from 'next/router';
-import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
+import NavButtonWrapper from '@/_components/NavButtonWrapper';
 import useAuth from '@/context/useAuth';
 
 const ProfilePage = () => {
