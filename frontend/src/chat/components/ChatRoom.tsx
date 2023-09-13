@@ -51,30 +51,43 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   }, [socket, channelId]);
 
   // 페이지에서 채팅의 내용을 바꾸기 위해
+  // useEffect(() => {
+  //   socket.on('chat-new-message', (data) => {
+  //     const message = data.message;
+  //     const receivedChannelId = data.channelId;
+  //     const sender = data.sender;
+  //     console.log('[Chat] chat-new-message message, channelId, sender', message, channelId, sender);
+
+  //     const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+  //     if (!loggedInUser) {
+  //       return ;
+  //     }
+
+  //     const loggedInUserId = loggedInUser.intraId;
+  //     if (sender === loggedInUserId) {
+  //       console.log('[Chat] myMessage sender, loggedInUserId', sender, loggedInUserId);
+  //       return;
+  //     }
+
+  //     if (channelId === receivedChannelId) {
+  //       setMessages(prevMessages => [...prevMessages, message]);
+  //     }
+  //   });
+  //   return () => {
+  //     socket.off('chat-new-message');
+  //   };
+  // }, [socket, channelId]);
+
+  //
   useEffect(() => {
-    socket.on('chat-new-message', (data) => {
-      const message = data.message;
-      const receivedChannelId = data.channelId;
-      const sender = data.sender;
-      console.log('[Chat] chat-new-message message, channelId, sender', message, channelId, sender);
+    // TODO : data에 channel id
+    socket.on('chat-watch-new-message', (data)=>{
 
-      const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
-      if (!loggedInUser) {
-        return ;
-      }
-
-      const loggedInUserId = loggedInUser.intraId;
-      if (sender === loggedInUserId) {
-        console.log('[Chat] myMessage sender, loggedInUserId', sender, loggedInUserId);
-        return;
-      }
-
-      if (channelId === receivedChannelId) {
-        setMessages(prevMessages => [...prevMessages, message]);
-      }
+      getMessagesFromLocalStorage(channelId as string);
     });
+
     return () => {
-      socket.off('chat-new-message');
+      socket.off('chat-watch-new-message');
     };
   }, [socket, channelId]);
 
@@ -85,8 +98,8 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
         content: inputMessage,
         nickname: loggedInUser.nickname
       };
-      setMessages(prevMessages => [...prevMessages, newMessage]);
-      addMessageToLocalStorage(channelId as string, newMessage);
+      // setMessages(prevMessages => [...prevMessages, newMessage]);
+      // addMessageToLocalStorage(channelId as string, newMessage);
       socket.emit('chat-message-in-channel', { channelId, message: newMessage });
       setInputMessage('');
     }

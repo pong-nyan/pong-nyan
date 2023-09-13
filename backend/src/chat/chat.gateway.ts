@@ -104,6 +104,17 @@ export class ChatGateway {
     client.emit('chat-update-channel-list', updatedChannelList);
   }
 
+  @SubscribeMessage('chat-watch-new-message')
+  handleSetNewMessage(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }) {
+    const channel = this.chatService.getChannel(payloadEmit.channelId);
+    // if (!channel) return;
+    // channel.newMessage = payloadEmit.message;
+
+    this.server.to(payloadEmit.channelId).emit('chat-watch-new-message', { channelId: payloadEmit.channelId });
+
+  }
+
+
   handleConnection(@ConnectedSocket() client: Socket) {
     console.log('[ChatGateway] Connection', client.id);
 

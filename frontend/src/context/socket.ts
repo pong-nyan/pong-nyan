@@ -21,13 +21,14 @@ socket.on('chat-new-message', (data) => {
   console.log('[Chat] chat-new-message', data);
   const { message, channelId: receivedChannelId, sender } = data;
 
-  const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
-  const loggedInUserId = loggedInUser.intraId;
-  if (sender === loggedInUserId) {
-    console.log('[Chat] myMessage sender, loggedInUserId', sender, loggedInUserId);
-    return;
-  }
+  // const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+  // const loggedInUserId = loggedInUser.intraId;
+  // if (sender === loggedInUserId) {
+  //   console.log('[Chat] myMessage sender, loggedInUserId', sender, loggedInUserId);
+  //   return;
+  // }
   addMessageToLocalStorage(receivedChannelId, message);
+  socket.emit('chat-watch-new-message', { channelId: receivedChannelId });
 });
 
 socket.on('add-tab', () => {
