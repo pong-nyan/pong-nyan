@@ -50,12 +50,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
       return ;
     } else {
-      this.server.to(userInfo.client.game.id).emit('add-tab');
+      this.server.to(userInfo.client.game?.id).emit('add-tab');
       userInfo.online = true;
       userInfo.client.game = client;
     }
     console.log('[GameGateway] have a userInfo', client.id);
-
 
 
     /* 게임 도중 탭 더 켜서 재접속할 때 */

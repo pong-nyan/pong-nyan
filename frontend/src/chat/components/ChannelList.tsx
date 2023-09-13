@@ -39,22 +39,22 @@ const ChannelList = () => {
   };
 
   useEffect(() => {
-    socket.emit('chat-request-channel-list');
+    chatNamespace.emit('chat-request-channel-list');
 
-    socket.on('chat-update-channel-list', (updatedList) => {
+    chatNamespace.on('chat-update-channel-list', (updatedList) => {
       console.log('[Chat] on chat-update-channel-list');
       setChannelList(updatedList);
     });
 
-    socket.on('chat-join-error', (errorMessage) => {
+    chatNamespace.on('chat-join-error', (errorMessage) => {
       alert(errorMessage);
     });
 
     return () => {
-      socket.off('chat-join-error');
-      socket.off('chat-update-channel-list');
+      chatNamespace.off('chat-join-error');
+      chatNamespace.off('chat-update-channel-list');
     };
-  }, [socket]);
+  }, [chatNamespace]);
 
   return (
     <div className="chat-room-list" style={{ flex: 1, overflowY: 'auto', borderRight: '1px solid gray' }}>
