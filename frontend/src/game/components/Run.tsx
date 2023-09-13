@@ -13,18 +13,18 @@ import {
   socketOnGameKeyEvent, 
   socketOnGameScoreEvent, 
   socketOnGameDisconnectEvent,
-  socketOnGameEnd,
   socketOffGameAllEvent
 } from '@/context/socketGameEvent';
     
 import styles from '@/game/styles/Run.module.css';
 
-const Run = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
+const Run = ({setGameStatus, playerNumber, opponentId, score, setScore, setNickname}: {
   setGameStatus: Dispatch<SetStateAction<number>>,
   playerNumber: PlayerNumber, 
   opponentId: string | undefined, 
   score: { p1: Score, p2: Score }, 
   setScore: Dispatch<SetStateAction<{ p1: Score, p2: Score }>>
+  setNickname: Dispatch<SetStateAction<{ p1: Nickname, p2: Nickname }>>
   }) => {
   const scene = useRef<HTMLDivElement>(null);
   const engine = useRef<Engine>();
@@ -109,7 +109,7 @@ const Run = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
     socketOnGameKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
     socketOnGameBallEvent(engine.current);  // 공 위치, 속도 동기화
     socketOnGameScoreEvent(sceneSize, engine.current, runner.current, setScore);
-    socketOnGameDisconnectEvent(sceneSize, engine.current, runner.current, setScore, setGameStatus);
+    socketOnGameDisconnectEvent(sceneSize, engine.current, runner.current, setScore, setGameStatus, setNickname);
     // run the engine
     Runner.run(runner.current, engine.current);
     Render.run(render.current);

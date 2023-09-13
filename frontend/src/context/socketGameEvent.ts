@@ -141,17 +141,22 @@ export const socketOnGameScoreEvent = (sceneSize: CanvasSize, engine: Engine | u
 //   socket.emit('game-disconnect');
 // }
 
-export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<{p1: Score, p2: Score}>>, setGameStatus: Dispatch<SetStateAction<GameStatus>>) => {
+export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<{p1: Score, p2: Score}>>, setGameStatus: Dispatch<SetStateAction<GameStatus>>, setNickname: Dispatch<SetStateAction<{ p1: Nickname, p2: Nickname}>> ) => {
   gameNamespace.on('game-disconnect', ( { disconnectNickname, gameInfo } : { disconnectNickname: string, gameInfo: GameInfo } ) => {
     if (!engine || !engine.world || !runner) return;
     Runner.stop(runner);
     const userString = localStorage.getItem('user');
     if (!userString) return;
-    const user = JSON.parse(userString);
-    user.nickname == disconnectNickname ? alert('비정상적인 행동을 감지했습니다.') 
+    const { nickname } = JSON.parse(userString);
+
+    nickname == disconnectNickname ? alert('비정상적인 행동을 감지했습니다.') 
       : alert(`${disconnectNickname}이(가) 나갔습니다.`);
-    console.log('game-disconnect', disconnectNickname, gameInfo);
-    setScore({ p1: gameInfo.score.p2, p2: gameInfo.score.p2 });
+    if (disconnectNickname === gameInfo.nickname.p1) {
+      setScore((prevScore: { p1: Score, p2: Score }) => { return { p1: prevScore.p1, p2: prevScore.p2 + 1}; });
+    } else if (disconnectNickname === gameInfo.nickname.p2) {
+      setScore((prevScore: { p1: Score, p2: Score }) => { return { p1: prevScore.p1 + 1, p2: prevScore.p2 }; });
+    }
+    setNickname({ p1: gameInfo.nickname.p1, p2: gameInfo.nickname.p2 });
     setGameStatus(GameStatus.End);
   });
 };
