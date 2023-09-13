@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserInfo, IntraId} from 'src/type/userType';
-import { SocketId, Socket } from 'src/type/socketType';
+import { SocketId, Socket, RoomName } from 'src/type/socketType';
+import { GameInfo } from 'src/type/gameType';
 import { JwtService } from '@nestjs/jwt';
 import { PnPayloadDto } from 'src/dto/pnPayload.dto';
 import * as cookie from 'cookie';
@@ -20,7 +21,7 @@ export class UserService {
     private idMap = new Map<SocketId, IntraId>();
 
     public getIntraId(clientId: SocketId) { return this.idMap.get(clientId); }
-    public getUserInfo(intraId: number) { return this.userMap.get(intraId); }
+    public getUserInfo(intraId: IntraId) { return this.userMap.get(intraId); }
 
     public checkPnJwt(client: Socket) {
       const cookies = client.handshake.headers.cookie;
@@ -116,18 +117,39 @@ export class UserService {
       // console.log('(After) deleteIdMap : ', this.idMap);
     }
 
-    public setGameRoom(intraId: IntraId, roomName: string) {
-      const userInfo = this.userMap.get(intraId);
-      if (!userInfo) return ;
-      userInfo.gameRoom = roomName;
+    public checkChatClient(clientId: SocketId, intraId: IntraId): UserInfo | undefined {
+        const userInfo = this.getUserInfo(intraId);
+        if (!userInfo || userInfo.client.chat.id !== clientId) return undefined;
+        return userInfo;
+    }
+
+    public checkGameClient(clientId: SocketId, intraId: IntraId): UserInfo | undefined{
+        const userInfo = this.getUserInfo(intraId);
+        if (!userInfo || userInfo.client.game.id !== clientId) return undefined;
+        return userInfo;
+    }
+
+    public setUserInfoGameRoom(roomName: RoomName, gameInfo: GameInfo) {
+      const userInfoA = this.userMap.get(gameInfo.intraId.p1);
+      const userInfoB = this.userMap.get(gameInfo.intraId.p2);
+      if (!userInfoA || !userInfoB || userInfoA.gameRoom !== userInfoB.gameRoom) return ;
+      userInfoA.client.game.join(roomName);
+      userInfoB.client.game.join(roomName);
+      userInfoA.gameRoom = roomName;
+      userInfoB.gameRoom = roomName;
       console.log('[userService] setGameRoom', this.userMap);
     }
 
-    public deleteGameRoom(intraId: IntraId) {
-      const userInfo = this.userMap.get(intraId);
-      if (!userInfo) return ;
-      userInfo.gameRoom = '';
-      console.log('[userService] deleteGameRoom', this.userMap);
+    public deleteUserInfoGameRoom(gameInfo: GameInfo) {
+      console.log('[userService] Before deleteGameRoom', this.userMap);
+      const userInfoA = this.userMap.get(gameInfo.intraId.p1);
+      const userInfoB = this.userMap.get(gameInfo.intraId.p2);
+      if (!userInfoA || !userInfoB || userInfoA.gameRoom !== userInfoB.gameRoom) return ;
+      userInfoA.client.game?.leave(userInfoA.gameRoom);
+      userInfoB.client.game?.leave(userInfoB.gameRoom);
+      userInfoA.gameRoom = '';
+      userInfoB.gameRoom = '';
+      console.log('[userService] After deleteGameRoom', this.userMap);
     }
 
     /* -------------------------------------------------------------------- */
