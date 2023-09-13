@@ -12,10 +12,11 @@ export type PendingFriendProps = {
   friendId: number,
 }
 
-export enum FriendStatus {
-  OFFLINE,
-  ONLINE,
-  INGAME,
+type SocketInfo = {
+  chatRoomList : Array<string>,
+  gameRoom : string,
+  nickname : string,
+  online : boolean 
 }
 
 export type FriendProps = {
@@ -23,5 +24,5 @@ export type FriendProps = {
   nickname: string;
   avatar: string;
   rankScore: number;
-  status: FriendStatus;
+  socketInfo: SocketInfo; 
 }
