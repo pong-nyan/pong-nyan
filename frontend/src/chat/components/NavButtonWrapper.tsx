@@ -25,11 +25,11 @@ const ListButton = () => {
 };
 
 //TODO: mikim3에게 링크 묻고 수정 -> list와 message-channel-list의 차이점
-const PublicChannelListButton = () => {
+const RankButton = () => {
   return (
     <button style={{ position: 'relative', width: '100%', height: '100%' }}>
-      <Link href="/chat/public-channel-list">
-        <Image src="/assets/public-room-button.png" alt="public-room-button" fill style={{ objectFit: 'contain' }} />
+      <Link href="/rank">
+        <Image src="/assets/rank.png" alt="rank" fill style={{ objectFit: 'contain' }} />
       </Link>
     </button>
   );
@@ -68,9 +68,9 @@ const NavButtonWrapper = () => {
     <nav className={styles.navButtonWrapper}>{/* 하단 네비게이션 최상위 태그 */}
       <HomeButton />
       <ListButton />
-      <PublicChannelListButton />
       <GameButton />
       <FriendsButton />
+      <RankButton />
     </nav>
   );
 };
