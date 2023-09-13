@@ -14,6 +14,42 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   const [channel, setChannel] = useState<Channel | null>(null);
   const { chatNamespace } = useContext(SocketContext);
 
+  const handleSendMessage = () => {
+    if (inputMessage.trim() !== '') {
+      const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const newMessage : Message = {
+        content: inputMessage,
+        nickname: loggedInUser.nickname
+      };
+      chatNamespace.emit('chat-message-in-channel', { channelId, message: newMessage });
+      setInputMessage('');
+    }
+  };
+
+  const handleLeaveChannel = () => {
+    chatNamespace.emit('chat-leave-channel', channelId);
+    onLeaveChannel();
+  };
+
+  const makeAdministrator = (grantedUser: IntraId) => {
+    // 서버에 업데이트된 목록을 보내는 로직 추가
+    chatNamespace.emit('chat-grant-administrator', { channelId, user: grantedUser });
+  };
+
+  const handleChangePassword = () => {
+    const newPassword = prompt('새로운 비밀번호를 입력하세요.');
+    if (newPassword) {
+      chatNamespace.emit('chat-change-password', { channelId, newPassword });
+    }
+  };
+
+  const handleRemovePassword = () => {
+    const confirmRemove = window.confirm('정말로 비밀번호를 제거하시겠습니까?');
+    if (confirmRemove) {
+      chatNamespace.emit('chat-remove-password', { channelId });
+    }
+  };
+
   useEffect(() => {
     console.log('[Chat] 처음 접속시 localStorage에서 메시지 불러옴');
     const loadedMessages = getMessagesFromLocalStorage(channelId as string);
@@ -76,28 +112,6 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     };
   }, [chatNamespace, channelId]);
 
-  const handleSendMessage = () => {
-    if (inputMessage.trim() !== '') {
-      const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
-      const newMessage : Message = {
-        content: inputMessage,
-        nickname: loggedInUser.nickname
-      };
-      chatNamespace.emit('chat-message-in-channel', { channelId, message: newMessage });
-      setInputMessage('');
-    }
-  };
-
-  const handleLeaveChannel = () => {
-    chatNamespace.emit('chat-leave-channel', channelId);
-    onLeaveChannel();
-  };
-
-  const makeAdministrator = (grantedUser: IntraId) => {
-    // 서버에 업데이트된 목록을 보내는 로직 추가
-    chatNamespace.emit('chat-grant-administrator', { channelId, user: grantedUser });
-  };
-
   useEffect(() => {
     chatNamespace.on('chat-grant-administrator-finish', (finishMessage) => {
       console.log('[Chat] chat-grant-administrator-finish 받음 channel ', channel);
@@ -114,12 +128,52 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     };
   }, [chatNamespace]);
 
+  useEffect(() => {
+    chatNamespace.on('chat-change-password-finish', (finishMessage) => {
+      console.log('[Chat] chat-change-password-finish 받음 channel ', channel);
+      chatNamespace.emit('chat-request-channel-info', { channelId });
+      alert(finishMessage);
+    });
+    chatNamespace.on('chat-change-password-error', (errorMessage) => {
+      alert(errorMessage);
+    });
+
+    return () => {
+      chatNamespace.off('chat-change-password-finish');
+      chatNamespace.off('chat-change-password-error');
+    };
+  }, [chatNamespace]);
+
+  // TODO: 비번 변경이랑 합칠까?
+  useEffect(() => {
+    chatNamespace.on('chat-remove-password-finish', (finishMessage) => {
+      console.log('[Chat] chat-remove-password-finish 받음 channel ', channel);
+      chatNamespace.emit('chat-request-channel-info', { channelId });
+      alert(finishMessage);
+    });
+    chatNamespace.on('chat-remove-password-error', (errorMessage) => {
+      alert(errorMessage);
+    });
+
+    return () => {
+      chatNamespace.off('chat-remove-password-finish');
+      chatNamespace.off('chat-remove-password-error');
+    };
+  }, [chatNamespace]);
+
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', height: '100%', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
           <strong>Current Channel:</strong> {channel?.title ? channel.title : 'No Channel Selected'}
           <button onClick={handleLeaveChannel}>Leave Channel</button>
+          {/* 비밀번호 변경/제거 버튼 추가 - owner만 볼 수 있도록 */}
+          {channel?.channelType === 'protected' && channel?.owner === JSON.parse(localStorage.getItem('user') || '{}').intraId && (
+            <>
+              <button onClick={handleChangePassword}>비밀번호 변경</button>
+              <button onClick={handleRemovePassword}>비밀번호 제거</button>
+            </>
+          )}
         </div>
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
           <h3>Channel Members</h3>
