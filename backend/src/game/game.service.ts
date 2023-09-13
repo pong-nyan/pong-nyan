@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Game } from 'src/entity/Game';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Socket, RoomName } from 'src/type/socketType'; import { BallInfo, GameInfo, QueueInfo, PlayerNumber, GameStatus, MatchingQueue } from 'src/type/gameType'; import { IntraId, UserInfo } from 'src/type/userType'; import { User } from 'src/entity/User';
+import { Socket, RoomName, SocketId } from 'src/type/socketType';
+import { BallInfo, GameInfo, QueueInfo, PlayerNumber, GameStatus, MatchingQueue } from 'src/type/gameType';
+import { IntraId, UserInfo } from 'src/type/userType';
+import { User } from 'src/entity/User';
 import { UserService } from 'src/user.service';
 
 @Injectable()
@@ -15,7 +18,8 @@ export class GameService {
     private readonly userService: UserService,
   ) { }
 
-  public match(client: Socket, gameStatus: GameStatus, intraId: IntraId, nickname: string) {
+  public match(client: Socket, gameStatus: GameStatus, intraId: IntraId, nickname: string) 
+    : [ RoomName, SocketId, SocketId, GameStatus ] | [ undefined, undefined, undefined, undefined ] {
     const userInfo = this.userService.getUserInfo(intraId);
     if (!userInfo) return ;
     console.log('userInfo', userInfo);
