@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Game } from 'src/entity/Game';
 import { InjectRepository } from '@nestjs/typeorm';
+import { v4 as uuidv4 } from 'uuid';
 import { Repository } from 'typeorm';
 import { Socket, RoomName, SocketId } from 'src/type/socketType';
 import { BallInfo, GameInfo, QueueInfo, PlayerNumber, GameStatus, MatchingQueue } from 'src/type/gameType';
@@ -18,7 +19,9 @@ export class GameService {
     private readonly userService: UserService,
   ) { }
 
-  public match(client: Socket, gameStatus: GameStatus, intraId: IntraId, nickname: string) 
+  public getGameMap() { return this.gameMap; }
+
+  public match(client: Socket, gameStatus: GameStatus, intraId: IntraId, nickname: string)
     : [ RoomName, SocketId, SocketId, GameStatus ] | [ undefined, undefined, undefined, undefined ] {
     const userInfo = this.userService.getUserInfo(intraId);
     if (!userInfo) return ;
@@ -34,14 +37,8 @@ export class GameService {
         this.matchingQueueList[gameStatusIndex].push(player1);
         return [ undefined, undefined, undefined, undefined ];
       }
-      const roomName = 'game-' + player1.nickname + ':' + player2.nickname;
-      player1.client.join(roomName);
-      player2.client.join(roomName);
-      this.userService.setGameRoom(player1.intraId, roomName);
-      this.userService.setGameRoom(player2.intraId, roomName);
-      const player1Id = player1.client.id;
-      const player2Id = player2.client.id;
-      this.gameMap.set(roomName, {
+      const roomName = uuidv4();
+      const gameInfo = {
         gameStatus,
         clientId: { p1: player1.client.id, p2: player2.client.id },
         intraId: { p1: player1.intraId, p2: player2.intraId },
@@ -52,7 +49,11 @@ export class GameService {
           position: { x: 0, y: 0 },
           velocity: { x: 0, y: 0 },
         },
-      });
+      }
+      const player1Id = player1.client.id;
+      const player2Id = player2.client.id;
+      this.gameMap.set(roomName, gameInfo);
+      this.userService.setUserInfoGameRoom(roomName, gameInfo);
       console.log('gameMap', this.gameMap);
       return [ roomName, player1Id, player2Id, gameStatus ];
     }
