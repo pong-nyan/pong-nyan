@@ -32,7 +32,7 @@ export class ProfileService {
     }
     profile.email = userInfo.email;
     profile.google2faOption = userInfo.google2faOption;
-    await this.userRepository.save(profile);
+    await this.userRepository.update({ intraId }, profile);
     return profile;
   }
 }
