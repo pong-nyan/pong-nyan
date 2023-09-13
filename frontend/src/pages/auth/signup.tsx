@@ -25,6 +25,10 @@ const SignUp = () => {
     }
 
     const output = await postFetchData();
+    if (!output) {
+      alert('Sign Up Failed');
+      return;
+    }
     setRedirectUrl(output);
   };
 
