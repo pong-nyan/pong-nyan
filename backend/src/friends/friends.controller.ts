@@ -23,12 +23,6 @@ export class FriendsController {
     async getFriends(@Query() query: GetIntraIdDto) {
         const intraId = query.intraId;
         const friends = await this.friendsService.getFriends(intraId);
-        // get friends info
-        // const friendsInfo = [];
-        // for (const friend of friends) {
-            // const friendInfo = this.userService.getUserInfo(friend.friendId);
-            // friendsInfo.push(friendInfo);
-        // }
         return friends;
     }
 
