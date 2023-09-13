@@ -55,7 +55,7 @@ export class AuthController {
         const { email, nickname, avatar } = signupDto;
         const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar || defaultAvatar, 0, email);
         if (!result) return new HttpException('Create User Faild', HttpStatus.INTERNAL_SERVER_ERROR);
-        return { redirectUrl: '/auth/qr' };
+        return { redirectUrl: '/auth/no-2fa-signin' };
     }
     @Get('signin')
     @ApiOperation({ summary: 'signin', description: '로그인을 진행한다.' })
