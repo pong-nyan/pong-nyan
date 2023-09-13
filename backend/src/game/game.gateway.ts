@@ -31,7 +31,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   fps = 1000 / 60;
 
-  async handleConnection(@ConnectedSocket() client: Socket) {
+  async handleConnection(client: Socket) {
     console.log('[GameGateway] Connection', client.id);
 
     const pnPayload = this.userService.checkPnJwt(client);
@@ -55,27 +55,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       userInfo.client.game = client;
     }
     console.log('[GameGateway] have a userInfo', client.id);
-
-
-    /* 게임 도중 탭 더 켜서 재접속할 때 */
-    // 이전 클라이언트 한테 게임 종료 메시지 보내기
-    if (userInfo.gameRoom === '') return ;
-    const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
-    if (!gameInfo) return ;
-    this.server.to(userInfo.client.game.id).emit('game-disconnect', {
-      disconnectNickname: userInfo.nickname,
-      gameInfo
-    });
-    userInfo.gameRoom = '';
-    // const gameInfo = this.gameService.findGameRoomByNickname(userInfo.nickname);
-    // console.log('[GameGateway] gameInfo', gameInfo);
-    // if (!gameInfo) return ;
-    // console.log('[GameGateway] have a gameInfo', client.id);
-    // userInfo.gameRoom = gameInfo.roomName;
-    // console.log('[GameGateway] reconnect', userInfo.gameRoom);
   }
 
-  async handleDisconnect(@ConnectedSocket() client: Socket) {
+  async handleDisconnect(client: Socket) {
     console.log('[GameGateway] Disconnection', client.id);
 
     if (!this.userService.checkPnJwt(client)) return ;
@@ -86,13 +68,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const userInfo = this.userService.getUserInfo(intraId);
     if (!userInfo ) return ;
-    console.log('[GameGateway] have userInfo', userInfo);
-
+    userInfo.online = false;
     this.gameService.removeMatchingClient(client);
+    console.log('[GameGateway] have userInfo', userInfo);
     if (userInfo.gameRoom === '') return ;
     console.log('[GameGateway] is in gameRoom', userInfo.gameRoom);
 
-    /* 새로고침하는 경우 막기 */
     const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
     if (!gameInfo) return ;
     console.log('[GameGateway] emit gameInfo', client.id);
@@ -100,13 +81,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       disconnectNickname: userInfo.nickname,
       gameInfo
     });
-    this.userService.deleteGameRoom(intraId);
-    this.gameService.deleteGameRoom(userInfo.gameRoom);
+    const roomName = userInfo.gameRoom; // Deep copy
+    this.userService.deleteUserInfoGameRoom(gameInfo);
+    console.log('[GameGateway] After deleteGameRoom', roomName, this.gameService.getGameInfo(roomName));
+    this.gameService.deleteGameRoom(roomName);
   }
 
   @SubscribeMessage('game-friendStart')
-  handleFriendStart(@ConnectedSocket() client: Socket, @MessageBody() payload: { gameStatus: GameStatus, friendNickname: string}, @PnJwtPayload() pnPayload: PnPayloadDto) {
-    const userInfo = this.userService.getUserInfo(pnPayload.intraId);
+  handleFriendStart(@ConnectedSocket() client: Socket,
+                    @MessageBody() payload: { gameStatus: GameStatus, friendNickname: string},
+                    @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkGameClient(client.id, pnPayload.intraId);
     if (!userInfo) return ;
 
     const [ roomName, player1Id, player2Id ] = this.gameService.friendMatch(client, payload.gameStatus - 1, pnPayload.intraId, pnPayload.nickname, payload.friendNickname);
@@ -116,7 +101,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('game-start')
-  handleStartGame(@ConnectedSocket() client: Socket, @MessageBody() payload: { gameStatus: GameStatus }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+  handleStartGame(@ConnectedSocket() client: Socket,
+                  @MessageBody() payload: { gameStatus: GameStatus },
+                  @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkGameClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
+
     console.log('[Game Gateway] game-start');
     const [ roomName, player1Id, player2Id, gameStatus ] =
       this.gameService.match(client, payload.gameStatus, pnPayload.intraId, pnPayload.nickname);
@@ -126,7 +116,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('game-keyEvent')
-  handleGameKeyEvent(@ConnectedSocket() client: Socket, @MessageBody() payload: any, @PnJwtPayload() pnPayload: PnPayloadDto) {
+  handleGameKeyEvent(@ConnectedSocket() client: Socket,
+                     @MessageBody() payload: any,
+                     @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkGameClient(client.id, pnPayload.intraId);
+    if (!userInfo || userInfo.gameRoom === '') return ;
+
     const roomName = this.gameService.getGameRoom(client);
     console.log('roomName', this.gameService.getGameInfo(roomName));
     this.server.to(payload.opponentId).emit('game-keyEvent', {
@@ -139,14 +134,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // TODO: sensor에 닿을 시 score 변경
   @SubscribeMessage('game-score')
-  handleScore(@ConnectedSocket() client: Socket, @MessageBody() payload: { playerNumber: PlayerNumber, score: { p1: number, p2: number }}, @PnJwtPayload() pnPayload: PnPayloadDto) {
-    console.log('[Game Gateway] game-score');
-    const userInfo = this.userService.getUserInfo(pnPayload.intraId);
+  handleScore(@ConnectedSocket() client: Socket,
+              @MessageBody() payload: { playerNumber: PlayerNumber, score: { p1: number, p2: number }},
+              @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkGameClient(client.id, pnPayload.intraId);
     if (!userInfo || userInfo.gameRoom === '') return ;
+
     const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
     console.log('gameInfo', gameInfo);
     if (!gameInfo) return ;
-
 
     if (this.gameService.isReadyScoreCheck(gameInfo, payload.playerNumber, payload.score)) {
       const winnerNickname = this.gameService.checkCorrectScoreWhoWinner(gameInfo);
@@ -171,11 +167,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('game-ball')
-  handleBall(@ConnectedSocket() client: Socket, @MessageBody() ball: BallInfo) {
-    const roomName = this.gameService.getGameRoom(client);
-    const updatedBallInfo = this.gameService.reconcilateBallInfo(roomName, ball);
+  handleBall(@ConnectedSocket() client: Socket,
+             @MessageBody() ball: BallInfo,
+             @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkGameClient(client.id, pnPayload.intraId);
+    if (!userInfo || userInfo.gameRoom === '') return ;
+
+    const updatedBallInfo = this.gameService.reconcilateBallInfo(userInfo.gameRoom, ball);
     if (!updatedBallInfo) return;
-    this.server.to(roomName).emit('game-ball', updatedBallInfo);
+    this.server.to(userInfo.gameRoom).emit('game-ball', updatedBallInfo);
   }
 }
 

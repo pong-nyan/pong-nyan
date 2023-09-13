@@ -1,5 +1,5 @@
 
-import styles from '@/game/styles/Start.module.css'
+import styles from '@/game/styles/Start.module.css';
 
 const GameLoading= () => {
   return (
