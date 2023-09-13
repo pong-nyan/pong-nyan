@@ -1,4 +1,4 @@
-import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { ConnectedSocket, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'src/type/socketType';
 import { UserService } from 'src/user.service';
 import { PnJwtPayload, PnPayloadDto } from 'src/dto/pnPayload.dto';
@@ -10,6 +10,7 @@ import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
   cors: { origin: '*' },
   path: '/socket/',
   cookie: true,
+  namespace: '/auth',
 })
 export class Google2faGateway {
   constructor(private readonly userService: UserService) {}

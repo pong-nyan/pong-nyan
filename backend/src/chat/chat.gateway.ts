@@ -14,6 +14,7 @@ import { Controller2faGuard } from 'src/guard/controller2fa.guard';
   cors: { origin: '*' },
   path: '/socket/',
   cookie: true,
+  namespace: '/chat',
 })
 @UseGuards(Gateway2faGuard)
 export class ChatGateway {
