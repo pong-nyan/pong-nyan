@@ -3,7 +3,7 @@ import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import SendMessageButton from './SendMessageButton';
 import { SocketContext } from '@/context/socket';
-import { getMessagesFromLocalStorage, addMessageToLocalStorage } from '../utils/chatLocalStorage';
+import { getMessagesFromLocalStorage } from '../utils/chatLocalStorage';
 import { Message } from '@/type/chatType';
 import { Channel } from '@/type/chatType';
 
@@ -20,6 +20,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     setMessages(loadedMessages);
   }, [socket, channelId]);
 
+  // 해당 채널에 들어와 있는 user의 목록을 받아옴
   useEffect(() => {
     socket.on('chat-update-users', (users) => {
       console.log('[Chat] chat-update-users users', users);
@@ -29,13 +30,12 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     return () => {
       socket.off('chat-update-users');
     };
-  }, [socket]);
+  }, [socket, channelId]);
 
   useEffect(() => {
     console.log('[Chat] 채널 정보를 서버에 요청함');
     if (channelId) {
       socket.emit('chat-request-channel-info', { channelId });
-
       socket.on('chat-response-channel-info', (response) => {
         if (response.error) {
           alert(response.error);
@@ -50,40 +50,12 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     }
   }, [socket, channelId]);
 
-  // 페이지에서 채팅의 내용을 바꾸기 위해
-  // useEffect(() => {
-  //   socket.on('chat-new-message', (data) => {
-  //     const message = data.message;
-  //     const receivedChannelId = data.channelId;
-  //     const sender = data.sender;
-  //     console.log('[Chat] chat-new-message message, channelId, sender', message, channelId, sender);
-
-  //     const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
-  //     if (!loggedInUser) {
-  //       return ;
-  //     }
-
-  //     const loggedInUserId = loggedInUser.intraId;
-  //     if (sender === loggedInUserId) {
-  //       console.log('[Chat] myMessage sender, loggedInUserId', sender, loggedInUserId);
-  //       return;
-  //     }
-
-  //     if (channelId === receivedChannelId) {
-  //       setMessages(prevMessages => [...prevMessages, message]);
-  //     }
-  //   });
-  //   return () => {
-  //     socket.off('chat-new-message');
-  //   };
-  // }, [socket, channelId]);
-
-  //
   useEffect(() => {
-    // TODO : data에 channel id
     socket.on('chat-watch-new-message', (data)=>{
-
-      getMessagesFromLocalStorage(channelId as string);
+      console.log('[Chat] chat-watch-new-message', data);
+      const { channelId: receivedChannelId } = data;
+      const storageMessages = getMessagesFromLocalStorage(receivedChannelId);
+      setMessages(storageMessages);
     });
 
     return () => {
@@ -94,7 +66,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   const handleSendMessage = () => {
     if (inputMessage.trim() !== '') {
       const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
-      const newMessage = {
+      const newMessage : Message = {
         content: inputMessage,
         nickname: loggedInUser.nickname
       };

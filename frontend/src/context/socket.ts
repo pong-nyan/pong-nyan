@@ -19,14 +19,9 @@ socket.on('auth-set-map-payload', () => {
 // 메시지를 받아서 로컬 스토리지에 저장
 socket.on('chat-new-message', (data) => {
   console.log('[Chat] chat-new-message', data);
-  const { message, channelId: receivedChannelId, sender } = data;
+  // 메시지를 받은 채널 ID
+  const { message, channelId: receivedChannelId } = data;
 
-  // const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
-  // const loggedInUserId = loggedInUser.intraId;
-  // if (sender === loggedInUserId) {
-  //   console.log('[Chat] myMessage sender, loggedInUserId', sender, loggedInUserId);
-  //   return;
-  // }
   addMessageToLocalStorage(receivedChannelId, message);
   socket.emit('chat-watch-new-message', { channelId: receivedChannelId });
 });

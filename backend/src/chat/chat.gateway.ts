@@ -1,6 +1,6 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
-import { ChannelInfo } from 'src/type/chatType';
+import { ChannelInfo, Message } from 'src/type/chatType';
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
 import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
@@ -81,12 +81,13 @@ export class ChatGateway {
       client.emit('chat-response-channel-info', { channel });
   }
 
+  // 메시지 보내기 버튼 누른 직후
   @SubscribeMessage('chat-message-in-channel')
-  handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, message: string }, @PnJwtPayload() payload: PnPayloadDto) {
-    // 해당 채널의 모든 사용자에게 메시지 전송
+  handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, message: Message }, @PnJwtPayload() payload: PnPayloadDto) {
     console.log('chat-message-in-channel, payload', payloadEmit);
 
-    this.server.to(payloadEmit.channelId).emit('chat-new-message', { channelId: payloadEmit.channelId, message: payloadEmit.message, sender: payload.intraId });
+    // 해당 채널에 모두에게 chat-new-message 전송
+    this.server.to(payloadEmit.channelId).emit('chat-new-message', { channelId: payloadEmit.channelId, message: payloadEmit.message });
   }
 
   @SubscribeMessage('chat-leave-channel')
@@ -107,11 +108,10 @@ export class ChatGateway {
   @SubscribeMessage('chat-watch-new-message')
   handleSetNewMessage(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }) {
     const channel = this.chatService.getChannel(payloadEmit.channelId);
-    // if (!channel) return;
-    // channel.newMessage = payloadEmit.message;
+    if (!channel) return;
 
+    //해당 채널의 모든 사용자에게 전송
     this.server.to(payloadEmit.channelId).emit('chat-watch-new-message', { channelId: payloadEmit.channelId });
-
   }
 
 
@@ -141,4 +141,4 @@ export class ChatGateway {
 }
 
 // TODO : setUserInfoChatRoomList 만들기
-    // chatRoomList: RoomName[],
+// chatRoomList: RoomName[],
