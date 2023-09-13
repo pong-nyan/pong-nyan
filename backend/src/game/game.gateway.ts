@@ -32,27 +32,42 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   fps = 1000 / 60;
 
   async handleConnection(@ConnectedSocket() client: Socket) {
-
     console.log('[GameGateway] Connection', client.id);
-    if (!this.userService.checkPnJwt(client)) return ;
+
+    const pnPayload = this.userService.checkPnJwt(client);
+    if (!pnPayload) return;
+    this.userService.setIdMap(client.id, pnPayload.intraId);
     console.log('[GameGateway] have a pnJwt', client.id);
-    const intraId = this.userService.getIntraId(client.id);
-    if (!intraId) return ;
-    const userInfo = this.userService.getUserInfo(intraId);
-    console.log('[GameGateway] userInfo', userInfo);
-    if (!userInfo) return ;
+
+    const userInfo = this.userService.getUserInfo(pnPayload.intraId);
+    if (!userInfo) {
+        this.userService.setUserMap(pnPayload.intraId, {
+        client : { game: client, chat: undefined },
+        nickname: pnPayload.nickname,
+        chatRoomList: [],
+        gameRoom: '',
+        online: true,
+      });
+      return ;
+    } else {
+      this.server.to(userInfo.client.game.id).emit('add-tab');
+      userInfo.online = true;
+      userInfo.client.game = client;
+    }
     console.log('[GameGateway] have a userInfo', client.id);
+
+
 
     /* 게임 도중 탭 더 켜서 재접속할 때 */
     // 이전 클라이언트 한테 게임 종료 메시지 보내기
     if (userInfo.gameRoom === '') return ;
     const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
     if (!gameInfo) return ;
-    client.join(userInfo.gameRoom);
-    this.server.to(userInfo.gameRoom).emit('game-disconnect', {
+    this.server.to(userInfo.client.game.id).emit('game-disconnect', {
       disconnectNickname: userInfo.nickname,
       gameInfo
     });
+    userInfo.gameRoom = '';
     // const gameInfo = this.gameService.findGameRoomByNickname(userInfo.nickname);
     // console.log('[GameGateway] gameInfo', gameInfo);
     // if (!gameInfo) return ;
@@ -94,6 +109,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleFriendStart(@ConnectedSocket() client: Socket, @MessageBody() payload: { gameStatus: GameStatus, friendNickname: string}, @PnJwtPayload() pnPayload: PnPayloadDto) {
     const userInfo = this.userService.getUserInfo(pnPayload.intraId);
     if (!userInfo) return ;
+
     const [ roomName, player1Id, player2Id ] = this.gameService.friendMatch(client, payload.gameStatus - 1, pnPayload.intraId, pnPayload.nickname, payload.friendNickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;

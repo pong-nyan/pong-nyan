@@ -1,10 +1,10 @@
 import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
-import { socket, SocketContext } from '@/context/socket';
+import { authNamespace, gameNamespace, chatNamespace, SocketContext } from '@/context/socket';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <SocketContext.Provider value={socket}>
+    <SocketContext.Provider value={{authNamespace, gameNamespace, chatNamespace}}>
       <Component {...pageProps} />
     </SocketContext.Provider>
   );

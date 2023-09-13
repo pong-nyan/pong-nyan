@@ -40,7 +40,8 @@ export class Google2faController {
       await this.authService.enableTwoFactorAuthentication(user);
       response.cookie('pn-jwt', jwt, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
 
-      this.userService.setUserMap(intraId, { nickname: user.nickname, chatRoomList: [], gameRoom: '', online: false});
+      // TODO: 돌아간 후 authNamespace 지우면서 밑에 코드도 지워야함
+      this.userService.setUserMap(intraId, { client: { game: undefined, chat: undefined}, nickname: user.nickname, chatRoomList: [], gameRoom: '', online: false});
 
       return response.status(HttpStatus.ACCEPTED).send({ exp: decodedJwt.exp, nickname: decodedJwt.nickname, intraId: decodedJwt.intraId });
     }

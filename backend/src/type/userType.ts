@@ -1,4 +1,4 @@
-import { RoomName } from './socketType';
+import { Socket, SocketId, RoomName } from './socketType';
 
 /*
 * shared between frontend and backend
@@ -8,6 +8,7 @@ import { RoomName } from './socketType';
 export type IntraId = number;
 
 export type UserInfo = {
+  client: { game: Socket | undefined, chat: Socket | undefined},
   nickname: string,
   chatRoomList: RoomName[],
   gameRoom: RoomName,

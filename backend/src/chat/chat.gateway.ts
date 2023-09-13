@@ -150,6 +150,8 @@ export class ChatGateway {
   }
 
   handleConnection(@ConnectedSocket() client: Socket) {
+    //TODO: chat client id update 하기
+
     console.log('[ChatGateway] handleConnection', client.id);
     // pnJwt 검증
     if (!this.userService.checkPnJwt(client)) return;

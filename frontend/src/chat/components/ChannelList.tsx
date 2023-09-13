@@ -7,7 +7,7 @@ import { sha256 } from 'js-sha256';
 // onChannelSelect: (channel: Channel) => void  // list.tsx에 선택될 채널을 넘겨줘야함
 const ChannelList = () => {
   const [channelList, setChannelList] = useState<Channel[]>([]);
-  const socket = useContext(SocketContext);
+  const { chatNamespace } = useContext(SocketContext);
   const router = useRouter();
 
   const handleChannelSelect = (channel: Channel) => {
@@ -34,7 +34,7 @@ const ChannelList = () => {
       }
     }
 
-    socket.emit('chat-join-channel', { channelId: seletedChannel.id, password: inputPassword });
+    chatNamespace.emit('chat-join-channel', { channelId: seletedChannel.id, password: inputPassword });
     router.push(`/chat/${seletedChannel.id}`);
   };
 

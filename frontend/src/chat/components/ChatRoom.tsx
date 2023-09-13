@@ -14,26 +14,26 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   const [channel, setChannel] = useState<Channel | null>(null);
   // 선택한 유저 (선택될때마다 다시 렌더링이 필요해서 넣음) TODO : 다시생각해보기
   // const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const socket = useContext(SocketContext);
+  const { chatNamespace } = useContext(SocketContext);
 
   useEffect(() => {
     console.log('[Chat] 처음 접속시 localStorage에서 메시지 불러옴');
     const loadedMessages = getMessagesFromLocalStorage(channelId as string);
     setMessages(loadedMessages);
-  }, [socket, channelId]);
+  }, [chatNamespace, channelId]);
 
   useEffect(() => {
     console.log('[Chat] 처음 접속했을때 채널 정보를 서버에 요청함');
     if (channelId) {
       console.log('[Chat] 처음 접속했을때 channelId 존재함');
-      socket.emit('chat-request-channel-info', { channelId });
+      chatNamespace.emit('chat-request-channel-info', { channelId });
     }
-  }, [socket, channelId]);
+  }, [chatNamespace, channelId]);
 
   useEffect(() => {
     console.log('[Chat] 접속해있는 URL의 channelId가 바뀔때마다 채널 정보를 서버에 요청함');
     if (channelId) {
-      socket.on('chat-response-channel-info', (response) => {
+      chatNamespace.on('chat-response-channel-info', (response) => {
         console.log('[Chat] chat-response-channel-info 받음', response);
         if (response.error) {
           alert(response.error);
@@ -43,16 +43,16 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
       });
 
       return () => {
-        socket.off('chat-response-channel-info');
+        chatNamespace.off('chat-response-channel-info');
       };
     }
-  }, [socket, channel, channelId]);
+  }, [chatNamespace, channel, channelId]);
 
   useEffect(() => {
     console.log('[Chat] 채널 정보를 서버에 다시 요청함');
     if (channelId) {
-      socket.emit('chat-request-channel-info', { channelId });
-      socket.on('chat-response-channel-info', (response) => {
+      chatNamespace.emit('chat-request-channel-info', { channelId });
+      chatNamespace.on('chat-response-channel-info', (response) => {
         if (response.error) {
           alert(response.error);
         } else {
@@ -60,13 +60,13 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
         }
       });
       return () => {
-        socket.off('chat-response-channel-info');
+        chatNamespace.off('chat-response-channel-info');
       };
     }
-  }, [socket, channelId]);
+  }, [chatNamespace, channelId]);
 
   useEffect(() => {
-    socket.on('chat-watch-new-message', (data)=>{
+    chatNamespace.on('chat-watch-new-message', (data)=>{
       console.log('[Chat] chat-watch-new-message', data);
       const { channelId: receivedChannelId } = data;
       const storageMessages = getMessagesFromLocalStorage(receivedChannelId);
@@ -74,9 +74,9 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     });
 
     return () => {
-      socket.off('chat-watch-new-message');
+      chatNamespace.off('chat-watch-new-message');
     };
-  }, [socket, channelId]);
+  }, [chatNamespace, channelId]);
 
   const handleSendMessage = () => {
     if (inputMessage.trim() !== '') {
@@ -85,19 +85,19 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
         content: inputMessage,
         nickname: loggedInUser.nickname
       };
-      socket.emit('chat-message-in-channel', { channelId, message: newMessage });
+      chatNamespace.emit('chat-message-in-channel', { channelId, message: newMessage });
       setInputMessage('');
     }
   };
 
   const handleLeaveChannel = () => {
-    socket.emit('chat-leave-channel', channelId);
+    chatNamespace.emit('chat-leave-channel', channelId);
     onLeaveChannel();
   };
 
   const makeAdministrator = (grantedUser: IntraId) => {
     // 서버에 업데이트된 목록을 보내는 로직 추가
-    socket.emit('chat-grant-administrator', { channelId, user: grantedUser });
+    chatNamespace.emit('chat-grant-administrator', { channelId, user: grantedUser });
   };
 
   // 선택된 사용자가 변경될 때마다 관리자로 임명하는 로직을 실행합니다.
@@ -105,34 +105,34 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   // useEffect(() => {
   //   console.log('[Chat] selectedUser 변경됨', selectedUser);
   //   if (selectedUser) {
-  //     socket.emit('chat-grant-administrator', { channelId, user: selectedUser });
+  //     chatNamespace.emit('chat-grant-administrator', { channelId, user: selectedUser });
   //   }
   //   // TODO:
   //   // 만약실패하면 chat-grant-error 보내야함
   //   // emit이후 임명이후 channel의 상태가 바뀌었다고 서버쪽에서 다시 보내줘야함
-  //   socket.on('chat-grant-error', (errorMessage) => {
+  //   chatNamespace.on('chat-grant-error', (errorMessage) => {
   //     alert(errorMessage);
   //   });
 
   //   return () => {
-  //     socket.off('chat-grant-error');
+  //     chatNamespace.off('chat-grant-error');
   //   };
   // }, [selectedUser]);
 
   useEffect(() => {
-    socket.on('chat-grant-administrator-finish', (finishMessage) => {
+    chatNamespace.on('chat-grant-administrator-finish', (finishMessage) => {
       setChannel(channel);
       alert(finishMessage);
     });
-    socket.on('chat-grant-error', (errorMessage) => {
+    chatNamespace.on('chat-grant-error', (errorMessage) => {
       alert(errorMessage);
     });
 
     return () => {
-      socket.off('chat-grant-administrator-finish');
-      socket.off('chat-grant-error');
+      chatNamespace.off('chat-grant-administrator-finish');
+      chatNamespace.off('chat-grant-error');
     };
-  }, [socket]);
+  }, [chatNamespace]);
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
