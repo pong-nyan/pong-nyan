@@ -37,7 +37,7 @@ const Run = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
   const handleKeyDown = (engine: Engine, e: KeyboardEvent, cw: number) => {
     if (!playerNumber || !opponentId) return ;
     const step = 24;
-    const velocity = 1;
+    const velocity = 0.2;
 
     switch (e.key) {
     case 'ArrowLeft':
@@ -63,7 +63,7 @@ const Run = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
 
   const handleKeyUp = (engine: Engine, e: KeyboardEvent) => {
     if (!playerNumber || !opponentId) return ;
-    const velocity = 1;
+    const velocity = 0.2;
 
     switch (e.key) {
     case ' ':

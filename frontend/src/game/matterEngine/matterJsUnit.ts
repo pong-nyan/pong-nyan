@@ -23,7 +23,7 @@ export const bar = (x: number, y: number, width: number, height: number, label: 
     density: 2,
     render: {
       sprite : {
-        texture : playerNumber === 'player1' ? '/assets/flat-fish_orginal.png' : '/assets/flat-fish_flat.png',
+        texture : playerNumber === 'player1' ? '/assets/flat-fish-original.png' : '/assets/flat-fish-flip.png',
         xScale: width / assetWidth,
         yScale: height / assetHeight,
       }
@@ -35,16 +35,18 @@ export const bar = (x: number, y: number, width: number, height: number, label: 
   });
 };
 
-export const paddle = (x: number, y: number, width: number, height: number, label: string, group: number) : Body => {
+export const paddle = (x: number, y: number, width: number, height: number, label: string, group: number, playerNumber: PlayerNumber) : Body => {
   const assetWidth = 1731 / 2;
   // const assetHeight = 587;
+  const paddleLeftPng = playerNumber === 'player1' ? '/assets/flat-fish-left.png' : '/assets/flat-fish-right-flip.png';
+  const paddleRightPng = playerNumber === 'player1' ? '/assets/flat-fish-right.png' : '/assets/flat-fish-left-flip.png';
   return Bodies.rectangle(x, y, width, height, {
     label,
     isStatic: false,
     density: 2,
     render: {
       sprite : {
-        texture : label == 'PaddleLeft' ? '/assets/flat-fish-left.png' : '/assets/flat-fish-right.png',
+        texture : label == 'PaddleLeft' ? paddleLeftPng : paddleRightPng,
         xScale: width / assetWidth,
         yScale: 0.1,
       }

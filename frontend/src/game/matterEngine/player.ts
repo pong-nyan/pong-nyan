@@ -10,12 +10,12 @@ export const makeHinge = (middleX: number, offsetX: number, baseY: number, hinge
   return [ hingeLeft, hingeRight ];
 };
 
-export const makePaddle = (middleX: number, offsetX: number, baseY:number, hingeGroupRef:number) => {
+export const makePaddle = (middleX: number, offsetX: number, baseY:number, hingeGroupRef:number, playerNumber: PlayerNumber) => {
   // const paddleWidth = 0.15 * cw;
   const paddleWidth = 50;
   const paddleHeight = 20;
-  const paddleLeft = paddle(middleX - offsetX, baseY, paddleWidth, paddleHeight, 'PaddleLeft', hingeGroupRef);
-  const paddleRight = paddle(middleX + offsetX, baseY, paddleWidth, paddleHeight, 'PaddleRight', hingeGroupRef);
+  const paddleLeft = paddle(middleX - offsetX, baseY, paddleWidth, paddleHeight, 'PaddleLeft', hingeGroupRef, playerNumber);
+  const paddleRight = paddle(middleX + offsetX, baseY, paddleWidth, paddleHeight, 'PaddleRight', hingeGroupRef, playerNumber);
 
   Body.setCentre(paddleLeft, { x: -paddleWidth / 2, y: 0}, true);
   Body.setCentre(paddleRight, { x: paddleWidth / 2, y: 0}, true);

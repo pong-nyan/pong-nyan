@@ -50,7 +50,7 @@ export function initPlayer(playerNumber:PlayerNumber, cw: number, ch: number, no
   const offsetX = 70;
   const middleX = cw / 2;
   const [ hingeLeft, hingeRight ] = makeHinge(middleX, offsetX, yScale * ch, hingeGroupRef);
-  const [ paddleLeft, paddleRight ] = makePaddle(middleX, offsetX, yScale * ch, hingeGroupRef);
+  const [ paddleLeft, paddleRight ] = makePaddle(middleX, offsetX, yScale * ch, hingeGroupRef, playerNumber);
   const [ stopperLeftBottom, stopperRightBottom, stopperLeftTop, stopperRightTop ] = makeStopper(playerNumber, middleX, yScale * ch, nonCollisionGroupRef);
   const [ jointLeft, joinRight ] = makeJoint(hingeLeft, hingeRight, paddleLeft, paddleRight);
   return { hingeLeft, hingeRight, paddleLeft, paddleRight, stopperLeftTop, stopperLeftBottom, stopperRightTop, stopperRightBottom, jointLeft, joinRight};
