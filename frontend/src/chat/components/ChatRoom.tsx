@@ -6,7 +6,6 @@ import { SocketContext } from '@/context/socket';
 import { getMessagesFromLocalStorage } from '../utils/chatLocalStorage';
 import { Message } from '@/type/chatType';
 import { Channel } from '@/type/chatType';
-import { IntraId } from '@/type/userType';
 
 function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveChannel: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -21,10 +20,18 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   }, [socket, channelId]);
 
   useEffect(() => {
+    console.log('[Chat] 처음 접속했을때 채널 정보를 서버에 요청함');
+    if (channelId) {
+      console.log('[Chat] 처음 접속했을때 channelId 존재함');
+      socket.emit('chat-request-channel-info', { channelId });
+    }
+  }, [socket, channelId]);
+
+  useEffect(() => {
     console.log('[Chat] 접속해있는 URL의 channelId가 바뀔때마다 채널 정보를 서버에 요청함');
     if (channelId) {
-      socket.emit('chat-request-channel-info', { channelId });
       socket.on('chat-response-channel-info', (response) => {
+        console.log('[Chat] chat-response-channel-info 받음', response);
         if (response.error) {
           alert(response.error);
         } else {
@@ -36,7 +43,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
         socket.off('chat-response-channel-info');
       };
     }
-  }, [socket, channelId]);
+  }, [socket, channel, channelId]);
 
   useEffect(() => {
     console.log('[Chat] 채널 정보를 서버에 다시 요청함');
@@ -49,7 +56,6 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
           setChannel(response.channel);
         }
       });
-
       return () => {
         socket.off('chat-response-channel-info');
       };
@@ -117,7 +123,8 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
               <li key={invitedUser}>{invitedUser}</li>
             ))}
           </ul>
-        </div>        <MessageList messages={messages} />
+        </div>
+        <MessageList messages={messages} />
         <div style={{ display: 'flex', marginTop: 'auto' }}>
           <MessageInput value={inputMessage} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)} />
           <SendMessageButton onClick={handleSendMessage} />

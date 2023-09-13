@@ -66,7 +66,7 @@ export class ChatGateway {
     }
     client.join(payloadEmit.channelId);
     this.chatService.joinChannel(payloadEmit.channelId, payload.intraId);
-    if (!this.syncAfterChannelChange(channel, client)) return ;
+    if (!this.syncAfterChannelChange(channel)) return ;
     // 프론트의 전체 채널 목록 업데이트
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
     this.server.emit('chat-update-channel-list', updatedChannelList);
@@ -75,7 +75,7 @@ export class ChatGateway {
   @SubscribeMessage('chat-request-channel-info')
   handleChannelInfoRequest(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }) {
       const channel = this.chatService.getChannel(payloadEmit.channelId);
-      if (!this.syncAfterChannelChange(channel, client)) return ;
+      if (!this.syncAfterChannelChange(channel)) return ;
     }
 
   // 메시지 보내기 버튼 누른 직후
@@ -94,7 +94,14 @@ export class ChatGateway {
       const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
       this.chatService.leaveChannel(channelId, payload.intraId);
       this.userService.deleteUserInfoChatRoomList(payload.intraId, channelId);
-      if (!this.syncAfterChannelChange(channel, client)) return ;
+      // 나간사람이 owner이면 채널 삭제
+      console.log('chat-leave-channel, channel.owner, payload.intraId', channel.owner, payload.intraId);
+      if (channel.owner === payload.intraId) {
+        console.log('chat-leave-channel, owner가 나감 channel.owner === payload.intraId');
+        this.chatService.getChannelMap().delete(channelId);
+        if (!this.syncAfterChannelChange(channel)) return ;
+      }
+      if (!this.syncAfterChannelChange(channel)) return ;
       this.server.emit('chat-update-channel-list', updatedChannelList);
   }
 
@@ -137,17 +144,17 @@ export class ChatGateway {
         console.log('[ChatGateway] reconnected to room', room);
         // TODO: 이거 제대로 반영될지 확인해보기
         const channel = this.chatService.getChannel(room);
-        if (!this.syncAfterChannelChange(channel, client)) return ;
+        if (!this.syncAfterChannelChange(channel)) return ;
     }
   }
 
-  // 오류있으면 false
-  syncAfterChannelChange(channel:Channel, client: Socket){
+  syncAfterChannelChange(channel:Channel){
+    console.log('syncAfterChannelChange, channel.id', channel.id);
     if (!channel) {
-      client.emit('chat-response-channel-info', { error: '채널이 존재하지 않습니다.' });
+      this.server.to(channel.id).emit('chat-response-channel-info', { error: '채널이 존재하지 않습니다.' });
       return false;
     }
-    client.emit('chat-response-channel-info', { channel });
+    this.server.to(channel.id).emit('chat-response-channel-info', { channel });
     return true;
   }
 }
