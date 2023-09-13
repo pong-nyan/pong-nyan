@@ -8,7 +8,6 @@ import { PnJwtPayload, PnPayloadDto } from 'src/dto/pnPayload.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user.service';
 import { sha256 } from 'js-sha256';
-import { Controller2faGuard } from 'src/guard/controller2fa.guard';
 import { IntraId } from 'src/type/userType';
 
 @WebSocketGateway({
@@ -150,18 +149,34 @@ export class ChatGateway {
   }
 
   handleConnection(@ConnectedSocket() client: Socket) {
-    //TODO: chat client id update 하기
-
     console.log('[ChatGateway] handleConnection', client.id);
     // pnJwt 검증
-    if (!this.userService.checkPnJwt(client)) return;
-    // intraId 검색
+
+    const pnPayload = this.userService.checkPnJwt(client);
+    if (!pnPayload) return;
+
+    this.userService.setIdMap(client.id, pnPayload.intraId);
+
+    const userInfo = this.userService.getUserInfo(pnPayload.intraId);
+    if (!userInfo) {
+      this.userService.setUserMap(pnPayload.intraId, {
+        client: { game: undefined, chat: client },
+        nickname: pnPayload.nickname,
+        chatRoomList: [],
+        gameRoom: '',
+        online: true,
+      });
+      return ;
+    } else {
+      this.server.to(userInfo.client.chat?.id).emit('add-tab');
+      userInfo.online = true;
+      userInfo.client.chat = client;
+    }
+
+    console.log('[ChatGateway] have a userInfo', userInfo);
+
     const intraId = this.userService.getIntraId(client.id);
     if (!intraId) return;
-
-    // 사용자 정보 검색
-    const userInfo = this.userService.getUserInfo(intraId);
-    if (!userInfo) return;
 
     // 사용자가 이전에 접속했던 채팅방 목록
     const userChatRooms = userInfo.chatRoomList;

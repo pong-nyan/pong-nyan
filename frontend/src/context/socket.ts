@@ -34,10 +34,10 @@ chatNamespace.on('chat-new-message', (data) => {
 });
 
 chatNamespace.on('add-tab', () => {
-  alert('새로운 탭이 열렸습니다. 하나의 탭만 남겨주세요.');
   location.replace('/');
+  alert('새로운 탭이 열렸습니다. 하나의 탭만 남겨주세요.');
 });
 gameNamespace.on('add-tab', () => {
-  alert('새로운 탭이 열렸습니다. 하나의 탭만 남겨주세요.');
   location.replace('/');
+  alert('새로운 탭이 열렸습니다. 하나의 탭만 남겨주세요.');
 });
