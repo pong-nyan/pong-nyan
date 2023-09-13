@@ -5,7 +5,7 @@ import { Nickname } from '@/type/userType';
 import { SocketId, RoomName } from '@/type/socketType';
 import { socket } from '@/context/socket';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
-import { movePlayer, movePaddle } from '@/game/matterEngine/player';
+import { movePlayer, moveOriginalPongPlayer, movePaddle } from '@/game/matterEngine/player';
 import { resumeGame } from '@/game/logic/resumeGame';
 
 /**
@@ -60,6 +60,21 @@ export const socketOnGameKeyEvent = (engine: Engine | undefined) => {
       break;
     case 'spaceUp':
       movePaddle(engine, opponentNumber, -velocity);
+      break;
+    }
+  });
+};
+
+export const socketOnGameOriginalPongKeyEvent = (engine: Engine | undefined) => {
+  socket.on('game-keyEvent', ({opponentNumber, message, step, velocity}
+    : {opponentNumber: PlayerNumber, message: KeyEventMessage, step: number, velocity: number}) => {
+    if (!engine) return ;
+    switch (message) {
+    case 'leftDown':
+      moveOriginalPongPlayer(engine, opponentNumber, -step);
+      break;
+    case 'rightDown':
+      moveOriginalPongPlayer(engine, opponentNumber, step);
       break;
     }
   });
