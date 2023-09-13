@@ -15,6 +15,7 @@ import { IntraId } from 'src/type/userType';
   cors: { origin: '*' },
   path: '/socket/',
   cookie: true,
+  namespace: '/chat',
 })
 @UseGuards(Gateway2faGuard)
 export class ChatGateway {

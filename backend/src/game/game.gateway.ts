@@ -22,6 +22,7 @@ import { GameStatus } from 'src/type/gameType';
   cors: { origin: '*' },
   path: '/socket/',
   cookie: true,
+  namespace: '/game',
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly gameService: GameService,
@@ -31,6 +32,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   fps = 1000 / 60;
 
   async handleConnection(@ConnectedSocket() client: Socket) {
+
     console.log('[GameGateway] Connection', client.id);
     if (!this.userService.checkPnJwt(client)) return ;
     console.log('[GameGateway] have a pnJwt', client.id);
