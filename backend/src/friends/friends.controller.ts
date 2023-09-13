@@ -6,6 +6,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { GetIntraIdDto, PostFriendDto, PostFriendStatusDto, PostFriendNicknameDto } from './friends.dto';
 import { PnJwtPayload } from 'src/dto/pnPayload.dto';
 import Friend from 'src/entity/Friend';
+import { UserService } from 'src/user.service';
 
 @UseGuards(AuthGuard)
 @ApiTags('friends')
@@ -13,6 +14,7 @@ import Friend from 'src/entity/Friend';
 export class FriendsController {
     constructor(
         private readonly friendsService: FriendsService,
+        private readonly userService: UserService,
         ) {}
 
     @Get('/')
@@ -20,7 +22,8 @@ export class FriendsController {
     @ApiOperation({ summary: 'get friends', description: '친구 목록을 가져온다.' })
     async getFriends(@Query() query: GetIntraIdDto) {
         const intraId = query.intraId;
-        return await this.friendsService.getFriends(intraId);
+        const friends = await this.friendsService.getFriends(intraId);
+        return friends;
     }
 
     @Get('/me')

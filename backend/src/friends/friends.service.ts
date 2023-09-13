@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { on } from 'events';
 import Friend from 'src/entity/Friend';
 import FriendStatus from 'src/entity/FriendStatus';
 import { User } from 'src/entity/User';
+import { UserService } from 'src/user.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -14,6 +16,7 @@ export class FriendsService {
         private readonly userRepository: Repository<User>,
         @InjectRepository(FriendStatus)
         private readonly friendStatusRepository: Repository<FriendStatus>,
+        private readonly userService: UserService,
     ) {}
 
     async getFriends(intraId: number): Promise<Friend[]> {
@@ -73,7 +76,17 @@ export class FriendsService {
             });
             return newFriend.friendStatuses[0].status === 'accepted';
         });
-        return refineFriends;
+        const onlyFriends : any = refineFriends.map(friend => {
+            if (friend.requestUser.id === user.id) {
+                return friend.addressUser;
+            } else {
+                return friend.requestUser;
+            }
+        });
+        onlyFriends.forEach(friend => {
+            friend.socketInfo = this.userService.getUserInfo(friend.intraId);
+        });
+        return onlyFriends;
     }
 
     async getPendingFriends(intraId: number): Promise<Friend[]> {
