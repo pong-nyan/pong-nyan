@@ -1,3 +1,5 @@
+@import url('/font.css');
+
 /* styles.module.css */
 .container {
   display: flex;
@@ -9,12 +11,13 @@
 .linkList {
   list-style: none;
   padding: 0;
-  display: flex
+  display: flex;
 }
 
 .linkItem {
   margin-right: 20px;
   font-size: xx-large;
+  font-family: 'ONE-Mobile-POP';
 }
 
 .linkItem:last-child {
@@ -25,6 +28,8 @@
   text-decoration: none;
   color: #333;
   font-weight: bold;
+  font-family: 'ONE-Mobile-POP';
+  font-size: 21px;
   animation: sparkle 1s infinite;
 }
 
