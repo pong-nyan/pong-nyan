@@ -88,4 +88,14 @@ export class ChatService {
     return channel;
   }
 
+  deleteAdministrator(channelId: string, userId: number) {
+    const channel = this.channelMap.get(channelId);
+    if (channel) {
+      const index = channel.administrator.indexOf(userId);
+      if (index > -1) {
+        channel.administrator.splice(index, 1);
+      }
+    }
+    return channel;
+  }
 }

@@ -36,6 +36,11 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     chatNamespace.emit('chat-grant-administrator', { channelId, user: grantedUser });
   };
 
+  const deleteAdministrator = (deletedUser: IntraId) => {
+    // 서버에 업데이트된 목록을 보내는 로직 추가
+    chatNamespace.emit('chat-delete-administrator', { channelId, user: deletedUser });
+  };
+
   const handleChangePassword = () => {
     const newPassword = prompt('새로운 비밀번호를 입력하세요.');
     if (newPassword) {
@@ -113,18 +118,19 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   }, [chatNamespace, channelId]);
 
   useEffect(() => {
-    chatNamespace.on('chat-grant-administrator-finish', (finishMessage) => {
-      console.log('[Chat] chat-grant-administrator-finish 받음 channel ', channel);
+    // emit에 성공한 후 채널정보를 화면에 동기화 시키고 메시지를 alert로 출력합니다.
+    chatNamespace.on('chat-finish-message', (finishMessage) => {
       chatNamespace.emit('chat-request-channel-info', { channelId });
       alert(finishMessage);
     });
-    chatNamespace.on('chat-grant-error', (errorMessage) => {
+    // emit에 실패한 후 에러메시지를 alert로 출력합니다.
+    chatNamespace.on('chat-catch-error-message', (errorMessage) => {
       alert(errorMessage);
     });
 
     return () => {
-      chatNamespace.off('chat-grant-administrator-finish');
-      chatNamespace.off('chat-grant-error');
+      chatNamespace.off('chat-finish-message');
+      chatNamespace.off('chat-catch-error-message');
     };
   }, [chatNamespace]);
 
@@ -184,7 +190,10 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
           <strong>Administrators:</strong>
           <ul>
             {channel?.administrator.map(admin => (
-              <li key={admin}>{admin}</li>
+              <li key={admin}>
+                {admin}
+                <button onClick={() => deleteAdministrator(admin)}>Delete Administrator</button>
+              </li>
             ))}
           </ul>
           <strong>Users:</strong>
