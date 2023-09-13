@@ -5,10 +5,15 @@ import axios from 'axios';
 
 const PendingFriendList = () => {
   const [pendingFriends, setPendingFriends] = useState<PendingFriend[]>([]);
+  const [friendIdList, setFriendIdList] = useState<number[]>([]);
 
   useEffect(() => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/friends/me/pending`).then((res) => {
-      const requestUser = res.data.map((friend: PendingFriend) => friend.requestUser);
+      const tempFriendIdIlist = res.data.map((friend: PendingFriend) => friend.id);
+      const requestUser = res.data.map((friend: PendingFriend) => {
+        return friend.requestUser;
+      });
+      setFriendIdList(tempFriendIdIlist);
       setPendingFriends(requestUser);
     }).catch((err) => {
       console.log(err);
@@ -18,7 +23,7 @@ const PendingFriendList = () => {
     <div>
       {
         pendingFriends.map((friend, index) => (
-          <PendingFreind key={index} pendingFriend={friend} />
+          <PendingFreind key={index} pendingFriend={friend} friendId={friendIdList[index]} />
         ))
       }
     </div>
