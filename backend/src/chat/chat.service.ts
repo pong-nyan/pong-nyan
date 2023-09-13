@@ -49,8 +49,12 @@ export class ChatService {
     const channel = this.channelMap.get(channelId);
     if (channel) {
       const index = channel.userList.indexOf(userId);
+      const index2 = channel.administrator.indexOf(userId);
       if (index > -1) {
         channel.userList.splice(index, 1);
+      }
+      if (index2 > -1) {
+        channel.administrator.splice(index2, 1);
       }
     }
   }
@@ -84,4 +88,14 @@ export class ChatService {
     return channel;
   }
 
+  deleteAdministrator(channelId: string, userId: number) {
+    const channel = this.channelMap.get(channelId);
+    if (channel) {
+      const index = channel.administrator.indexOf(userId);
+      if (index > -1) {
+        channel.administrator.splice(index, 1);
+      }
+    }
+    return channel;
+  }
 }
