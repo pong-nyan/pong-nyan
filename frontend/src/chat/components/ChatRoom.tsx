@@ -12,8 +12,6 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [channel, setChannel] = useState<Channel | null>(null);
-  // 선택한 유저 (선택될때마다 다시 렌더링이 필요해서 넣음) TODO : 다시생각해보기
-  // const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const { chatNamespace } = useContext(SocketContext);
 
   useEffect(() => {
@@ -100,28 +98,10 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     chatNamespace.emit('chat-grant-administrator', { channelId, user: grantedUser });
   };
 
-  // 선택된 사용자가 변경될 때마다 관리자로 임명하는 로직을 실행합니다.
-
-  // useEffect(() => {
-  //   console.log('[Chat] selectedUser 변경됨', selectedUser);
-  //   if (selectedUser) {
-  //     chatNamespace.emit('chat-grant-administrator', { channelId, user: selectedUser });
-  //   }
-  //   // TODO:
-  //   // 만약실패하면 chat-grant-error 보내야함
-  //   // emit이후 임명이후 channel의 상태가 바뀌었다고 서버쪽에서 다시 보내줘야함
-  //   chatNamespace.on('chat-grant-error', (errorMessage) => {
-  //     alert(errorMessage);
-  //   });
-
-  //   return () => {
-  //     chatNamespace.off('chat-grant-error');
-  //   };
-  // }, [selectedUser]);
-
   useEffect(() => {
     chatNamespace.on('chat-grant-administrator-finish', (finishMessage) => {
-      setChannel(channel);
+      console.log('[Chat] chat-grant-administrator-finish 받음 channel ', channel);
+      chatNamespace.emit('chat-request-channel-info', { channelId });
       alert(finishMessage);
     });
     chatNamespace.on('chat-grant-error', (errorMessage) => {
