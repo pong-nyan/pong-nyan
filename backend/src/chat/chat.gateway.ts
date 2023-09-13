@@ -44,7 +44,6 @@ export class ChatGateway {
       client.emit('chat-join-error', '채널이 존재하지 않습니다.');
       return ;
     }
-
     if (channel.maxUsers < channel.userList.length) {
       client.emit('chat-join-error', '채널이 가득 찼습니다.');
       return ;
@@ -61,7 +60,6 @@ export class ChatGateway {
         return ;
       }
     }
-    // client.emit('chat-join-success');
     client.join(payloadEmit.channelId);
     this.chatService.joinChannel(payloadEmit.channelId, payload.intraId);
     const users = this.chatService.getChannelUsers(payloadEmit.channelId);
@@ -97,10 +95,12 @@ export class ChatGateway {
   @SubscribeMessage('chat-leave-channel')
   handleLeaveChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string, @PnJwtPayload() payload: PnPayloadDto) {
       client.leave(channelId);
+      const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
       this.chatService.leaveChannel(channelId, payload.intraId);
       this.userService.deleteUserInfoChatRoomList(payload.intraId, channelId);
       const users = this.chatService.getChannelUsers(channelId);
       this.server.to(channelId).emit('chat-update-users', users);
+      this.server.emit('chat-update-channel-list', updatedChannelList);
   }
 
   @SubscribeMessage('chat-request-channel-list')

@@ -50,7 +50,7 @@ const ChannelList = () => {
       socket.off('chat-join-error');
       socket.off('chat-update-channel-list');
     };
-  }, []);
+  }, [socket]);
 
   return (
     <div className="chat-room-list" style={{ flex: 1, overflowY: 'auto', borderRight: '1px solid gray' }}>
