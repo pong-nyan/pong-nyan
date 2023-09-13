@@ -1,6 +1,6 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
-import { ChannelInfo, Message } from 'src/type/chatType';
+import { ChannelInfo, Message, Channel } from 'src/type/chatType';
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
 import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
@@ -66,12 +66,7 @@ export class ChatGateway {
     }
     client.join(payloadEmit.channelId);
     this.chatService.joinChannel(payloadEmit.channelId, payload.intraId);
-    const users = this.chatService.getChannelUsers(payloadEmit.channelId);
-    console.log('chat-join-channel, channelId, users', payloadEmit.channelId, users);
-
-    // 해당 채널의 유저 목록 업데이트
-    this.server.to(payloadEmit.channelId).emit('chat-update-users', users);
-
+    if (!this.syncAfterChannelChange(channel, client)) return ;
     // 프론트의 전체 채널 목록 업데이트
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
     this.server.emit('chat-update-channel-list', updatedChannelList);
@@ -80,12 +75,8 @@ export class ChatGateway {
   @SubscribeMessage('chat-request-channel-info')
   handleChannelInfoRequest(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }) {
       const channel = this.chatService.getChannel(payloadEmit.channelId);
-      if (!channel) {
-        client.emit('chat-response-channel-info', { error: '채널이 존재하지 않습니다.' });
-        return;
-      }
-      client.emit('chat-response-channel-info', { channel });
-  }
+      if (!this.syncAfterChannelChange(channel, client)) return ;
+    }
 
   // 메시지 보내기 버튼 누른 직후
   @SubscribeMessage('chat-message-in-channel')
@@ -98,12 +89,12 @@ export class ChatGateway {
 
   @SubscribeMessage('chat-leave-channel')
   handleLeaveChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string, @PnJwtPayload() payload: PnPayloadDto) {
+      const channel = this.chatService.getChannel(channelId);
       client.leave(channelId);
       const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
       this.chatService.leaveChannel(channelId, payload.intraId);
       this.userService.deleteUserInfoChatRoomList(payload.intraId, channelId);
-      const users = this.chatService.getChannelUsers(channelId);
-      this.server.to(channelId).emit('chat-update-users', users);
+      if (!this.syncAfterChannelChange(channel, client)) return ;
       this.server.emit('chat-update-channel-list', updatedChannelList);
   }
 
@@ -122,17 +113,8 @@ export class ChatGateway {
     this.server.to(payloadEmit.channelId).emit('chat-watch-new-message', { channelId: payloadEmit.channelId });
   }
 
-  // 처음 페이지에 들어왔을 때 user목록 요청
-  @SubscribeMessage('chat-request-users')
-  handleRequestUsers(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }) {
-    const users = this.chatService.getChannelUsers(payloadEmit.channelId);
-    client.emit('chat-update-users', users);
-  }
-
-
   handleConnection(@ConnectedSocket() client: Socket) {
     console.log('[ChatGateway] handleConnection', client.id);
-
     // pnJwt 검증
     if (!this.userService.checkPnJwt(client)) return;
     // intraId 검색
@@ -153,11 +135,19 @@ export class ChatGateway {
         if (!chatInfo) continue;
         client.join(room);
         console.log('[ChatGateway] reconnected to room', room);
-        const users = this.chatService.getChannelUsers(room);
-        this.server.to(room).emit('chat-update-users', users);
+        // TODO: 이거 제대로 반영될지 확인해보기
+        const channel = this.chatService.getChannel(room);
+        if (!this.syncAfterChannelChange(channel, client)) return ;
     }
   }
-}
 
-// TODO : setUserInfoChatRoomList 만들기
-// chatRoomList: RoomName[],
+  // 오류있으면 false
+  syncAfterChannelChange(channel:Channel, client: Socket){
+    if (!channel) {
+      client.emit('chat-response-channel-info', { error: '채널이 존재하지 않습니다.' });
+      return false;
+    }
+    client.emit('chat-response-channel-info', { channel });
+    return true;
+  }
+}
