@@ -1,4 +1,4 @@
-import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
+import NavButtonWrapper from '@/_components/NavButtonWrapper';
 import Manage from '@/friend/components/Manage';
 
 const FriendManagePage = () => {

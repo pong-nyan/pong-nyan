@@ -3,7 +3,7 @@ import { PlayerNumber, GameStatus } from '@/type/gameType';
 import GameStartWrapper from './GameStartWrapper';
 import { socketOnGameStartEvent, socketOnGameLoadingEvent, socketOffGameStartEvent } from '@/context/socketGameEvent';
 import { SocketId } from '@/type/socketType';
-import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
+import NavButtonWrapper from '@/_components/NavButtonWrapper';
 import GameLoading from './GameLoading';
 
 
