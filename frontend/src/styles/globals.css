@@ -1,3 +1,5 @@
+@import url('https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css');
+
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
@@ -127,4 +129,19 @@ a {
 
 .button:active {
   background-color: #004085;
+}
+
+@font-face {
+  font-family: 'ONE-Mobile-POP';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-POP.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.fontOneMobilePop {
+  font-family: 'ONE-Mobile-POP';
+}
+
+.fontGalmuri {
+  font-family: GalmuriMono7;
 }

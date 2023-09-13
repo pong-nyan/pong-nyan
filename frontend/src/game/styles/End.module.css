@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'ONE-Mobile-POP';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/ONE-Mobile-POP.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .endPage {
   height: 100vh;
   background-image: url('/assets/cute-cat.png');
@@ -7,7 +14,7 @@
 }
 
 .scoreBoardMargin {
-    height: 5vh;  /* 높이를 5vh로 설정 */
+  height: 5vh;  /* 높이를 5vh로 설정 */
 }
 
 .scoreBoardHeader, .scoreBoardContent {
@@ -30,6 +37,7 @@
   justify-content: space-between;
   font-size: 2em;
   font-weight: bold;
+  font-family: 'ONE-Mobile-POP';
   color: green;
 }
 
@@ -38,6 +46,7 @@
   justify-content: center;
   align-items: center;
   font-size: 3em;
+  font-family: 'ONE-Mobile-POP';
   font-weight: bold;
   color: #10B981;
   margin: 30px 0;
@@ -53,15 +62,18 @@
 .winner {
   color: #D97706;
   font-weight: bold;
+  font-family: 'ONE-Mobile-POP';
 }
 
 .loser {
   color: #8B5CF6;
   font-weight: bold;
+  font-family: 'ONE-Mobile-POP';
 }
 
 .colon {
   font-size: 2em;
+  font-family: 'ONE-Mobile-POP';
   color: #10B981;
 }
 
@@ -72,6 +84,7 @@
   align-items: flex-end;  /* 하단으로 정렬 */
   margin: 0 auto; /* 상단 마진을 0으로 설정 */
   padding: 20px; /* 패딩 추가 */
+
 }
 
 
@@ -84,6 +97,7 @@
 .mainButton {
   padding: 15px 30px;
   font-size: 25px;
+  font-family: 'ONE-Mobile-POP';
   font-weight: bold;
   background: #10B981;
   color: white;
@@ -94,6 +108,7 @@
 .restartButton {
   padding: 15px 20px;
   font-size: 25px;
+  font-family: 'ONE-Mobile-POP';
   font-weight: bold;
   background: #10B981;
   color: white;

@@ -5,15 +5,14 @@ import { FriendProps} from '@/type/friendType';
 
 const Friend = (friendInfo: FriendProps) => {
   const redirection = `/profile/${friendInfo.nickname}`;
-
+  
   let styleColor = { color : 'gray' } ;
-
-  if (friendInfo.socketInfo.gameRoom !== '') {
-    styleColor = { color: 'red' };
-  } else if (friendInfo.socketInfo.online == true){
-    styleColor = { color: 'green' };
-  } else {
+  if (!friendInfo.socketInfo || !friendInfo.socketInfo.online ) {
     styleColor = { color: 'gray' };
+  } else if (friendInfo.socketInfo.gameRoom !== '') {
+    styleColor = { color: 'red' };
+  } else {
+    styleColor = { color: 'green' };
   }
 
   return (
@@ -22,7 +21,7 @@ const Friend = (friendInfo: FriendProps) => {
         <span className={styles.nickname} style={styleColor}> 
           <Link href={redirection}>
             {friendInfo.nickname} 
-            {styleColor.color === 'red' ? ' (게임중)' : styleColor.color === 'green' ? ' (온라인)' : ' (오프라인)' }
+            {styleColor.color === 'red' ? ' (게임중) ' : styleColor.color === 'green' ? ' (온라인) ' : ' (오프라인) ' }
           </Link>
         </span>
         <Image src={friendInfo.avatar ?? '/pong-nyan.png'} alt='avatar' width={50} height={50} /> 
