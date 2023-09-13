@@ -55,24 +55,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       userInfo.client.game = client;
     }
     console.log('[GameGateway] have a userInfo', client.id);
-
-
-    /* 게임 도중 탭 더 켜서 재접속할 때 */
-    // 이전 클라이언트 한테 게임 종료 메시지 보내기
-    if (userInfo.gameRoom === '') return ;
-    const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
-    if (!gameInfo) return ;
-    this.server.to(userInfo.client.game.id).emit('game-disconnect', {
-      disconnectNickname: userInfo.nickname,
-      gameInfo
-    });
-    userInfo.gameRoom = '';
-    // const gameInfo = this.gameService.findGameRoomByNickname(userInfo.nickname);
-    // console.log('[GameGateway] gameInfo', gameInfo);
-    // if (!gameInfo) return ;
-    // console.log('[GameGateway] have a gameInfo', client.id);
-    // userInfo.gameRoom = gameInfo.roomName;
-    // console.log('[GameGateway] reconnect', userInfo.gameRoom);
   }
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
@@ -86,13 +68,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const userInfo = this.userService.getUserInfo(intraId);
     if (!userInfo ) return ;
-    console.log('[GameGateway] have userInfo', userInfo);
-
+    userInfo.online = false;
     this.gameService.removeMatchingClient(client);
+    console.log('[GameGateway] have userInfo', userInfo);
     if (userInfo.gameRoom === '') return ;
     console.log('[GameGateway] is in gameRoom', userInfo.gameRoom);
 
-    /* 새로고침하는 경우 막기 */
     const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
     if (!gameInfo) return ;
     console.log('[GameGateway] emit gameInfo', client.id);
@@ -100,8 +81,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       disconnectNickname: userInfo.nickname,
       gameInfo
     });
-    this.userService.deleteGameRoom(intraId);
-    this.gameService.deleteGameRoom(userInfo.gameRoom);
+    const roomName = userInfo.gameRoom; // Deep copy
+    this.userService.deleteUserInfoGameRoom(gameInfo);
+    console.log('[GameGateway] After deleteGameRoom', roomName, this.gameService.getGameInfo(roomName));
+    this.gameService.deleteGameRoom(roomName);
   }
 
   @SubscribeMessage('game-friendStart')
