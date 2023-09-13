@@ -2,10 +2,10 @@ import { PendingFriendProps } from '@/type/friendType';
 import styles from '@/friend/styles/PendingFriend.module.css';
 import axios from 'axios';
 
-const PendingFriend = ({ pendingFriend }: PendingFriendProps) => {
+const PendingFriend = ({ pendingFriend, friendId }: PendingFriendProps) => {
   const onClickAccept = () => {
     axios.post(`${process.env.NEXT_PUBLIC_API_URL}/friends/status`, {
-      friendId: pendingFriend.id,
+      friendId: friendId,
       status: 'accepted'
     }).then((res) => {
       alert('수락되었습니다.');
@@ -17,7 +17,7 @@ const PendingFriend = ({ pendingFriend }: PendingFriendProps) => {
 
   const onClickReject = () => {
     axios.post(`${process.env.NEXT_PUBLIC_API_URL}/friends/status`, {
-      friendId: pendingFriend.id,
+      friendId: friendId,
       status: 'rejected'
     }).then((res) => {
       alert('거절되었습니다.');

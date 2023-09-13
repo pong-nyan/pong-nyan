@@ -9,12 +9,13 @@ export type PendingFriend = {
 export type PendingFriendProps = {
   pendingFriend: PendingFriend,
   key: number,
+  friendId: number,
 }
 
 export enum FriendStatus {
-  OFFLINE = 0,
-  ONLINE = 1,
-  INGAME = 2,
+  OFFLINE,
+  ONLINE,
+  INGAME,
 }
 
 export type FriendProps = {
@@ -22,4 +23,5 @@ export type FriendProps = {
   nickname: string;
   avatar: string;
   rankScore: number;
+  status: FriendStatus;
 }

@@ -146,7 +146,7 @@ export class FriendsService {
 
     async validateAcceptFriend(intraId: number, friendId: number): Promise<Friend> {
         const friend = await this.friendRepository.findOne({ where: { id: friendId }, relations: ['addressUser'] });
-        console.log(intraId, friend);
+        if (!friend) throw new Error('No friend found');
         if (friend.addressUser.intraId !== intraId) throw new Error('No friend found');
         return friend;
     }
