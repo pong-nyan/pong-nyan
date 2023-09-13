@@ -10,6 +10,10 @@ const RequestFriend = () => {
       alert('친구요청할 친구의 nickname을 입력해주세요.');
       return;
     }
+    if (nickname === JSON.parse(localStorage.getItem('user') || '{}').nickname) {
+      alert('자기 자신에게 친구요청을 할 수 없습니다.');
+      return;
+    }
     axios.post(`${process.env.NEXT_PUBLIC_API_URL}/friends/request`,
       {
         friendNickname: nickname
