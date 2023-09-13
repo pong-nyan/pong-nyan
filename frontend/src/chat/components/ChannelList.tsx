@@ -12,18 +12,24 @@ const ChannelList = () => {
   const handleChannelSelect = (channel: Channel) => {
     console.log('[Chat] handleChannelSelect', channel);
     const seletedChannel = channelList.find(ch => ch.id === channel.id);
-
+    console.log('[Chat] seletedChannel', seletedChannel);
+    console.log('[Chat] seletedChannel userList length', seletedChannel?.userList.length);
     if (!seletedChannel) return;
-    let password;
+    let inputPassword;
     if (seletedChannel.password) {
-      password = prompt('이 채널은 비밀번호로 보호되어 있습니다. 비밀번호를 입력하세요.');
-      if (!password) return ;
-      if (password !== seletedChannel.password) {
+      inputPassword = prompt('이 채널은 비밀번호로 보호되어 있습니다. 비밀번호를 입력하세요.');
+      if (!inputPassword) return ;
+      if (inputPassword !== seletedChannel.password) {
         alert('비밀번호가 틀렸습니다.');
         return ;
       }
     }
-    socket.emit('chat-join-channel', { channelId: seletedChannel.id, password });
+    if (seletedChannel.maxUsers <= seletedChannel.userList.length) {
+      alert('채널이 가득 찼습니다.');
+      return ;
+    }
+
+    socket.emit('chat-join-channel', { channelId: seletedChannel.id, password: inputPassword });
 
     router.push(`/chat/${seletedChannel.id}`);
   };
