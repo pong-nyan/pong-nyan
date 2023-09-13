@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useRouter } from 'next/router';
 import useNotAuth from '@/context/useNotAuth';
 import { SocketContext } from '@/context/socket';
 import { useContext } from 'react';
@@ -7,7 +6,6 @@ import { useContext } from 'react';
 const Google2FA = () => {
   useNotAuth();
   const socket = useContext(SocketContext);
-  const router = useRouter();
 
   const handleSubmit =  async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

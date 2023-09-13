@@ -31,6 +31,9 @@ export class User {
     @Column({ default: false })
     google2faEnable: boolean;
 
+    @Column({ default: false })
+    google2faOption: boolean;
+
     @OneToMany(() => Game, game => game.winner)
     winnerGames: Game[];
 

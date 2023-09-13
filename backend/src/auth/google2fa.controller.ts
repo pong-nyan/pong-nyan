@@ -29,8 +29,6 @@ export class Google2faController {
 
   @Post('enable')
   async enable(@Res() response: Response, @CookieValue() accessToken: string, @Body() body: { code: string }) {
-    console.log('enable code ', body.code);
-
     const { intraId } = await this.authService.getUserInfoFromToken(accessToken);
     const user = await this.authService.findUser(intraId);
     const isCodeValid = await this.google2faService.isTwoFactorAuthenticationCodeValid(body.code, user);
