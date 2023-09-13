@@ -15,10 +15,11 @@ export class GameService {
     private readonly userService: UserService,
   ) { }
 
-  public match(client: Socket, gameStatusIndex: number, intraId: IntraId, nickname: string) {
+  public match(client: Socket, gameStatus: GameStatus, intraId: IntraId, nickname: string) {
     const userInfo = this.userService.getUserInfo(intraId);
     if (!userInfo) return ;
     console.log('userInfo', userInfo);
+    const gameStatusIndex = gameStatus - 1;
     this.matchingQueueList[gameStatusIndex].push({client, nickname, intraId});
     console.log('matchingQueue', this.matchingQueueList);
     // this.matchingQueue.push({client, nickname, intraId});
@@ -37,7 +38,7 @@ export class GameService {
       const player1Id = player1.client.id;
       const player2Id = player2.client.id;
       this.gameMap.set(roomName, {
-        gameStatus: gameStatusIndex + 1,
+        gameStatus,
         clientId: { p1: player1.client.id, p2: player2.client.id },
         intraId: { p1: player1.intraId, p2: player2.intraId },
         score: { p1: 0, p2: 0 },
@@ -48,9 +49,10 @@ export class GameService {
           velocity: { x: 0, y: 0 },
         },
       });
-      return [ roomName, player1Id, player2Id ];
+      console.log('gameMap', this.gameMap);
+      return [ roomName, player1Id, player2Id, gameStatus ];
     }
-    return [ undefined, undefined, undefined ];
+    return [ undefined, undefined, undefined, undefined ];
   }
 
   public friendMatch(client: Socket, gameStatusIndex: number, intraId: IntraId, nickname: string, friendNickname: string) {
