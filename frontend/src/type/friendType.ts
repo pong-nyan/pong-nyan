@@ -12,7 +12,6 @@ export type PendingFriendProps = {
   friendId: number,
 }
 
-
 type SocketInfo = {
   chatRoomList : Array<string>,
   gameRoom : string,
