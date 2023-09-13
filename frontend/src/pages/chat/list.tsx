@@ -1,20 +1,13 @@
 import MakeChannelButton from '@/chat/components/MakeChannelButton';
 import MakeChannel from '@/chat/components/MakeChannel';
 import ChannelList from '@/chat/components/ChannelList';
-import ChatRoom from '@/chat/components/ChatRoom';
 import { useState } from 'react';
-import { Channel } from '@/type/chatType';
 import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
 import useAuth from '@/context/useAuth';
 
 const ChannelListPage = () => {
   useAuth();
-  const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [isMakeChannelOpen, setMakeChannelOpen] = useState(false);
-
-  const handleLeaveChannel = () => {
-    setSelectedChannel(null);
-  };
 
   const handleOpenMakeChannel = () => {
     setMakeChannelOpen(true);
@@ -27,7 +20,7 @@ const ChannelListPage = () => {
   return (
     <div className="commonLayout" >
       <div style={{ flex: 1, border: '2px solid gray', overflowY: 'auto', height: '100%' }}>
-        <ChannelList onChannelSelect={setSelectedChannel} />
+        <ChannelList />
         <MakeChannel isOpen={isMakeChannelOpen} onClose={handleCloseMakeChannel} />
         <MakeChannelButton onMakeChannel={handleOpenMakeChannel} />
         <NavButtonWrapper />
