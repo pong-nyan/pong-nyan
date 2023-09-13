@@ -1,6 +1,6 @@
 import styles from '@/profile/styles/Profile.module.css';
 import Image from 'next/image';
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ProfileProps, ProfileData } from '@/type/profileType';
 import RecentGame from './RecentGame';
