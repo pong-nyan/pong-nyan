@@ -55,6 +55,5 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const updateUserInfo = { ...userInfo, online: false };
     console.log('>>> [AppGateway] setUserMap', updateUserInfo);
     this.userService.setUserMap(intraId, updateUserInfo);
-    this.userService.deleteIdMap(client.id);
   }
 }

@@ -3,16 +3,24 @@ import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import SendMessageButton from './SendMessageButton';
 import { SocketContext } from '@/context/socket';
-import { getMessagesFromLocalStorage, addMessageToLocalStorage } from '../utils/chatLocalStorage';
+import { getMessagesFromLocalStorage } from '../utils/chatLocalStorage';
 import { Message } from '@/type/chatType';
 import { Channel } from '@/type/chatType';
+import { IntraId } from '@/type/userType';
 
 function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveChannel: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
-  const [channelUsers, setChannelUsers] = useState<string[]>([]);
+  // TODO : 난 IntraId로 넣었는데 쓰는곳에 마우스올리면 number[]가 됨
+  const [channelUsers, setChannelUsers] = useState<IntraId[]>([]);
   const [channel, setChannel] = useState<Channel | null>(null);
   const socket = useContext(SocketContext);
+
+  // 처음 컴포넌트가 마운트될 때 사용자 목록을 요청
+  useEffect(() => {
+    console.log('[Chat] 유저 목록을 서버에 요청함');
+    socket.emit('chat-request-users', { channelId });
+  }, [socket, channelId]);
 
   useEffect(() => {
     console.log('[Chat] 처음 접속시 localStorage에서 메시지 불러옴');
@@ -20,6 +28,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     setMessages(loadedMessages);
   }, [socket, channelId]);
 
+  // 해당 채널에 들어와 있는 user의 목록을 받아옴
   useEffect(() => {
     socket.on('chat-update-users', (users) => {
       console.log('[Chat] chat-update-users users', users);
@@ -29,13 +38,12 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     return () => {
       socket.off('chat-update-users');
     };
-  }, [socket]);
+  }, [socket, channelId]);
 
   useEffect(() => {
-    console.log('[Chat] 채널 정보를 서버에 요청함');
+    console.log('[Chat] 접속해있는 URL의 channelId가 바뀔때마다 채널 정보를 서버에 요청함');
     if (channelId) {
       socket.emit('chat-request-channel-info', { channelId });
-
       socket.on('chat-response-channel-info', (response) => {
         if (response.error) {
           alert(response.error);
@@ -50,43 +58,26 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     }
   }, [socket, channelId]);
 
-  // 페이지에서 채팅의 내용을 바꾸기 위해
   useEffect(() => {
-    socket.on('chat-new-message', (data) => {
-      const message = data.message;
-      const receivedChannelId = data.channelId;
-      const sender = data.sender;
-      console.log('[Chat] chat-new-message message, channelId, sender', message, channelId, sender);
-
-      const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
-      if (!loggedInUser) {
-        return ;
-      }
-
-      const loggedInUserId = loggedInUser.intraId;
-      if (sender === loggedInUserId) {
-        console.log('[Chat] myMessage sender, loggedInUserId', sender, loggedInUserId);
-        return;
-      }
-
-      if (channelId === receivedChannelId) {
-        setMessages(prevMessages => [...prevMessages, message]);
-      }
+    socket.on('chat-watch-new-message', (data)=>{
+      console.log('[Chat] chat-watch-new-message', data);
+      const { channelId: receivedChannelId } = data;
+      const storageMessages = getMessagesFromLocalStorage(receivedChannelId);
+      setMessages(storageMessages);
     });
+
     return () => {
-      socket.off('chat-new-message');
+      socket.off('chat-watch-new-message');
     };
   }, [socket, channelId]);
 
   const handleSendMessage = () => {
     if (inputMessage.trim() !== '') {
       const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
-      const newMessage = {
+      const newMessage : Message = {
         content: inputMessage,
         nickname: loggedInUser.nickname
       };
-      setMessages(prevMessages => [...prevMessages, newMessage]);
-      addMessageToLocalStorage(channelId as string, newMessage);
       socket.emit('chat-message-in-channel', { channelId, message: newMessage });
       setInputMessage('');
     }
@@ -99,7 +90,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', height: '100%', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
           <strong>Current Channel:</strong> {channel?.title ? channel.title : 'No Channel Selected'}
           <button onClick={handleLeaveChannel}>Leave Channel</button>

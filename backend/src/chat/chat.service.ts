@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
-import { Channel, ChannelInfo } from 'src/type/chatType';
+import { Channel, ChannelInfo, ChannelId } from 'src/type/chatType';
+import { IntraId } from 'src/type/userType';
+import { UserService } from 'src/user.service';
 
 @Injectable()
 export class ChatService {
-  private channelMap = new Map<string, Channel>();
+  constructor(private readonly userService : UserService) {}
+
+  private channelMap = new Map<ChannelId, Channel>();
 
   // 사용자가 채널을 추가
   addChannel(channelInfo: ChannelInfo, client: Socket, intraId: number) : string {
-    console.log('service addChannel, channelInfo', channelInfo);
+    console.log('[ChatService] service addChannel, channelInfo', channelInfo);
     const channelId = uuidv4();
     const newChannel = {
       id: channelId,
@@ -20,28 +24,28 @@ export class ChatService {
       ...channelInfo };
     client.join(channelId);
     this.channelMap.set(channelId, newChannel);
-    console.log('channel List :', this.channelMap);
+    console.log('[ChatService] channel List :', this.channelMap);
     return channelId;
   }
 
   // 채널이 사용자를 추가
-  joinChannel(channelId: string, userId: number) {
-    console.log('service joinChannel, channelId, userId', channelId, userId);
+  joinChannel(channelId: ChannelId, userId: number) {
+    console.log('[ChatService] service joinChannel, channelId, userId', channelId, userId);
 
     const channel = this.channelMap.get(channelId);
-    console.log('service joinChannel, channelMap.get channel', channel);
+    console.log('[ChatService] service joinChannel, channelMap.get channel', channel);
     if (!channel) return; // 채널이 없다면 종료
 
     if (!channel.userList) {
         channel.userList = []; // 사용자 목록 초기화
     }
-
     if (!channel.userList.includes(userId)) {
         channel.userList.push(userId);
     }
+    this.userService.setUserInfoChatRoomList(userId, channelId);
   }
 
-  leaveChannel(channelId: string, userId: number) {
+  leaveChannel(channelId: ChannelId, userId: number) {
     const channel = this.channelMap.get(channelId);
     if (channel) {
       const index = channel.userList.indexOf(userId);
@@ -51,7 +55,7 @@ export class ChatService {
     }
   }
 
-  getChannelUsers(channelId: string): number[] {
+  getChannelUsers(channelId: ChannelId): IntraId[] {
     const channel = this.channelMap.get(channelId);
     return channel ? channel.userList : [];
   }
@@ -64,11 +68,11 @@ export class ChatService {
     return Array.from(this.channelMap.values()).filter(channel => channel.channelType === 'public' || channel.channelType === 'protected');
   }
 
-  getChannel(title: string) {
-    return this.channelMap.get(title);
+  getChannel(channelId: string) {
+    return this.channelMap.get(channelId);
   }
 
-  deleteChannel(title: string) {
-    return this.channelMap.delete(title);
+  deleteChannel(channelId: string) {
+    return this.channelMap.delete(channelId);
   }
 }

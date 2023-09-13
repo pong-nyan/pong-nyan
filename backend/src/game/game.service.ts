@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Game } from 'src/entity/Game';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Socket, RoomName } from 'src/type/socketType';
-import { BallInfo, GameInfo, QueueInfo, PlayerNumber, GameStatus } from 'src/type/gameType';
-import { IntraId, UserInfo } from 'src/type/userType';
-import { User } from 'src/entity/User';
+import { Socket, RoomName } from 'src/type/socketType'; import { BallInfo, GameInfo, QueueInfo, PlayerNumber, GameStatus, MatchingQueue } from 'src/type/gameType'; import { IntraId, UserInfo } from 'src/type/userType'; import { User } from 'src/entity/User';
 import { UserService } from 'src/user.service';
 
 @Injectable()
@@ -22,13 +19,14 @@ export class GameService {
     const userInfo = this.userService.getUserInfo(intraId);
     if (!userInfo) return ;
     console.log('userInfo', userInfo);
-    // this.matchingQueueList[gameStatusIndex].push({client, nickname});
-    this.matchingQueue.push({client, nickname, intraId});
-    if (this.matchingQueue.length > 1) {
-      const player1 = this.matchingQueue.shift();
-      const player2 = this.matchingQueue.shift();
+    this.matchingQueueList[gameStatusIndex].push({client, nickname, intraId});
+    console.log('matchingQueue', this.matchingQueueList);
+    // this.matchingQueue.push({client, nickname, intraId});
+    if (this.matchingQueueList[gameStatusIndex].length > 1) {
+      const player1 = this.matchingQueueList[gameStatusIndex].shift();
+      const player2 = this.matchingQueueList[gameStatusIndex].shift();
       if (player1.nickname === player2.nickname) {
-        this.matchingQueue.push(player1);
+        this.matchingQueueList[gameStatusIndex].push(player1);
         return [ undefined, undefined, undefined ];
       }
       const roomName = 'game-' + player1.nickname + ':' + player2.nickname;
@@ -145,11 +143,11 @@ export class GameService {
   }
 
   public removeMatchingClient(client: Socket) {
-    this.matchingQueue = this.matchingQueue.filter(item => item.client.id !== client.id);
-    // this.matchingQueueList.forEach((matchingQueue, index) => {
-    //   this.matchingQueueList[index] = matchingQueue.filter(item => item.client.id !== client.id);
-    // });
-    console.log(this.matchingQueue.length);
+    console.log('before remove matchingQueue', this.matchingQueueList);
+    this.matchingQueueList.forEach((matchingQueue, index) => {
+      this.matchingQueueList[index] = matchingQueue.filter(item => item.client.id !== client.id);
+    });
+    console.log('after remove matchingQueue', this.matchingQueueList);
   }
 
   public async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
@@ -196,7 +194,8 @@ export class GameService {
     return this.friendMatchingQueue.findIndex(item => item.nickname === friendNickname);
   }
 
-  private matchingQueue: QueueInfo[] = [];
+  // private matchingQueue: QueueInfo[] = [];
+  private matchingQueueList: MatchingQueue[] = [[], [], [], []];
   private friendMatchingQueue: QueueInfo[] = [];
   // TODO: 적절하게  recentBallInfo 메모리 관리해야함.
   // IDEA: 게임이 끝나면 삭제하는 방법

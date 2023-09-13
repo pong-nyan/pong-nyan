@@ -24,6 +24,10 @@ const MakeChannel = ({ isOpen, onClose }) => {
       alert('최대 인원수는 25명을 초과할 수 없습니다.');
       return;
     }
+    if (channelMaxUsers < 2) {
+      alert('최대 인원수는 2명 이상이어야 합니다.');
+      return;
+    }
 
     if (channelType === 'protected') {
       const passwordPattern = /^[a-zA-Z0-9]{4,8}$/;

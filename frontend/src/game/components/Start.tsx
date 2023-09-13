@@ -3,6 +3,9 @@ import { PlayerNumber, GameStatus } from '@/type/gameType';
 import GameStartWrapper from './GameStartWrapper';
 import { socketOnGameStartEvent, socketOnGameLoadingEvent } from '@/context/socketGameEvent';
 import { SocketId } from '@/type/socketType';
+import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
+import GameLoading from './GameLoading';
+
 
 const Start = ({ gameStatus, setGameStatus, setPlayerNumber, setOpponentId }: {
   gameStatus: GameStatus, 
@@ -19,8 +22,15 @@ const Start = ({ gameStatus, setGameStatus, setPlayerNumber, setOpponentId }: {
 
   return (
     loading ?
-      'Loading' :
-      <GameStartWrapper gameStatus={gameStatus}/>
+      <div>
+        <GameLoading />
+        <NavButtonWrapper />
+      </div>
+      :
+      <div>
+        <GameStartWrapper gameStatus={gameStatus}/>
+        <NavButtonWrapper />
+      </div>
   );
 }
 

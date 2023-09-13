@@ -3,13 +3,12 @@ import { useState } from 'react';
 import Friend from './Friend';
 import { FriendProps, FriendStatus } from '@/type/friendType';
 import { UserInfo } from '@/type/userType';
-// import { socketEmitFriendOnlineListEvent, socketOnFriendOnlineListEvent } from '@/friends/hooks/socketFriendEvent';
 import { useGetFriendsData } from '../hooks/useGetFriendsData';
 
 const Friends = () => {
   const [friends, setFriends] = useState<FriendProps[]>();
-  
   useGetFriendsData(setFriends);
+
 
   if (!friends || !friends.length) return (
     <div>
@@ -17,7 +16,6 @@ const Friends = () => {
       <div className={styles.profile}>you don't have friends</div>
     </div>
   );
-
   return (
     <>
       <h1 className={styles.profile}>Friends List</h1>

@@ -6,6 +6,7 @@ export const addMessageToLocalStorage = (channelId: string, message : Message) =
   localStorage.setItem(`chat-${channelId}`, JSON.stringify(updatedMessages));
 };
 
+// 해당 채널의 메시지 목록을 가져옴
 export const getMessagesFromLocalStorage = (channelId: string) => {
   const messages = localStorage.getItem(`chat-${channelId}`);
   return messages ? JSON.parse(messages) : [];
