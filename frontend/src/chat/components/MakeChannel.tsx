@@ -18,7 +18,6 @@ const MakeChannel = ({ isOpen, onClose }) => {
       alert('최대 인원수는 숫자만 입력 가능합니다.');
       return;
     }
-
     channelMaxUsers = parseInt(maxUsers, 10);
     if (channelMaxUsers > 25) {
       alert('최대 인원수는 25명을 초과할 수 없습니다.');

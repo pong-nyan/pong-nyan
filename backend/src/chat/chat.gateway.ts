@@ -163,6 +163,7 @@ export class ChatGateway {
       return ;
     }
     channel.password = payloadEmit.password;
+    channel.channelType = 'protected';
     if (!this.syncAfterChannelChange(channel)) return ;
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
     client.emit('chat-update-channel-list', updatedChannelList);
@@ -174,14 +175,18 @@ export class ChatGateway {
   handleRemovePassword(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }, @PnJwtPayload() payload: PnPayloadDto) {
     const channel = this.chatService.getChannel(payloadEmit.channelId);
     if (!channel) return;
-    // owner만 변경 가능
+    // owner만 비번 제거 가능
     if (channel.owner !== payload.intraId) {
-      client.emit('chat-finish-message', '비밀번호 변경 권한이 없습니다.');
+      client.emit('chat-catch-error-message', '비밀번호 제거 권한이 없습니다.');
       return ;
     }
     channel.password = '';
+    channel.channelType = 'public';
     if (!this.syncAfterChannelChange(channel)) return ;
-    client.emit('chat-finish-message', '비밀번호 변경에 성공했습니다.');
+    const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
+    client.emit('chat-update-channel-list', updatedChannelList);
+
+    client.emit('chat-finish-message', '비밀번호 제거에 성공했습니다.');
   }
 
   async handleConnection(@ConnectedSocket() client: Socket) {

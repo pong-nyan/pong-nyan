@@ -45,6 +45,11 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   const handleChangePassword = () => {
     const newPassword = prompt('새로운 비밀번호를 입력하세요.');
     if (!newPassword) return;
+    const passwordPattern = /^[a-zA-Z0-9]{4,8}$/;
+    if (!passwordPattern.test(newPassword)) {
+      alert('비밀번호는 4글자 이상 8글자 이하의 알파벳과 숫자만 포함해야 합니다.');
+      return;
+    }
     const hasedInputPassword = sha256(newPassword);
     chatNamespace.emit('chat-change-password', { channelId, password : hasedInputPassword });
   };
@@ -69,24 +74,6 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
       chatNamespace.emit('chat-request-channel-info', { channelId });
     }
   }, [chatNamespace, channelId]);
-
-  // useEffect(() => {
-  //   console.log('[Chat] 접속해있는 URL의 channelId가 바뀔때마다 채널 정보를 서버에 요청함');
-  //   if (channelId) {
-  //     chatNamespace.on('chat-response-channel-info', (response) => {
-  //       console.log('[Chat] chat-response-channel-info 받음', response);
-  //       if (response.error) {
-  //         alert(response.error);
-  //       } else {
-  //         setChannel(response.channel);
-  //       }
-  //     });
-
-  //     return () => {
-  //       chatNamespace.off('chat-response-channel-info');
-  //     };
-  //   }
-  // }, [chatNamespace, channel, channelId]);
 
   useEffect(() => {
     console.log('[Chat] 채널 정보를 서버에 다시 요청함');
