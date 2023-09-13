@@ -53,6 +53,8 @@ export class AuthController {
         if (!userInfo) return new HttpException('unauthorized', HttpStatus.UNAUTHORIZED);
         const { intraId, intraNickname, defaultAvatar } = userInfo;
         const { email, nickname, avatar } = signupDto;
+        const alreadyUser = await this.userService.checkPossibleNickname(nickname);
+        if (alreadyUser) return new HttpException('이미 존재하는 닉네임입니다.', HttpStatus.CONFLICT);
         const result = await this.authService.createUser(intraId, intraNickname, nickname, avatar || defaultAvatar, 0, email);
         if (!result) return new HttpException('Create User Faild', HttpStatus.INTERNAL_SERVER_ERROR);
         return { redirectUrl: '/auth/no-2fa-signin' };
