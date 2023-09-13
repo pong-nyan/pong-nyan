@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { SocketContext } from '@/context/socket';
 import { Channel } from '@/type/chatType';
 import { useRouter } from 'next/router';
+import { sha256 } from 'js-sha256';
 
 // onChannelSelect: (channel: Channel) => void  // list.tsx에 선택될 채널을 넘겨줘야함
 const ChannelList = () => {
@@ -18,8 +19,10 @@ const ChannelList = () => {
     let inputPassword;
     if (seletedChannel.password) {
       inputPassword = prompt('이 채널은 비밀번호로 보호되어 있습니다. 비밀번호를 입력하세요.');
-      if (!inputPassword) return ;
-      if (inputPassword !== seletedChannel.password) {
+      if (!inputPassword) return;
+      const hasedInputPassword = sha256(inputPassword);
+      console.log(hasedInputPassword, seletedChannel.password);
+      if (hasedInputPassword !== seletedChannel.password) {
         alert('비밀번호가 틀렸습니다.');
         return ;
       }
