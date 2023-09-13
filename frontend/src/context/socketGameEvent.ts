@@ -5,7 +5,7 @@ import { Nickname } from '@/type/userType';
 import { SocketId, RoomName } from '@/type/socketType';
 import { socket } from '@/context/socket';
 import { findTarget } from '@/game/matterEngine/matterJsUnit';
-import { movePlayer, movePaddle } from '@/game/matterEngine/player';
+import { movePlayer, moveOriginalPongPlayer, movePaddle } from '@/game/matterEngine/player';
 import { resumeGame } from '@/game/logic/resumeGame';
 
 /**
@@ -60,6 +60,21 @@ export const socketOnGameKeyEvent = (engine: Engine | undefined) => {
       break;
     case 'spaceUp':
       movePaddle(engine, opponentNumber, -velocity);
+      break;
+    }
+  });
+};
+
+export const socketOnGameOriginalPongKeyEvent = (engine: Engine | undefined) => {
+  socket.on('game-keyEvent', ({opponentNumber, message, step, velocity}
+    : {opponentNumber: PlayerNumber, message: KeyEventMessage, step: number, velocity: number}) => {
+    if (!engine) return ;
+    switch (message) {
+    case 'leftDown':
+      moveOriginalPongPlayer(engine, opponentNumber, -step);
+      break;
+    case 'rightDown':
+      moveOriginalPongPlayer(engine, opponentNumber, step);
       break;
     }
   });
@@ -142,7 +157,7 @@ export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engin
 };
 
 export const socketOnGameStartEvent = (setGameStatus: Dispatch<SetStateAction<GameStatus>>, setPlayerNumber: Dispatch<SetStateAction<PlayerNumber>>, setOpponentId: Dispatch<SetStateAction<SocketId>>) => {
-  socket.on('game-start', ({ player1Id, player2Id }: {roomName: RoomName, player1Id: string, player2Id: string}) => {
+  socket.on('game-start', ({ player1Id, player2Id, gameStatus }: {roomName: RoomName, player1Id: string, player2Id: string, gameStatus: GameStatus}) => {
     if (socket.id === player1Id) { 
       setPlayerNumber('player1');
       setOpponentId(player2Id);
@@ -151,7 +166,7 @@ export const socketOnGameStartEvent = (setGameStatus: Dispatch<SetStateAction<Ga
       setPlayerNumber('player2');
       setOpponentId(player1Id);
     }
-    setGameStatus(GameStatus.RankPnRun);
+    setGameStatus(gameStatus);
   });
 };
 
@@ -182,6 +197,11 @@ export const socketOffGameAllEvent = () => {
   socket.off('game-start');
   socket.off('game-loading');
   socket.off('game-end');
+};
+
+export const socketOffGameStartEvent = () => {
+  socket.off('game-start');
+  socket.off('game-loading');
 };
 
 const getNickname = () => {

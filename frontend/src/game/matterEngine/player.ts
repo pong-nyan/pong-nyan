@@ -1,5 +1,5 @@
 import { Constraint, Body, Engine } from 'matter-js';
-import { stopper, hinge, paddle, findTargetAll } from './matterJsUnit';
+import { stopper, hinge, paddle, bar, findTargetAll } from './matterJsUnit';
 import { CollisionEvent, KeyDownEvent, KeyUpEvent, PlayerNumber } from '@/type/gameType';
 import { socket } from '@/context/socket';
 
@@ -10,16 +10,24 @@ export const makeHinge = (middleX: number, offsetX: number, baseY: number, hinge
   return [ hingeLeft, hingeRight ];
 };
 
-export const makePaddle = (middleX: number, offsetX: number, baseY:number, hingeGroupRef:number) => {
+export const makePaddle = (middleX: number, offsetX: number, baseY:number, hingeGroupRef:number, playerNumber: PlayerNumber) => {
   // const paddleWidth = 0.15 * cw;
   const paddleWidth = 50;
   const paddleHeight = 20;
-  const paddleLeft = paddle(middleX - offsetX, baseY, paddleWidth, paddleHeight, 'PaddleLeft', hingeGroupRef);
-  const paddleRight = paddle(middleX + offsetX, baseY, paddleWidth, paddleHeight, 'PaddleRight', hingeGroupRef);
+  const paddleLeft = paddle(middleX - offsetX, baseY, paddleWidth, paddleHeight, 'PaddleLeft', hingeGroupRef, playerNumber);
+  const paddleRight = paddle(middleX + offsetX, baseY, paddleWidth, paddleHeight, 'PaddleRight', hingeGroupRef, playerNumber);
 
   Body.setCentre(paddleLeft, { x: -paddleWidth / 2, y: 0}, true);
   Body.setCentre(paddleRight, { x: paddleWidth / 2, y: 0}, true);
   return [ paddleLeft, paddleRight ];
+}
+
+export const makeBar= (middleX: number, offsetX: number, baseY:number, hingeGroupRef:number, playerNumber: PlayerNumber) => {
+  // const paddleWidth = 0.15 * cw;
+  const barWidth = 100;
+  const barHeight = 20;
+  const barMiddle = bar(middleX, baseY, barWidth, barHeight, 'Bar', hingeGroupRef, playerNumber);
+  return barMiddle;
 };
 
 export const makeStopper = (playerNumber:PlayerNumber, middleX: number, baseY:number, nonCollisionGroupRef: number) => {
@@ -81,6 +89,13 @@ export const movePlayer = (engine: Engine, playerNumber: PlayerNumber, dx: numbe
   Body.translate(StopperRightBottom, { x: dx, y: 0 });
   Body.translate(hingeLeft, { x: dx, y: 0 });
   Body.translate(hingeRight, { x: dx, y: 0 });
+};
+
+export const moveOriginalPongPlayer = (engine: Engine, playerNumber: PlayerNumber, dx: number) => {
+  const barMiddle = getOwnTarget(engine, playerNumber, 'Bar');
+  if (!barMiddle) return;
+  dx = playerNumber === 'player1' ? dx : -dx;
+  Body.translate(barMiddle, { x: dx, y: 0 });
 };
 
 export const movePaddle = (engine: Engine, playerNumber: PlayerNumber, velocity: number) => {

@@ -101,11 +101,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('game-start')
   handleStartGame(@ConnectedSocket() client: Socket, @MessageBody() payload: { gameStatus: GameStatus }, @PnJwtPayload() pnPayload: PnPayloadDto) {
     console.log('[Game Gateway] game-start');
-    const [ roomName, player1Id, player2Id ] =
-      this.gameService.match(client, payload.gameStatus - 1, pnPayload.intraId, pnPayload.nickname);
+    const [ roomName, player1Id, player2Id, gameStatus ] =
+      this.gameService.match(client, payload.gameStatus, pnPayload.intraId, pnPayload.nickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;
-    this.server.to(roomName).emit('game-start', {roomName, player1Id, player2Id});
+    this.server.to(roomName).emit('game-start', { roomName, player1Id, player2Id, gameStatus });
   }
 
   @SubscribeMessage('game-keyEvent')

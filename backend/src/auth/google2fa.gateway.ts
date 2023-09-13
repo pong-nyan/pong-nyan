@@ -20,7 +20,7 @@ export class Google2faGateway {
 
   handleDisconnect(@ConnectedSocket() client: Socket) {
     console.log('[Gateway2faGuard] Disconnection ', client.id);
-    // this.userService.deleteIdMap(client.id);
+    this.userService.deleteIdMap(client.id);
   }
 
   @SubscribeMessage('auth-set-map')

@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react';
 import { Engine, Render, World, Runner } from 'matter-js';
-import { initEngine, initWorld } from '@/game/matterEngine/matterJsSet';
-import { movePlayer, movePaddle, getOwnTarget } from '@/game/matterEngine/player';
+import { initEngine, initOriginPongWorld} from '@/game/matterEngine/matterJsSet';
+import { moveOriginalPongPlayer, movePaddle, getOwnTarget } from '@/game/matterEngine/player';
 import { eventOnCollisionStart, eventOnCollisionEnd, eventOnBeforeUpdate } from '@/game/matterEngine/matterJsGameEvent';
 import { PlayerNumber, Score, CanvasSize } from '@/type/gameType';
 import { Nickname } from '@/type/userType';
@@ -10,16 +10,15 @@ import {
   socketEmitGameKeyEvent,
   socketEmitGameScoreEvent, 
   socketOnGameBallEvent, 
-  socketOnGameKeyEvent, 
+  socketOnGameOriginalPongKeyEvent, 
   socketOnGameScoreEvent, 
   socketOnGameDisconnectEvent,
-  socketOnGameEnd,
   socketOffGameAllEvent
 } from '@/context/socketGameEvent';
     
 import styles from '@/game/styles/Run.module.css';
 
-const Run = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
+const OriginPongRun = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
   setGameStatus: Dispatch<SetStateAction<number>>,
   playerNumber: PlayerNumber, 
   opponentId: string | undefined, 
@@ -32,44 +31,24 @@ const Run = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
   const runner = useRef<Runner>();
   const nonCollisionGroupRef = useRef<number>(0);
   const hingeGroupRef = useRef<number>(0);
-  let debouncingFlag = false;
 
   const handleKeyDown = (engine: Engine, e: KeyboardEvent, cw: number) => {
     if (!playerNumber || !opponentId) return ;
     const step = 24;
-    const velocity = 0.2;
-
+    const barMiddle = getOwnTarget(engine, playerNumber, 'Bar');
+    // get width of barMiddle
     switch (e.key) {
     case 'ArrowLeft':
-      if (playerNumber === 'player1' && getOwnTarget(engine, playerNumber, 'HingeLeft').position.x - step < 0) return;
-      else if (playerNumber === 'player2' && getOwnTarget(engine, playerNumber, 'HingeRight').position.x + step > cw) return;
-      movePlayer(engine, playerNumber, -step);
+      if (playerNumber === 'player1' && barMiddle.bounds.min.x - step < 0) return;
+      else if (playerNumber === 'player2' && barMiddle.bounds.max.x + step > cw) return;
+      moveOriginalPongPlayer(engine, playerNumber, -step);
       socketEmitGameKeyEvent(playerNumber, opponentId, 'leftDown', step, 0);
       break;
     case 'ArrowRight':
-      if (playerNumber === 'player1' && getOwnTarget(engine, playerNumber, 'HingeRight').position.x + step > cw) return;
-      else if (playerNumber === 'player2' && getOwnTarget(engine, playerNumber, 'HingeLeft').position.x - step < 0) return;
-      movePlayer(engine, playerNumber, step);
+      if (playerNumber === 'player1' && barMiddle.bounds.max.x + step > cw) return;
+      else if (playerNumber === 'player2' && barMiddle.bounds.min.x - step < 0) return;
+      moveOriginalPongPlayer(engine, playerNumber, step)
       socketEmitGameKeyEvent(playerNumber, opponentId, 'rightDown', step, 0);
-      break;
-    case ' ':
-      if (debouncingFlag) return ;
-      debouncingFlag = true;
-      movePaddle(engine, playerNumber, velocity);
-      socketEmitGameKeyEvent(playerNumber, opponentId, 'spaceDown', 0, velocity);
-      break;
-    }
-  };
-
-  const handleKeyUp = (engine: Engine, e: KeyboardEvent) => {
-    if (!playerNumber || !opponentId) return ;
-    const velocity = 0.2;
-
-    switch (e.key) {
-    case ' ':
-      debouncingFlag = false;
-      movePaddle(engine, playerNumber, -velocity);
-      socketEmitGameKeyEvent(playerNumber, opponentId, 'spaceUp', 0, velocity);
       break;
     }
   };
@@ -97,7 +76,7 @@ const Run = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
     runner.current = Runner.create();
 
     /* init matterjs(순서 정말 중요함)*/ 
-    initWorld(engine.current.world, sceneSize.width, sceneSize.height, nonCollisionGroupRef.current, hingeGroupRef.current);
+    initOriginPongWorld(engine.current.world, sceneSize.width, sceneSize.height, nonCollisionGroupRef.current, hingeGroupRef.current);
     initEngine(engine.current);
 
     /* matterjs event on */
@@ -106,7 +85,8 @@ const Run = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
     eventOnCollisionEnd(engine.current);
 
     /* socket on event */
-    socketOnGameKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
+    socketOnGameOriginalPongKeyEvent(engine.current);   // 상대방의 키 이벤트를 받아서 처리
+
     socketOnGameBallEvent(engine.current);  // 공 위치, 속도 동기화
     socketOnGameScoreEvent(sceneSize, engine.current, runner.current, setScore);
     socketOnGameDisconnectEvent(sceneSize, engine.current, runner.current, setScore, setGameStatus);
@@ -139,10 +119,6 @@ const Run = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
         if (!engine.current || !scene.current) return;
         handleKeyDown(engine.current, e, scene.current.clientWidth);
       }}
-      onKeyUp={(e) => {
-        if (!engine.current || !scene.current) return;
-        handleKeyUp(engine.current, e);
-      }}
       tabIndex={0} >
       <div ref={scene} className={styles.scene}>
         <ScoreBoard score={score} playerNumber={playerNumber}/>
@@ -151,4 +127,4 @@ const Run = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
   );
 };
 
-export default Run;
+export default OriginPongRun;

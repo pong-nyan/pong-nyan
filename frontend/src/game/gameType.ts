@@ -11,3 +11,5 @@ export type Player = {
   jointLeft: Matter.Constraint,
   joinRight: Matter.Constraint
 };
+
+export type OriginPongPlayer = Matter.Body

@@ -1,14 +1,13 @@
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import { PlayerNumber, GameStatus } from '@/type/gameType';
 import GameStartWrapper from './GameStartWrapper';
-import { socketOnGameStartEvent, socketOnGameLoadingEvent } from '@/context/socketGameEvent';
+import { socketOnGameStartEvent, socketOnGameLoadingEvent, socketOffGameStartEvent } from '@/context/socketGameEvent';
 import { SocketId } from '@/type/socketType';
 import NavButtonWrapper from '@/chat/components/NavButtonWrapper';
 import GameLoading from './GameLoading';
 
 
-const Start = ({ gameStatus, setGameStatus, setPlayerNumber, setOpponentId }: {
-  gameStatus: GameStatus, 
+const Start = ({setGameStatus, setPlayerNumber, setOpponentId }: {
   setGameStatus: Dispatch<SetStateAction<number>>, 
   setPlayerNumber: Dispatch<SetStateAction<PlayerNumber>>, 
   setOpponentId: Dispatch<SetStateAction<SocketId>>
@@ -16,8 +15,11 @@ const Start = ({ gameStatus, setGameStatus, setPlayerNumber, setOpponentId }: {
   const [ loading, setLoading ] = useState(false);
 
   useEffect(() => {
-    socketOnGameStartEvent(setGameStatus, setPlayerNumber, setOpponentId);
     socketOnGameLoadingEvent(setLoading);
+    socketOnGameStartEvent(setGameStatus, setPlayerNumber, setOpponentId);
+    return () => {
+      socketOffGameStartEvent();
+    };
   }, [setGameStatus, setPlayerNumber, setOpponentId]);
 
   return (
@@ -28,7 +30,7 @@ const Start = ({ gameStatus, setGameStatus, setPlayerNumber, setOpponentId }: {
       </div>
       :
       <div>
-        <GameStartWrapper gameStatus={gameStatus}/>
+        <GameStartWrapper />
         <NavButtonWrapper />
       </div>
   );
