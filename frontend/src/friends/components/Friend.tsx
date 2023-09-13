@@ -5,15 +5,14 @@ import { FriendProps} from '@/type/friendType';
 
 const Friend = (friendInfo: FriendProps) => {
   const redirection = `/profile/${friendInfo.nickname}`;
-
+  
   let styleColor = { color : 'gray' } ;
-
-  if (friendInfo.socketInfo.gameRoom !== '') {
-    styleColor = { color: 'red' };
-  } else if (friendInfo.socketInfo.online == true){
-    styleColor = { color: 'green' };
-  } else {
+  if (!friendInfo.socketInfo || !friendInfo.socketInfo.online ) {
     styleColor = { color: 'gray' };
+  } else if (friendInfo.socketInfo.gameRoom !== '') {
+    styleColor = { color: 'red' };
+  } else {
+    styleColor = { color: 'green' };
   }
 
   return (
