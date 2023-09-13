@@ -3,14 +3,16 @@
 * below type
 */
 
+import { IntraId } from './userType';
+
 export type ChannelType = 'public' | 'private' | 'protected';
 
 export type Channel = ChannelInfo & {
   id: string,
-  owner: string,
-  administrator: string[],
-  userList: string[]
-  invitedUsers: string[]
+  owner: IntraId,
+  administrator: IntraId[],
+  userList: IntraId[]
+  invitedUsers: IntraId[]
 }
 
 export type ChannelInfo = {

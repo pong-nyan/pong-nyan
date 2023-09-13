@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, use } from 'react';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import SendMessageButton from './SendMessageButton';
@@ -6,11 +6,14 @@ import { SocketContext } from '@/context/socket';
 import { getMessagesFromLocalStorage } from '../utils/chatLocalStorage';
 import { Message } from '@/type/chatType';
 import { Channel } from '@/type/chatType';
+import { IntraId } from '@/type/userType';
 
 function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveChannel: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [channel, setChannel] = useState<Channel | null>(null);
+  // 선택한 유저 (선택될때마다 다시 렌더링이 필요해서 넣음) TODO : 다시생각해보기
+  // const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const socket = useContext(SocketContext);
 
   useEffect(() => {
@@ -92,6 +95,45 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     onLeaveChannel();
   };
 
+  const makeAdministrator = (grantedUser: IntraId) => {
+    // 서버에 업데이트된 목록을 보내는 로직 추가
+    socket.emit('chat-grant-administrator', { channelId, user: grantedUser });
+  };
+
+  // 선택된 사용자가 변경될 때마다 관리자로 임명하는 로직을 실행합니다.
+
+  // useEffect(() => {
+  //   console.log('[Chat] selectedUser 변경됨', selectedUser);
+  //   if (selectedUser) {
+  //     socket.emit('chat-grant-administrator', { channelId, user: selectedUser });
+  //   }
+  //   // TODO:
+  //   // 만약실패하면 chat-grant-error 보내야함
+  //   // emit이후 임명이후 channel의 상태가 바뀌었다고 서버쪽에서 다시 보내줘야함
+  //   socket.on('chat-grant-error', (errorMessage) => {
+  //     alert(errorMessage);
+  //   });
+
+  //   return () => {
+  //     socket.off('chat-grant-error');
+  //   };
+  // }, [selectedUser]);
+
+  useEffect(() => {
+    socket.on('chat-grant-administrator-finish', (finishMessage) => {
+      setChannel(channel);
+      alert(finishMessage);
+    });
+    socket.on('chat-grant-error', (errorMessage) => {
+      alert(errorMessage);
+    });
+
+    return () => {
+      socket.off('chat-grant-administrator-finish');
+      socket.off('chat-grant-error');
+    };
+  }, [socket]);
+
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', height: '100%', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
@@ -114,7 +156,10 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
           <strong>Users:</strong>
           <ul>
             {channel?.userList.map(user => (
-              <li key={user}>{user}</li>
+              <li key={user}>
+                {user}
+                <button onClick={() => makeAdministrator(user)}>Make Administrator</button>
+              </li>
             ))}
           </ul>
           <strong>Invited Users:</strong>

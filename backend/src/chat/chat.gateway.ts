@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user.service';
 import { sha256 } from 'js-sha256';
 import { Controller2faGuard } from 'src/guard/controller2fa.guard';
+import { IntraId } from 'src/type/userType';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -99,7 +100,6 @@ export class ChatGateway {
       if (channel.owner === payload.intraId) {
         console.log('chat-leave-channel, owner가 나감 channel.owner === payload.intraId');
         this.chatService.getChannelMap().delete(channelId);
-        if (!this.syncAfterChannelChange(channel)) return ;
       }
       if (!this.syncAfterChannelChange(channel)) return ;
       this.server.emit('chat-update-channel-list', updatedChannelList);
@@ -118,6 +118,34 @@ export class ChatGateway {
 
     //해당 채널의 모든 사용자에게 전송
     this.server.to(payloadEmit.channelId).emit('chat-watch-new-message', { channelId: payloadEmit.channelId });
+  }
+
+  @SubscribeMessage('chat-grant-administrator')
+  handleGrantAdministrator(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, user: IntraId }, @PnJwtPayload() payload: PnPayloadDto) {
+    // 유효성검사
+    // admin정보 바꾸기 반영
+      // 같은 서버안에 클라에게 동기화요구
+    // 안 유효하면 emit보낸 client에게 에러메시지
+    const channel = this.chatService.getChannel(payloadEmit.channelId);
+    const grantedUserId = payloadEmit.user;
+    if (!channel) return;
+    // owner만 임명 가능
+    if (channel.owner !== payload.intraId) {
+      client.emit('chat-grant-error', '관리자 임명 권한이 없습니다.');
+      return ;
+    }
+    // 이미 administrator인 경우
+    if (channel.administrator.includes(grantedUserId)) {
+      client.emit('chat-grant-error', '이미 관리자입니다.');
+      return ;
+    }
+    console.log('[Chat] chat-grant-administrator, before channel', channel);
+    console.log('[Chat] chat-grant-administrator, grantedUserId', grantedUserId);
+    const grantedChannel = this.chatService.grantAdministrator(payloadEmit.channelId, grantedUserId);
+    console.log('[Chat] chat-grant-administrator, grantedChannel', grantedChannel);
+    this.syncAfterChannelChange(grantedChannel);
+
+    client.emit('chat-grant-administrator-finish', '관리자 임명에 성공했습니다.');
   }
 
   handleConnection(@ConnectedSocket() client: Socket) {
@@ -148,7 +176,7 @@ export class ChatGateway {
     }
   }
 
-  syncAfterChannelChange(channel:Channel){
+  syncAfterChannelChange(channel:Channel) {
     console.log('syncAfterChannelChange, channel.id', channel.id);
     if (!channel) {
       this.server.to(channel.id).emit('chat-response-channel-info', { error: '채널이 존재하지 않습니다.' });
