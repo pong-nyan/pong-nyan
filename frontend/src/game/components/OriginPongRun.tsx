@@ -18,12 +18,13 @@ import {
     
 import styles from '@/game/styles/Run.module.css';
 
-const OriginPongRun = ({setGameStatus, playerNumber, opponentId, score, setScore}: {
+const OriginPongRun = ({setGameStatus, playerNumber, opponentId, score, setScore, setNickname}: {
   setGameStatus: Dispatch<SetStateAction<number>>,
   playerNumber: PlayerNumber, 
   opponentId: string | undefined, 
   score: { p1: Score, p2: Score }, 
   setScore: Dispatch<SetStateAction<{ p1: Score, p2: Score }>>
+  setNickname: Dispatch<SetStateAction<{ p1: Nickname, p2: Nickname }>>
   }) => {
   const scene = useRef<HTMLDivElement>(null);
   const engine = useRef<Engine>();
@@ -89,7 +90,7 @@ const OriginPongRun = ({setGameStatus, playerNumber, opponentId, score, setScore
 
     socketOnGameBallEvent(engine.current);  // 공 위치, 속도 동기화
     socketOnGameScoreEvent(sceneSize, engine.current, runner.current, setScore);
-    socketOnGameDisconnectEvent(sceneSize, engine.current, runner.current, setScore, setGameStatus);
+    socketOnGameDisconnectEvent(sceneSize, engine.current, runner.current, setScore, setGameStatus, setNickname);
     // run the engine
     Runner.run(runner.current, engine.current);
     Render.run(render.current);

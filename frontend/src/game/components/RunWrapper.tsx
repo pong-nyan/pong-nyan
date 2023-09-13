@@ -27,7 +27,7 @@ const RunWrapper = ({ gameStatus, setGameStatus, playerNumber, opponentId, score
   case GameStatus.NormalPnRun:
     return ( 
       <div style={{ position: 'relative' }}>
-        <Run setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} />
+        <Run setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} setNickname={setNickname} />
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1}}>
           <CountDown />
         </div>
@@ -38,7 +38,7 @@ const RunWrapper = ({ gameStatus, setGameStatus, playerNumber, opponentId, score
     console.log('gameStatus', gameStatus);
     return ( 
       <div style={{ position: 'relative' }}>
-        <OriginPongRun setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} />
+        <OriginPongRun setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} setNickname={setNickname}/>
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1}}>
           <CountDown />
         </div>
