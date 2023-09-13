@@ -1,4 +1,5 @@
 import { World, Bodies, Body } from 'matter-js';
+import { PlayerNumber } from '@/type/gameType';
 
 export const hinge = (x: number, y: number, radius: number, label: string, group: number) : Body => {
   return Bodies.circle(x, y, radius, {
@@ -13,16 +14,16 @@ export const hinge = (x: number, y: number, radius: number, label: string, group
   });
 };
 
-export const bar = (x: number, y: number, width: number, height: number, label: string, group: number) : Body => {
-  const assetWidth = 1731 / 2;
+export const bar = (x: number, y: number, width: number, height: number, label: string, group: number, playerNumber: PlayerNumber) : Body => {
+  const assetWidth = 1731;
   const assetHeight = 587;
   return Bodies.rectangle(x, y, width, height, {
     label,
-    isStatic: false,
+    isStatic: true,
     density: 2,
     render: {
       sprite : {
-        texture : '/assets/flat-fish_orginal.png',
+        texture : playerNumber === 'player1' ? '/assets/flat-fish_orginal.png' : '/assets/flat-fish_flat.png',
         xScale: width / assetWidth,
         yScale: height / assetHeight,
       }

@@ -61,7 +61,7 @@ export function initOriginPongPlayer(playerNumber:PlayerNumber, cw: number, ch: 
   const yScale = playerNumber === 'player1' ? 0.9 : 0.1;
   const offsetX = 70;
   const middleX = cw / 2;
-  const barMiddle = makeBar(middleX, offsetX, yScale * ch, hingeGroupRef);
+  const barMiddle = makeBar(middleX, offsetX, yScale * ch, hingeGroupRef, playerNumber);
   return barMiddle;
 }
 

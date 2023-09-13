@@ -1,7 +1,10 @@
 import{ useEffect, useRef } from 'react';
 import { Score, PlayerNumber } from '@/type/gameType';
 
-export const ScoreBoard = ({score, playerNumber}: {score: Score, playerNumber: PlayerNumber | undefined})  => {
+export const ScoreBoard = ({score, playerNumber}: {
+  score: {p1: Score, p2: Score},
+  playerNumber: PlayerNumber
+  }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
