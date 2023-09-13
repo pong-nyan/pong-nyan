@@ -21,7 +21,6 @@ const ChannelList = () => {
       inputPassword = prompt('이 채널은 비밀번호로 보호되어 있습니다. 비밀번호를 입력하세요.');
       if (!inputPassword) return;
       const hasedInputPassword = sha256(inputPassword);
-      console.log(hasedInputPassword, seletedChannel.password);
       if (hasedInputPassword !== seletedChannel.password) {
         alert('비밀번호가 틀렸습니다.');
         return ;

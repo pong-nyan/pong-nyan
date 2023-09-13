@@ -32,8 +32,6 @@ export class ChatGateway {
     // if (client.id !== userInfo.clientId) return ;
     if (channelInfo.password) {
       channelInfo.password = sha256(channelInfo.password);
-      console.log('PASSWORD in BE', channelInfo.password);
-
     }
     const channelId = this.chatService.addChannel(channelInfo, client, payload.intraId);
     this.userService.setUserInfoChatRoomList(payload.intraId, channelId);
@@ -62,7 +60,6 @@ export class ChatGateway {
       }
     } else if (channel.channelType === 'protected') {
       if (channel.password !== payloadEmit.password) {
-        console.log('비번 일치안함');
         client.emit('chat-join-error', '비밀번호가 잘못되었습니다.');
         return ;
       }
