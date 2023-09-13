@@ -13,7 +13,6 @@ const HomeButton = () => {
   );
 };
 
-//TODO: mikim3에게 묻고 수정-> list와 message-channel-list의 차이점
 const ListButton = () => {
   return (
     <button style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -24,7 +23,6 @@ const ListButton = () => {
   );
 };
 
-//TODO: mikim3에게 링크 묻고 수정 -> list와 message-channel-list의 차이점
 const RankButton = () => {
   return (
     <button style={{ position: 'relative', width: '100%', height: '100%' }}>
