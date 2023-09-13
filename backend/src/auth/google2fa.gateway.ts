@@ -26,6 +26,6 @@ export class Google2faGateway {
   @SubscribeMessage('auth-set-map')
   handleAuthSetMap(@ConnectedSocket() client: Socket, @PnJwtPayload() payload: PnPayloadDto) {
     console.log('handleAuthSetMap client.id intraId', client.id, payload.intraId);
-    // this.userService.setIdMap(client.id, payload.intraId);
+    this.userService.setIdMap(client.id, payload.intraId);
   }
 }
