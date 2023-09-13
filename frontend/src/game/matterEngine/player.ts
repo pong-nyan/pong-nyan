@@ -22,11 +22,11 @@ export const makePaddle = (middleX: number, offsetX: number, baseY:number, hinge
   return [ paddleLeft, paddleRight ];
 }
 
-export const makeBar= (middleX: number, offsetX: number, baseY:number, hingeGroupRef:number) => {
+export const makeBar= (middleX: number, offsetX: number, baseY:number, hingeGroupRef:number, playerNumber: PlayerNumber) => {
   // const paddleWidth = 0.15 * cw;
-  const barWidth = 50;
+  const barWidth = 100;
   const barHeight = 20;
-  const barMiddle = bar(middleX, baseY, barWidth, barHeight, 'Bar', hingeGroupRef);
+  const barMiddle = bar(middleX, baseY, barWidth, barHeight, 'Bar', hingeGroupRef, playerNumber);
   return barMiddle;
 };
 
@@ -89,6 +89,13 @@ export const movePlayer = (engine: Engine, playerNumber: PlayerNumber, dx: numbe
   Body.translate(StopperRightBottom, { x: dx, y: 0 });
   Body.translate(hingeLeft, { x: dx, y: 0 });
   Body.translate(hingeRight, { x: dx, y: 0 });
+};
+
+export const moveOriginalPongPlayer = (engine: Engine, playerNumber: PlayerNumber, dx: number) => {
+  const barMiddle = getOwnTarget(engine, playerNumber, 'Bar');
+  if (!barMiddle) return;
+  dx = playerNumber === 'player1' ? dx : -dx;
+  Body.translate(barMiddle, { x: dx, y: 0 });
 };
 
 export const movePaddle = (engine: Engine, playerNumber: PlayerNumber, velocity: number) => {
