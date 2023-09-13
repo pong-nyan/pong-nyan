@@ -4,10 +4,10 @@ import { useState } from 'react';
 import axios from 'axios';
 
 const UpDateMyInfo = () => {
-  const [nickname, setNickname] = useState('');
+  const [nickname, setNickname] = useState<string>('');
   const [avatar, setAvatar] = useState<string>('');
-  const [email, setEmail] = useState('');
-  const [google2faOption, setGoogle2faOption] = useState(false);
+  const [email, setEmail] = useState<string>('');
+  const [google2faOption, setGoogle2faOption] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,10 +26,17 @@ const UpDateMyInfo = () => {
       avatar,
       email,
       google2faOption,
-    }).then((res) => {
-      alert(res.data);
+    }).then(() => {
+      alert('수정 성공');
+      setNickname('');
+      setAvatar('');
+      setEmail('');
+      setGoogle2faOption(false);
+      localStorage.removeItem('user');
+      location.href = '/';
     }).catch((err) => {
-      alert(err.response.data);
+      console.error(err);
+      alert(err.response.data.message);
     });
   };  
 
