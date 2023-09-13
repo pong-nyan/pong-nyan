@@ -1,6 +1,7 @@
 import Friends from "@/friends/components/Friends";
 import NavButtonWrapper from "@/chat/components/NavButtonWrapper";
 import { useRouter } from "next/router";
+import PlusButton from "@/_components/PlusButton";
 
 const FriendsPage = () => {
   const router = useRouter();
@@ -9,6 +10,7 @@ const FriendsPage = () => {
   return (
     <div>
       <Friends />
+      <PlusButton alt='add friend' herf='/friend/manage' />
       <NavButtonWrapper />
     </div>
   );
