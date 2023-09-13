@@ -69,39 +69,39 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     }
   }, [chatNamespace, channelId]);
 
-  useEffect(() => {
-    console.log('[Chat] 접속해있는 URL의 channelId가 바뀔때마다 채널 정보를 서버에 요청함');
-    if (channelId) {
-      chatNamespace.on('chat-response-channel-info', (response) => {
-        console.log('[Chat] chat-response-channel-info 받음', response);
-        if (response.error) {
-          alert(response.error);
-        } else {
-          setChannel(response.channel);
-        }
-      });
+  // useEffect(() => {
+  //   console.log('[Chat] 접속해있는 URL의 channelId가 바뀔때마다 채널 정보를 서버에 요청함');
+  //   if (channelId) {
+  //     chatNamespace.on('chat-response-channel-info', (response) => {
+  //       console.log('[Chat] chat-response-channel-info 받음', response);
+  //       if (response.error) {
+  //         alert(response.error);
+  //       } else {
+  //         setChannel(response.channel);
+  //       }
+  //     });
 
-      return () => {
-        chatNamespace.off('chat-response-channel-info');
-      };
-    }
-  }, [chatNamespace, channel, channelId]);
+  //     return () => {
+  //       chatNamespace.off('chat-response-channel-info');
+  //     };
+  //   }
+  // }, [chatNamespace, channel, channelId]);
 
   useEffect(() => {
     console.log('[Chat] 채널 정보를 서버에 다시 요청함');
+    chatNamespace.on('chat-response-channel-info', (response) => {
+      if (response.error) {
+        alert(response.error);
+      } else {
+        setChannel(response.channel);
+      }
+    });
     if (channelId) {
       chatNamespace.emit('chat-request-channel-info', { channelId });
-      chatNamespace.on('chat-response-channel-info', (response) => {
-        if (response.error) {
-          alert(response.error);
-        } else {
-          setChannel(response.channel);
-        }
-      });
-      return () => {
-        chatNamespace.off('chat-response-channel-info');
-      };
     }
+    return () => {
+      chatNamespace.off('chat-response-channel-info');
+    };
   }, [chatNamespace, channelId]);
 
   useEffect(() => {
@@ -120,8 +120,8 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   useEffect(() => {
     // emit에 성공한 후 채널정보를 화면에 동기화 시키고 메시지를 alert로 출력합니다.
     chatNamespace.on('chat-finish-message', (finishMessage) => {
-      chatNamespace.emit('chat-request-channel-info', { channelId });
       alert(finishMessage);
+      chatNamespace.emit('chat-request-channel-info', { channelId });
     });
     // emit에 실패한 후 에러메시지를 alert로 출력합니다.
     chatNamespace.on('chat-catch-error-message', (errorMessage) => {
