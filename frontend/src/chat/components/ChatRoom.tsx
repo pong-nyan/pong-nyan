@@ -61,6 +61,21 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     }
   };
 
+  const kickUser = (targetUser: IntraId) => {
+    // kick 로직 구현
+    chatNamespace.emit('chat-kick-user', { channelId, user: targetUser });
+  };
+
+  const banUser = (targetUser: IntraId) => {
+    // ban 로직 구현
+    chatNamespace.emit('chat-ban-user', { channelId, user: targetUser });
+  };
+
+  const muteUser = (targetUser: IntraId) => {
+    // mute 로직 구현
+    chatNamespace.emit('chat-mute-user', { channelId, user: targetUser });
+  };
+
   useEffect(() => {
     console.log('[Chat] 처음 접속시 localStorage에서 메시지 불러옴');
     const loadedMessages = getMessagesFromLocalStorage(channelId as string);
@@ -122,6 +137,14 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     };
   }, [chatNamespace]);
 
+  useEffect(() => {
+    chatNamespace.on('chat-kicked-from-channel', (receivedChannelId) => {
+      alert('강퇴당했습니다.');
+      chatNamespace.emit('chat-leave-channel', receivedChannelId);
+      onLeaveChannel();
+    });
+  }, [chatNamespace]);
+
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', height: '100%', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
@@ -156,6 +179,13 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
             {channel?.userList.map(user => (
               <li key={user}>
                 {user}
+                {(channel?.owner === JSON.parse(localStorage.getItem('user') || '{}').intraId || channel?.administrator.includes(JSON.parse(localStorage.getItem('user') || '{}').intraId)) && (
+                  <>
+                    <button onClick={() => kickUser(user)}>Kick</button>
+                    <button onClick={() => banUser(user)}>Ban</button>
+                    <button onClick={() => muteUser(user)}>Mute</button>
+                  </>
+                )}
                 <button onClick={() => makeAdministrator(user)}>Make Administrator</button>
               </li>
             ))}
