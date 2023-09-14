@@ -151,11 +151,7 @@ export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engin
 
     nickname == disconnectNickname ? alert('비정상적인 행동을 감지했습니다.') 
       : alert(`${disconnectNickname}이(가) 나갔습니다.`);
-    if (disconnectNickname === gameInfo.nickname.p1) {
-      setScore((prevScore: { p1: Score, p2: Score }) => { return { p1: prevScore.p1, p2: prevScore.p2 + 1}; });
-    } else if (disconnectNickname === gameInfo.nickname.p2) {
-      setScore((prevScore: { p1: Score, p2: Score }) => { return { p1: prevScore.p1 + 1, p2: prevScore.p2 }; });
-    }
+    setScore({ p1: gameInfo.score.p1, p2: gameInfo.score.p2 });
     setNickname({ p1: gameInfo.nickname.p1, p2: gameInfo.nickname.p2 });
     setGameStatus(GameStatus.End);
   });
