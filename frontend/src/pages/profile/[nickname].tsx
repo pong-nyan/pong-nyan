@@ -39,8 +39,8 @@ const ProfilePage = () => {
       <h1 className={styles.title}>Profile Page</h1>
       <Matching nickname={nickname as string} />
       <Profile nickname={nickname as string} />
-      <NavButtonWrapper />
       <RequestFriendInProfile nickname={nickname as string} />
+      <NavButtonWrapper />
     </div>
   );
 };
