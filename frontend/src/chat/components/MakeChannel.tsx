@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { SocketContext } from '@/context/socket';
 import { ChannelType } from '@/type/chatType';
 import Modal from '@/chat/components/Modal';
+import { sha256 } from 'js-sha256';
 
 // 채널 생성 컴포넌트
 const MakeChannel = ({ isOpen, onClose }) => {
@@ -30,7 +31,6 @@ const MakeChannel = ({ isOpen, onClose }) => {
 
     if (channelType === 'protected') {
       const passwordPattern = /^[a-zA-Z0-9]{4,8}$/;
-
       if (!passwordPattern.test(channelPassword)) {
         alert('비밀번호는 4글자 이상 8글자 이하의 알파벳과 숫자만 포함해야 합니다.');
         return;
@@ -39,7 +39,7 @@ const MakeChannel = ({ isOpen, onClose }) => {
 
     const channelInfo = {
       title: channelTitle,
-      password: channelType === 'protected' ? channelPassword : '',
+      password: channelType === 'protected' ? sha256(channelPassword): '',
       channelType,
       maxUsers: channelMaxUsers,
     };

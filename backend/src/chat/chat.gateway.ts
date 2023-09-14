@@ -28,9 +28,6 @@ export class ChatGateway {
 
   @SubscribeMessage('chat-channel-make')
   handleMakeChannel(@ConnectedSocket() client: Socket, @MessageBody() channelInfo: ChannelInfo, @PnJwtPayload() payload: PnPayloadDto) {
-    if (channelInfo.password) {
-      channelInfo.password = sha256(channelInfo.password);
-    }
     const channelId = this.chatService.addChannel(channelInfo, client, payload.intraId);
     this.userService.setUserInfoChatRoomList(payload.intraId, channelId);
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
@@ -45,6 +42,10 @@ export class ChatGateway {
     console.log('chat-join-channel, channel', channel);
     if (!channel) {
       client.emit('chat-join-error', '채널이 존재하지 않습니다.');
+      return ;
+    }
+
+    if (channel.userList.includes(payload.intraId)) {
       return ;
     }
     if (channel.maxUsers < channel.userList.length) {
@@ -64,6 +65,7 @@ export class ChatGateway {
     }
     client.join(payloadEmit.channelId);
     this.chatService.joinChannel(payloadEmit.channelId, payload.intraId);
+
     if (!this.syncAfterChannelChange(channel)) return ;
   }
 
