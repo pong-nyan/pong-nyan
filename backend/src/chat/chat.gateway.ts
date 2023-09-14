@@ -7,7 +7,6 @@ import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
 import { PnJwtPayload, PnPayloadDto } from 'src/dto/pnPayload.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user.service';
-import { sha256 } from 'js-sha256';
 import { IntraId } from 'src/type/userType';
 
 @WebSocketGateway({
@@ -45,31 +44,31 @@ export class ChatGateway {
     console.log('chat-join-channel, payload', payloadEmit);
     console.log('chat-join-channel, channel', channel);
     if (!channel) {
-      client.emit('chat-join-error', '채널이 존재하지 않습니다.');
+      this.server.to(userInfo.client.chat.id).emit('chat-join-error', '채널이 존재하지 않습니다.');
       return ;
     }
 
     if (channel.userList.includes(pnPayload.intraId)) {
       return ;
     }
+    console.log('chat-join-channel, channel', channel);
     if (channel.maxUsers < channel.userList.length) {
-      client.emit('chat-join-error', '채널이 가득 찼습니다.');
+      this.server.to(userInfo.client.chat.id).emit('chat-join-error', '채널이 가득 찼습니다.');
       return ;
     }
     if (channel.channelType === 'private') {
       if (!channel.invitedUsers.includes(pnPayload.intraId)) {
-        client.emit('chat-join-error', '이 채널에는 초대받지 않은 사용자는 접속할 수 없습니다.');
+        this.server.to(userInfo.client.chat.id).emit('chat-join-error', '이 채널에는 초대받지 않은 사용자는 접속할 수 없습니다.');
         return;
       }
     } else if (channel.channelType === 'protected') {
       if (channel.password !== payloadEmit.password) {
-        client.emit('chat-join-error', '비밀번호가 잘못되었습니다.');
+        this.server.to(userInfo.client.chat.id).emit('chat-join-error', '비밀번호가 잘못되었습니다.');
         return ;
       }
     }
     client.join(payloadEmit.channelId);
     this.chatService.joinChannel(payloadEmit.channelId, pnPayload.intraId);
-
     if (!this.syncAfterChannelChange(channel)) return ;
   }
 
@@ -136,18 +135,20 @@ export class ChatGateway {
     const grantedUserId = payloadEmit.user;
     if (!channel) return;
     // owner만 임명 가능
+    // this.server.to(userInfo.client.chat.id).emit();
     if (channel.owner !== pnPayload.intraId) {
-      client.emit('chat-catch-error-message', '관리자 임명 권한이 없습니다.');
+      userInfo.client.chat.emit;
+      this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', '관리자 임명 권한이 없습니다.');
       return ;
     }
     // 이미 administrator인 경우
     if (channel.administrator.includes(grantedUserId)) {
-      client.emit('chat-catch-error-message', '이미 관리자입니다.');
+      this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', '이미 관리자입니다.');
       return ;
     }
     this.chatService.grantAdministrator(payloadEmit.channelId, grantedUserId);
     if (!this.syncAfterChannelChange(channel)) return ;
-    client.emit('chat-finish-message', '관리자 임명에 성공했습니다.');
+    this.server.to(userInfo.client.chat.id).emit('chat-finish-message', '관리자 임명에 성공했습니다.');
   }
 
   @SubscribeMessage('chat-delete-administrator')
@@ -160,17 +161,17 @@ export class ChatGateway {
     if (!channel) return;
     // owner만 삭제 가능
     if (channel.owner !== pnPayload.intraId) {
-      client.emit('chat-catch-error-message', '관리자 삭제 권한이 없습니다.');
+      this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', '관리자 삭제 권한이 없습니다.');
       return ;
     }
     // administrator가 아닌 경우
     if (!channel.administrator.includes(deletedUserId)) {
-      client.emit('chat-catch-error-message', '관리자가 아닙니다.');
+      this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', '관리자가 아닙니다.');
       return ;
     }
     this.chatService.deleteAdministrator(payloadEmit.channelId, deletedUserId);
     if (!this.syncAfterChannelChange(channel)) return ;
-    client.emit('chat-delete-administrator-finish', '관리자 삭제에 성공했습니다.');
+    this.server.to(userInfo.client.chat.id).emit('chat-delete-administrator-finish', '관리자 삭제에 성공했습니다.');
   }
 
   @SubscribeMessage('chat-change-password')
@@ -182,16 +183,16 @@ export class ChatGateway {
     if (!channel) return;
     // owner만 변경 가능
     if (channel.owner !== pnPayload.intraId) {
-      client.emit('chat-catch-error-message', '비밀번호 변경 권한이 없습니다.');
+      this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', '비밀번호 변경 권한이 없습니다.');
       return ;
     }
     channel.password = payloadEmit.password;
     channel.channelType = 'protected';
     if (!this.syncAfterChannelChange(channel)) return ;
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
-    client.emit('chat-update-channel-list', updatedChannelList);
+    this.server.to(userInfo.client.chat.id).emit('chat-update-channel-list', updatedChannelList);
 
-    client.emit('chat-finish-message', '비밀번호 변경에 성공했습니다.');
+    this.server.to(userInfo.client.chat.id).emit('chat-finish-message', '비밀번호 변경에 성공했습니다.');
   }
 
   @SubscribeMessage('chat-remove-password')
@@ -203,16 +204,17 @@ export class ChatGateway {
     if (!channel) return;
     // owner만 비번 제거 가능
     if (channel.owner !== pnPayload.intraId) {
-      client.emit('chat-catch-error-message', '비밀번호 제거 권한이 없습니다.');
+      this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', '비밀번호 제거 권한이 없습니다.');
       return ;
     }
     channel.password = '';
     channel.channelType = 'public';
     if (!this.syncAfterChannelChange(channel)) return ;
-    const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
-    client.emit('chat-update-channel-list', updatedChannelList);
 
-    client.emit('chat-finish-message', '비밀번호 제거에 성공했습니다.');
+    const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
+    this.server.to(userInfo.client.chat.id).emit('chat-update-channel-list', updatedChannelList);
+
+    this.server.to(userInfo.client.chat.id).emit('chat-finish-message', '비밀번호 제거에 성공했습니다.');
   }
 
   // 사용자를 강제로 나가게함
@@ -226,16 +228,16 @@ export class ChatGateway {
     if (!channel) return;
     // owner는 강퇴 불가
     if (channel.owner === kickedUserId) {
-      client.emit('chat-catch-error-message', 'owner를 강퇴할 수 없습니다.');
+      this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', 'owner를 강퇴할 수 없습니다.');
       return ;
     }
     if ((channel.owner !== pnPayload.intraId) || (!channel.administrator.includes(pnPayload.intraId))) {
-      client.emit('chat-catch-error-message', '강퇴 권한이 없습니다.');
+      this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', '강퇴 권한이 없습니다.');
       return ;
     }
     const kickedUserSocket = this.userService.getUserInfo(payloadEmit.user);
     kickedUserSocket.client.chat.emit('chat-kicked-from-channel', payloadEmit.channelId);
-    client.emit('chat-finish-message', '강퇴에 성공했습니다.');
+    this.server.to(userInfo.client.chat.id).emit('chat-finish-message', '강퇴에 성공했습니다.');
   }
 
   // 못들어오게 금지
@@ -274,7 +276,6 @@ export class ChatGateway {
     }
 
     console.log('[ChatGateway] have a userInfo', userInfo);
-
     const intraId = this.userService.getIntraId(client.id);
     if (!intraId) return;
 
@@ -284,21 +285,20 @@ export class ChatGateway {
 
     // 사용자가 이전에 접속했던 모든 채팅방에 다시 연결
     for (const room of userChatRooms) {
-        const chatInfo = this.chatService.getChannel(room);
-        if (!chatInfo) continue;
+        let channel = this.chatService.getChannel(room);
+        if (!channel) continue;
         client.join(room);
         console.log('[ChatGateway] reconnected to room', room);
         // TODO: 이거 제대로 반영될지 확인해보기
-        const channel = this.chatService.getChannel(room);
+        channel = this.chatService.getChannel(room);
         if (!this.syncAfterChannelChange(channel)) return ;
     }
-
-
-    /*--------------------------------임시선-------------------------------------------*/
-
-
   }
 
+  /*--------------------------------임시선-------------------------------------------*/
+
+
+  // channel내부 정보가 바뀌었을때 프론트에 emit을 보내서 동기화
   syncAfterChannelChange(channel:Channel) {
     console.log('syncAfterChannelChange');
     if (!channel) return false;

@@ -17,14 +17,14 @@ export type Channel = ChannelInfo & {
   id: string,
   owner: IntraId,
   administrator: IntraId[],
-  userList: IntraId[]
+  userList: IntraId[],
   invitedUsers: IntraId[]
 }
 
 export type ChannelInfo = {
   title: string,
   password?: string,
-  channelType: 'public' | 'private' | 'protected',
+  channelType: ChannelType,
   maxUsers: number,
 }
 
