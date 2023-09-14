@@ -114,7 +114,7 @@ export class ChatGateway {
     const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
     if (!userInfo) return ;
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
-    client.emit('chat-update-channel-list', updatedChannelList);
+    userInfo.client.chat.emit('chat-update-channel-list', updatedChannelList);
   }
 
   @SubscribeMessage('chat-watch-new-message')
@@ -292,6 +292,11 @@ export class ChatGateway {
         const channel = this.chatService.getChannel(room);
         if (!this.syncAfterChannelChange(channel)) return ;
     }
+
+
+    /*--------------------------------임시선-------------------------------------------*/
+
+
   }
 
   syncAfterChannelChange(channel:Channel) {
