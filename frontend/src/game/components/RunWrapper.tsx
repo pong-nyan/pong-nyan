@@ -21,7 +21,6 @@ const RunWrapper = ({ gameStatus, setGameStatus, playerNumber, opponentId, score
     socketOnGameEnd(setScore, setNickname, setGameStatus);
   }, [setScore, setGameStatus, setNickname]);
 
-
   switch (gameStatus) {
   case GameStatus.RankPnRun:
   case GameStatus.NormalPnRun:
