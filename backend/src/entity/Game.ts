@@ -1,7 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
 import { GameInfo } from 'src/type/gameType';
 import { User } from './User';
-import { GameInfo } from 'src/type/gameType';
 
 @Entity()
 export class Game {
