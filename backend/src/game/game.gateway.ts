@@ -146,10 +146,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!userInfo || userInfo.gameRoom === '') return ;
 
     const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
-    console.log('gameInfo', gameInfo);
     if (!gameInfo) return ;
 
+    console.log('WTF payload', payload);
     if (this.gameService.isReadyScoreCheck(gameInfo, payload.playerNumber, payload.score)) {
+      console.log("WTF gameInfo", gameInfo.waitList[0].score, gameInfo.waitList[1].score);
       const [ winnerNickname, winnerId, loserId ] = this.gameService.checkCorrectScoreWhoWinnerEnd(gameInfo);
       console.log('INFO: 승자 발견', winnerNickname);
       gameInfo.score = !winnerNickname ? gameInfo.score : gameInfo.waitList[0].score;
@@ -166,6 +167,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         console.log('[GameGateway] After deleteGameRoom', roomName, this.gameService.getGameInfo(roomName));
         this.gameService.deleteGameRoom(roomName);
       }
+      gameInfo.waitList = [];
     }
   }
 
