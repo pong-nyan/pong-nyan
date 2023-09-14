@@ -59,6 +59,29 @@ export class ChatService {
     }
   }
 
+  deleteChannel(channelId: string) {
+    return this.channelMap.delete(channelId);
+  }
+
+  deleteAdministrator(channelId: string, userId: number) {
+    const channel = this.channelMap.get(channelId);
+    if (channel) {
+      const index = channel.administrator.indexOf(userId);
+      if (index > -1) {
+        channel.administrator.splice(index, 1);
+      }
+    }
+    return channel;
+  }
+
+  grantAdministrator(channelId: string, userId: number) {
+    const channel = this.channelMap.get(channelId);
+    if (channel) {
+      channel.administrator.push(userId);
+    }
+    return channel;
+  }
+
   getChannelUsers(channelId: ChannelId): IntraId[] {
     const channel = this.channelMap.get(channelId);
     return channel ? channel.userList : [];
@@ -76,26 +99,4 @@ export class ChatService {
     return this.channelMap.get(channelId);
   }
 
-  deleteChannel(channelId: string) {
-    return this.channelMap.delete(channelId);
-  }
-
-  grantAdministrator(channelId: string, userId: number) {
-    const channel = this.channelMap.get(channelId);
-    if (channel) {
-      channel.administrator.push(userId);
-    }
-    return channel;
-  }
-
-  deleteAdministrator(channelId: string, userId: number) {
-    const channel = this.channelMap.get(channelId);
-    if (channel) {
-      const index = channel.administrator.indexOf(userId);
-      if (index > -1) {
-        channel.administrator.splice(index, 1);
-      }
-    }
-    return channel;
-  }
 }

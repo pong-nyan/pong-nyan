@@ -191,6 +191,38 @@ export class ChatGateway {
     client.emit('chat-finish-message', '비밀번호 제거에 성공했습니다.');
   }
 
+  // 사용자를 강제로 나가게함
+  @SubscribeMessage('chat-kick-user')
+  handleKickUser(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, user: IntraId }, @PnJwtPayload() payload: PnPayloadDto) {
+    const channel = this.chatService.getChannel(payloadEmit.channelId);
+    const kickedUserId = payloadEmit.user;
+    if (!channel) return;
+    // owner는 강퇴 불가
+    if (channel.owner === kickedUserId) {
+      client.emit('chat-catch-error-message', 'owner를 강퇴할 수 없습니다.');
+      return ;
+    }
+    if ((channel.owner !== payload.intraId) || (!channel.administrator.includes(payload.intraId))) {
+      client.emit('chat-catch-error-message', '강퇴 권한이 없습니다.');
+      return ;
+    }
+    const kickedUserSocket = this.userService.getUserInfo(payloadEmit.user);
+    kickedUserSocket.client.chat.emit('chat-kicked-from-channel', payloadEmit.channelId);
+    client.emit('chat-finish-message', '강퇴에 성공했습니다.');
+  }
+
+  // 못들어오게 금지
+  // @SubscribeMessage('chat-ban-user')
+  // handleBanUser(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, user: IntraId }, @PnJwtPayload() payload: PnPayloadDto) {
+
+  // }
+
+  // // 일정시간음소거
+  // @SubscribeMessage('chat-mute-user')
+  // handleMuteUser(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, user: IntraId }, @PnJwtPayload() payload: PnPayloadDto) {
+
+  // }
+
   async handleConnection(@ConnectedSocket() client: Socket) {
     console.log('[ChatGateway] handleConnection', client.id);
 
