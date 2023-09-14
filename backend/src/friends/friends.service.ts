@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { on } from 'events';
 import Friend from 'src/entity/Friend';
 import FriendStatus from 'src/entity/FriendStatus';
 import { User } from 'src/entity/User';
@@ -86,7 +85,7 @@ export class FriendsService {
         onlyFriends.forEach(friend => {
             friend.socketInfo = this.userService.getUserInfo(friend.intraId);
         });
-        // console.log(onlyFriends);
+        console.log("only friends",onlyFriends);
         return onlyFriends;
     }
 
