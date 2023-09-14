@@ -18,8 +18,7 @@ const RequestFriendInProfile = ({ nickname }: { nickname: string }) => {
       alert(`${nickname}에게 친구요청을 성공했습니다.`);
     }).
       catch((error) => {
-        alert(`${nickname}에게 친구요청을 실패했습니다.`);
-        console.error(error);
+        alert(`${error.response.data.message} 를 이유로 친구요청을 실패했습니다.`);
       }
       );
   };
