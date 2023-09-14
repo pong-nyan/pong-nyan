@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Repository } from 'typeorm';
 import { Socket, RoomName, SocketId } from 'src/type/socketType';
 import { BallInfo, GameInfo, QueueInfo, PlayerNumber, GameStatus, MatchingQueue } from 'src/type/gameType';
-import { IntraId, UserInfo } from 'src/type/userType';
+import { IntraId, UserInfo, Nickname } from 'src/type/userType';
 import { User } from 'src/entity/User';
 import { UserService } from 'src/user.service';
 
@@ -49,7 +49,7 @@ export class GameService {
           position: { x: 0, y: 0 },
           velocity: { x: 0, y: 0 },
         },
-      }
+      };
       const player1Id = player1.client.id;
       const player2Id = player2.client.id;
       this.gameMap.set(roomName, gameInfo);
@@ -93,7 +93,6 @@ export class GameService {
     return [ undefined, undefined, undefined ];
   }
 
-
   public getGameRoom(client: Socket) {
     //refactor: for문을 사용하지 않고 찾는 방법
     let roomName = '';
@@ -122,12 +121,18 @@ export class GameService {
     return true;
   }
 
-  public checkCorrectScoreWhoWinner(gameInfo: GameInfo) {
+  public checkCorrectScoreWhoWinnerEnd(gameInfo: GameInfo): [ Nickname, IntraId, IntraId ] | [undefined, undefined, undefined] {
     console.log('INFO: 점수 체크 준비 완료', gameInfo.waitList);
     if ((gameInfo.waitList[0].score.p1 !== gameInfo.waitList[1].score.p1)
-      || (gameInfo.waitList[0].score.p2 !== gameInfo.waitList[1].score.p2)) { return ''; }
-    return gameInfo.waitList[0].score.p1 - gameInfo.score.p1 === 1 ? gameInfo.nickname.p1
-      : gameInfo.waitList[0].score.p2 - gameInfo.score.p2 === 1 ? gameInfo.nickname.p2 : '';
+      || (gameInfo.waitList[0].score.p2 !== gameInfo.waitList[1].score.p2)) {
+      return [ undefined, undefined, undefined ];
+    }
+    if (gameInfo.waitList[0].score.p1 - gameInfo.score.p1 === 1) {
+      return [ gameInfo.nickname.p1, gameInfo.intraId.p1, gameInfo.intraId.p2 ];
+    } else if (gameInfo.waitList[0].score.p2 - gameInfo.score.p2 === 1) {
+      return [ gameInfo.nickname.p2, gameInfo.intraId.p2, gameInfo.intraId.p1 ];
+    }
+    return [ undefined, undefined, undefined ];
   }
 
   public reconcilateBallInfo(roomName: RoomName, ballInfo: BallInfo) : BallInfo | undefined {
@@ -157,13 +162,16 @@ export class GameService {
     console.log('after remove matchingQueue', this.matchingQueueList);
   }
 
-  public async addGameInfo(winner: number, loser: number, gameMode: number, rankScore: number, gameInfo: JSON) {
-    if (!winner || !loser) return;
-    const winnerUser = await this.userRepository.findOne( { where: { intraId: winner } });
-    const loserUser = await this.userRepository.findOne({ where: { intraId: loser } });
+  public async addGameInfo(winnerId: IntraId, loserId: IntraId, gameStatus: GameStatus, rankScore: number, gameInfo: GameInfo) {
+    if (!winnerId || !loserId) return;
+    const winnerUser = await this.userRepository.findOne( { where: { intraId: winnerId } });
+    const loserUser = await this.userRepository.findOne({ where: { intraId: loserId } });
     if (!winnerUser || !loserUser) return;
-    winnerUser.rankScore += rankScore;
-    loserUser.rankScore -= rankScore;
+    const gameMode = (gameStatus === GameStatus.RankPnRun || gameStatus === GameStatus.RankOriginRun) ? 1 : 0;
+    if (gameMode) {
+      winnerUser.rankScore += rankScore;
+      loserUser.rankScore -= rankScore;
+    }
     await this.userRepository.save(winnerUser);
     await this.userRepository.save(loserUser);
     await this.gameRepository.save({ winner: winnerUser, loser: loserUser, gameMode, rankScore, gameInfo });
@@ -190,6 +198,16 @@ export class GameService {
     }
     return undefined;
   }
+
+  public getWinnerLoserIdDisconnect(clientId: SocketId, gameInfo: GameInfo, )
+      : [ IntraId, IntraId ] | [ undefined, undefined ] {
+      const loserId = (clientId === gameInfo.clientId.p1) ? gameInfo.intraId.p1
+                  : (clientId === gameInfo.clientId.p2) ? gameInfo.intraId.p2 : undefined;
+    if (!loserId) return [ undefined, undefined ];
+    const winnerId = (loserId === gameInfo.intraId.p1) ? gameInfo.intraId.p2 : gameInfo.intraId.p1;
+    return [ winnerId, loserId ];
+  }
+
 
   public deleteGameRoom(roomName: RoomName) {
     this.gameMap.delete(roomName);
