@@ -6,6 +6,7 @@ import { FriendProps} from '@/type/friendType';
 const Friend = (friendInfo: FriendProps) => {
   const redirection = `/profile/${friendInfo.nickname}`;
   
+  console.log(friendInfo.socketInfo);
   let styleColor = { color : 'gray' } ;
   if (!friendInfo.socketInfo || !friendInfo.socketInfo.online ) {
     styleColor = { color: 'gray' };

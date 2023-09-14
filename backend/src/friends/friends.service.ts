@@ -83,7 +83,8 @@ export class FriendsService {
             }
         });
         onlyFriends.forEach(friend => {
-            friend.socketInfo = this.userService.getUserInfo(friend.intraId);
+            const temp = this.userService.getUserInfo(friend.intraId);
+            friend.socketInfo = { gameRoom: temp?.gameRoom, online: temp?.online, nickname: temp?.nickname };
         });
         console.log("only friends",onlyFriends);
         return onlyFriends;
