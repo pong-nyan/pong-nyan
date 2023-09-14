@@ -101,7 +101,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const [ roomName, player1Id, player2Id ] = this.gameService.friendMatch(client, payload.gameStatus - 1, pnPayload.intraId, pnPayload.nickname, payload.friendNickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;
-    this.server.to(roomName).emit('game-friendStart', {player1Id, player2Id});
+    this.server.to(roomName).emit('game-start', { roomName, player1Id, player2Id, gameStatus: GameStatus.NormalPnRun });
   }
 
   @SubscribeMessage('game-start')
@@ -148,9 +148,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
     if (!gameInfo) return ;
 
-    console.log('WTF payload', payload);
     if (this.gameService.isReadyScoreCheck(gameInfo, payload.playerNumber, payload.score)) {
-      console.log("WTF gameInfo", gameInfo.waitList[0].score, gameInfo.waitList[1].score);
       const [ winnerNickname, winnerId, loserId ] = this.gameService.checkCorrectScoreWhoWinnerEnd(gameInfo);
       console.log('INFO: 승자 발견', winnerNickname);
       gameInfo.score = !winnerNickname ? gameInfo.score : gameInfo.waitList[0].score;
