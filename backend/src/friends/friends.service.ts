@@ -76,17 +76,18 @@ export class FriendsService {
             return newFriend.friendStatuses[0].status === 'accepted';
         });
         const onlyFriends : any = refineFriends.map(friend => {
-            if (friend.requestUser.id === user.id) {
+            if (friend?.requestUser?.id === user.id) {
                 return friend.addressUser;
             } else {
                 return friend.requestUser;
             }
         });
-        onlyFriends.forEach(friend => {
+        const filteredFriends = onlyFriends.filter(friend => friend);
+        filteredFriends.forEach(friend => {
             const temp = this.userService.getUserInfo(friend.intraId);
             friend.socketInfo = { gameRoom: temp?.gameRoom, online: temp?.online, nickname: temp?.nickname };
         });
-        return onlyFriends;
+        return filteredFriends;
     }
 
     async getPendingFriends(intraId: number): Promise<Friend[]> {
