@@ -66,7 +66,7 @@ export class AuthService {
     user.rankScore = rankScore;
     user.email = email;
     const existUser = this.userRepository.findOne({ where: { intraId: intraId } });
-    if (existUser) return await this.userRepository.update({ intraId: intraId }, user);
+    if (!existUser) return await this.userRepository.update({ intraId: intraId }, user);
     else return await this.userRepository.save(user);
   }
 

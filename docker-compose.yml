@@ -18,6 +18,7 @@ services:
       - ./secrets:/usr/src/secrets
     networks:
       - pongnyan
+    restart: always
 
   nginx:
     container_name: nginx
@@ -31,6 +32,7 @@ services:
       - nextjs
     networks:
       - pongnyan
+    restart: always
 
   nestjs:
     container_name: PN-backend
@@ -43,6 +45,7 @@ services:
       - ./secrets:/usr/src/secrets
     networks:
       - pongnyan
+    restart: always
 
   postgres:
     container_name: PN-database

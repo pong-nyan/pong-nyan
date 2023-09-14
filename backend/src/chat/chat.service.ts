@@ -49,10 +49,37 @@ export class ChatService {
     const channel = this.channelMap.get(channelId);
     if (channel) {
       const index = channel.userList.indexOf(userId);
+      const index2 = channel.administrator.indexOf(userId);
       if (index > -1) {
         channel.userList.splice(index, 1);
       }
+      if (index2 > -1) {
+        channel.administrator.splice(index2, 1);
+      }
     }
+  }
+
+  deleteChannel(channelId: string) {
+    return this.channelMap.delete(channelId);
+  }
+
+  deleteAdministrator(channelId: string, userId: number) {
+    const channel = this.channelMap.get(channelId);
+    if (channel) {
+      const index = channel.administrator.indexOf(userId);
+      if (index > -1) {
+        channel.administrator.splice(index, 1);
+      }
+    }
+    return channel;
+  }
+
+  grantAdministrator(channelId: string, userId: number) {
+    const channel = this.channelMap.get(channelId);
+    if (channel) {
+      channel.administrator.push(userId);
+    }
+    return channel;
   }
 
   getChannelUsers(channelId: ChannelId): IntraId[] {
@@ -70,18 +97,6 @@ export class ChatService {
 
   getChannel(channelId: string) {
     return this.channelMap.get(channelId);
-  }
-
-  deleteChannel(channelId: string) {
-    return this.channelMap.delete(channelId);
-  }
-
-  grantAdministrator(channelId: string, userId: number) {
-    const channel = this.channelMap.get(channelId);
-    if (channel) {
-      channel.administrator.push(userId);
-    }
-    return channel;
   }
 
 }

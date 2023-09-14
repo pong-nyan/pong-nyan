@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from 'typeorm';
+import { GameInfo } from 'src/type/gameType';
 import { User } from './User';
 
 @Entity()
@@ -17,7 +18,7 @@ export class Game {
     gameMode: number;
 
     @Column({ type: 'jsonb' })
-    gameInfo: JSON;
+    gameInfo: GameInfo;
 
     @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
     createdAt: Date;

@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { on } from 'events';
 import Friend from 'src/entity/Friend';
 import FriendStatus from 'src/entity/FriendStatus';
 import { User } from 'src/entity/User';
@@ -84,9 +83,9 @@ export class FriendsService {
             }
         });
         onlyFriends.forEach(friend => {
-            friend.socketInfo = this.userService.getUserInfo(friend.intraId);
+            const temp = this.userService.getUserInfo(friend.intraId);
+            friend.socketInfo = { gameRoom: temp?.gameRoom, online: temp?.online, nickname: temp?.nickname };
         });
-        // console.log(onlyFriends);
         return onlyFriends;
     }
 
@@ -137,8 +136,8 @@ export class FriendsService {
     async addFriendByNickname(intraId: number, friendNickname: string): Promise<Friend> {
         const user = await this.userRepository.findOne({ where: { intraId } });
         const friend = await this.userRepository.findOne({ where: { nickname: friendNickname } });
-        if (!friend) throw new Error('No friend found');
-        if (!user) throw new Error('No User found');
+        if (!friend) throw new HttpException('No friend found', HttpStatus.NOT_FOUND);
+        if (!user) throw new HttpException('No user found', HttpStatus.NOT_FOUND);
         const newFriend = await this.friendRepository.create({ requestUser: user, addressUser: friend });
         await this.friendRepository.save(newFriend);
         const newFriendStatus = this.friendStatusRepository.create({ friend: newFriend, specificUser: user });

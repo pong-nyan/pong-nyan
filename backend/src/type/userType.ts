@@ -4,6 +4,7 @@ import { Socket, SocketId, RoomName } from './socketType';
 * shared between frontend and backend
 * below type
 */
+export type Nickname = string;
 
 export type IntraId = number;
 

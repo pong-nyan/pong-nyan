@@ -124,7 +124,7 @@ export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, score: { p1
  * @returns
  */
 export const socketOnGameScoreEvent = (sceneSize: CanvasSize, engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<{p1: Score, p2: Score}>>) => {
-  gameNamespace.on('game-score', ( { realScore, winnerNickname } : { realScore: Score, winnerNickname: string }) => {
+  gameNamespace.on('game-score', ( { realScore, winnerNickname } : { realScore: { p1: Score, p2: Score }, winnerNickname: string }) => {
     if (!engine || !engine.world || !runner ) return;
     if (realScore.p1 === 0 && realScore.p2 === 0) {
       resumeGame(sceneSize, engine, 5, '게임 시작!');
@@ -151,11 +151,7 @@ export const socketOnGameDisconnectEvent = (sceneSize: CanvasSize, engine: Engin
 
     nickname == disconnectNickname ? alert('비정상적인 행동을 감지했습니다.') 
       : alert(`${disconnectNickname}이(가) 나갔습니다.`);
-    if (disconnectNickname === gameInfo.nickname.p1) {
-      setScore((prevScore: { p1: Score, p2: Score }) => { return { p1: prevScore.p1, p2: prevScore.p2 + 1}; });
-    } else if (disconnectNickname === gameInfo.nickname.p2) {
-      setScore((prevScore: { p1: Score, p2: Score }) => { return { p1: prevScore.p1 + 1, p2: prevScore.p2 }; });
-    }
+    setScore({ p1: gameInfo.score.p1, p2: gameInfo.score.p2 });
     setNickname({ p1: gameInfo.nickname.p1, p2: gameInfo.nickname.p2 });
     setGameStatus(GameStatus.End);
   });

@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState, useEffect } from 'react';
-import { PlayerNumber, GameStatus } from '@/type/gameType';
+import { PlayerNumber } from '@/type/gameType';
 import GameStartWrapper from './GameStartWrapper';
 import { socketOnGameStartEvent, socketOnGameLoadingEvent, socketOffGameStartEvent } from '@/context/socketGameEvent';
 import { SocketId } from '@/type/socketType';

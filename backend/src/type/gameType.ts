@@ -1,6 +1,6 @@
 import { RoomName } from './socketType';
 import { Socket, SocketId } from './socketType';
-import { IntraId } from './userType';
+import { IntraId, Nickname } from './userType';
 
 export type CanvasSize = {
   width: number,
@@ -42,7 +42,6 @@ export type BallInfo = {
   velocity: { x: number, y: number }
 }
 
-export type Nickname = string;
 
 export type ClientId = {
   p1: string,
