@@ -7,8 +7,14 @@ import { useGetFriendsData } from '../hooks/useGetFriendsData';
 const Friends = () => {
   const [friends, setFriends] = useState<FriendProps[]>();
   useGetFriendsData(setFriends);
-
-  if (!friends || !friends.length) return (
+  //중복데이터 제거
+  const uniqueFriends = friends?.filter((friend, index, self) =>
+    index === self.findIndex((t) => (
+      t.intraId === friend.intraId
+    ))
+  );
+  
+  if (!uniqueFriends || !friends || !friends.length) return (
     <div>
       <h1 className={styles.profile}>Friends List</h1>
       <div className={styles.profile}>you don't have friends</div>
@@ -19,7 +25,7 @@ const Friends = () => {
     <>
       <h1 className={styles.profile}>Friends List</h1>
       <div className={styles.profile}>
-        {friends.map((friend: FriendProps) => (
+        {uniqueFriends.map((friend: FriendProps) => (
           <Friend key={friend.intraId} {...friend} />
         ))}
       </div>
