@@ -77,6 +77,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const gameInfo = this.gameService.getGameInfo(userInfo.gameRoom);
     if (!gameInfo) return ;
     console.log('[GameGateway] emit gameInfo', client.id);
+
+    const [ winnerId, loserId ] = this.gameService.getWinnerLoserIdDisconnect(client.id, gameInfo);
+    (winnerId === gameInfo.intraId.p1) ? ++gameInfo.score.p1 : ++gameInfo.score.p2;
+    this.gameService.addGameInfo(winnerId, loserId, gameInfo.gameStatus, 24, gameInfo);
     this.server.to(userInfo.gameRoom).emit('game-disconnect', {
       disconnectNickname: userInfo.nickname,
       gameInfo
@@ -104,10 +108,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleStartGame(@ConnectedSocket() client: Socket,
                   @MessageBody() payload: { gameStatus: GameStatus },
                   @PnJwtPayload() pnPayload: PnPayloadDto) {
+    console.log('[Game Gateway] before game-start');
     const userInfo = this.userService.checkGameClient(client.id, pnPayload.intraId);
     if (!userInfo) return ;
+    console.log('[Game Gateway] game-start', userInfo);
 
-    console.log('[Game Gateway] game-start');
     const [ roomName, player1Id, player2Id, gameStatus ] =
       this.gameService.match(client, payload.gameStatus, pnPayload.intraId, pnPayload.nickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
@@ -145,24 +150,22 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (!gameInfo) return ;
 
     if (this.gameService.isReadyScoreCheck(gameInfo, payload.playerNumber, payload.score)) {
-      const winnerNickname = this.gameService.checkCorrectScoreWhoWinner(gameInfo);
+      const [ winnerNickname, winnerId, loserId ] = this.gameService.checkCorrectScoreWhoWinnerEnd(gameInfo);
       console.log('INFO: 승자 발견', winnerNickname);
-      gameInfo.score = winnerNickname === '' ? gameInfo.score : gameInfo.waitList[0].score;
+      gameInfo.score = !winnerNickname ? gameInfo.score : gameInfo.waitList[0].score;
       if (gameInfo.score.p1 < 5 && gameInfo.score.p2 < 5) {
         console.log('INFO: 게임 스코어');
         this.server.to(userInfo.gameRoom).emit('game-score', { realScore: gameInfo.score, winnerNickname });
       }
-      else { /* 5점 이상일 때 */
-        // DB에 저장
+      else {
         console.log('INFO: DB에 저장');
-        if (gameInfo.gameStatus === GameStatus.RankPnRun || gameInfo.gameStatus === GameStatus.RankOriginRun) {
-            // 랭킹에 저장
-            console.log('INFO: 랭킹 업데이트');
-        }
+        this.gameService.addGameInfo(winnerId, loserId, gameInfo.gameStatus, 42, gameInfo);
         this.server.to(userInfo.gameRoom).emit('game-end', { winnerNickname, gameInfo });
+        const roomName = userInfo.gameRoom; // Deep copy
+        this.userService.deleteUserInfoGameRoom(gameInfo);
+        console.log('[GameGateway] After deleteGameRoom', roomName, this.gameService.getGameInfo(roomName));
+        this.gameService.deleteGameRoom(roomName);
       }
-      console.log('[GameGateway] ', gameInfo.score);
-      gameInfo.waitList = [];
     }
   }
 
