@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useRef, KeyboardEvent} from 'react';
 import { Engine, Render, World, Runner } from 'matter-js';
 import { initEngine, initOriginPongWorld} from '@/game/matterEngine/matterJsSet';
-import { moveOriginalPongPlayer, movePaddle, getOwnTarget } from '@/game/matterEngine/player';
+import { moveOriginalPongPlayer, getOwnTarget } from '@/game/matterEngine/player';
 import { eventOnCollisionStart, eventOnCollisionEnd, eventOnBeforeUpdate } from '@/game/matterEngine/matterJsGameEvent';
 import { PlayerNumber, Score, CanvasSize } from '@/type/gameType';
 import { Nickname } from '@/type/userType';
