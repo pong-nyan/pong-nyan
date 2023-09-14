@@ -118,6 +118,7 @@ export class GameService {
     }
     if (gameInfo.waitList.length != 2) return false;
     console.log('INFO: 점수 이상 무 ', playerNumber, score);
+    console.log('INFO: WTF gameInfo', gameInfo.waitList[0].score, gameInfo.waitList[1].score);
     return true;
   }
 

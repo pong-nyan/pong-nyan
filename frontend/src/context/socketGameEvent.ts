@@ -124,7 +124,7 @@ export const socketEmitGameScoreEvent = (playerNumber: PlayerNumber, score: { p1
  * @returns
  */
 export const socketOnGameScoreEvent = (sceneSize: CanvasSize, engine: Engine | undefined, runner: Runner | undefined, setScore: Dispatch<SetStateAction<{p1: Score, p2: Score}>>) => {
-  gameNamespace.on('game-score', ( { realScore, winnerNickname } : { realScore: Score, winnerNickname: string }) => {
+  gameNamespace.on('game-score', ( { realScore, winnerNickname } : { realScore: { p1: Score, p2: Score }, winnerNickname: string }) => {
     if (!engine || !engine.world || !runner ) return;
     if (realScore.p1 === 0 && realScore.p2 === 0) {
       resumeGame(sceneSize, engine, 5, '게임 시작!');
