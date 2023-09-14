@@ -27,16 +27,20 @@ export class ChatGateway {
   fps = 1000 / 60;
 
   @SubscribeMessage('chat-channel-make')
-  handleMakeChannel(@ConnectedSocket() client: Socket, @MessageBody() channelInfo: ChannelInfo, @PnJwtPayload() payload: PnPayloadDto) {
-    const channelId = this.chatService.addChannel(channelInfo, client, payload.intraId);
-    this.userService.setUserInfoChatRoomList(payload.intraId, channelId);
+  handleMakeChannel(@ConnectedSocket() client: Socket, @MessageBody() channelInfo: ChannelInfo, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
+    const channelId = this.chatService.addChannel(channelInfo, client, pnPayload.intraId);
+    this.userService.setUserInfoChatRoomList(pnPayload.intraId, channelId);
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
     this.server.emit('chat-update-channel-list', updatedChannelList);
     console.log('chat-ch-make, updatedChList', updatedChannelList);
   }
 
   @SubscribeMessage('chat-join-channel')
-  handleJoinChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, password?: string }, @PnJwtPayload() payload: PnPayloadDto) {
+  handleJoinChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, password?: string }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
     const channel = this.chatService.getChannel(payloadEmit.channelId);
     console.log('chat-join-channel, payload', payloadEmit);
     console.log('chat-join-channel, channel', channel);
@@ -45,7 +49,7 @@ export class ChatGateway {
       return ;
     }
 
-    if (channel.userList.includes(payload.intraId)) {
+    if (channel.userList.includes(pnPayload.intraId)) {
       return ;
     }
     if (channel.maxUsers < channel.userList.length) {
@@ -53,7 +57,7 @@ export class ChatGateway {
       return ;
     }
     if (channel.channelType === 'private') {
-      if (!channel.invitedUsers.includes(payload.intraId)) {
+      if (!channel.invitedUsers.includes(pnPayload.intraId)) {
         client.emit('chat-join-error', '이 채널에는 초대받지 않은 사용자는 접속할 수 없습니다.');
         return;
       }
@@ -64,20 +68,24 @@ export class ChatGateway {
       }
     }
     client.join(payloadEmit.channelId);
-    this.chatService.joinChannel(payloadEmit.channelId, payload.intraId);
+    this.chatService.joinChannel(payloadEmit.channelId, pnPayload.intraId);
 
     if (!this.syncAfterChannelChange(channel)) return ;
   }
 
   @SubscribeMessage('chat-request-channel-info')
-  handleChannelInfoRequest(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }) {
-      const channel = this.chatService.getChannel(payloadEmit.channelId);
+  handleChannelInfoRequest(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }, @PnJwtPayload() pnPayload: PnPayloadDto ) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
+    const channel = this.chatService.getChannel(payloadEmit.channelId);
       if (!this.syncAfterChannelChange(channel)) return ;
     }
 
   // 메시지 보내기 버튼 누른 직후
   @SubscribeMessage('chat-message-in-channel')
-  handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, message: Message }, @PnJwtPayload() payload: PnPayloadDto) {
+  handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, message: Message }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
     console.log('chat-message-in-channel, payload', payloadEmit);
 
     // 해당 채널에 모두에게 chat-new-message 전송
@@ -85,13 +93,15 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('chat-leave-channel')
-  handleLeaveChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string, @PnJwtPayload() payload: PnPayloadDto) {
-      const channel = this.chatService.getChannel(channelId);
+  handleLeaveChannel(@ConnectedSocket() client: Socket, @MessageBody() channelId: string, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
+    const channel = this.chatService.getChannel(channelId);
       client.leave(channelId);
-      this.chatService.leaveChannel(channelId, payload.intraId);
-      this.userService.deleteUserInfoChatRoomList(payload.intraId, channelId);
+      this.chatService.leaveChannel(channelId, pnPayload.intraId);
+      this.userService.deleteUserInfoChatRoomList(pnPayload.intraId, channelId);
       // 나간사람이 owner이면 채널 삭제
-      if (channel.owner === payload.intraId) {
+      if (channel.owner === pnPayload.intraId) {
         this.chatService.getChannelMap().delete(channelId);
       }
       if (!this.syncAfterChannelChange(channel)) return ;
@@ -100,13 +110,17 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('chat-request-channel-list')
-  handleRequestChannelList(@ConnectedSocket() client: Socket) {
+  handleRequestChannelList(@ConnectedSocket() client: Socket, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
     client.emit('chat-update-channel-list', updatedChannelList);
   }
 
   @SubscribeMessage('chat-watch-new-message')
-  handleSetNewMessage(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }) {
+  handleSetNewMessage(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
     const channel = this.chatService.getChannel(payloadEmit.channelId);
     if (!channel) return;
 
@@ -115,12 +129,14 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('chat-grant-administrator')
-  handleGrantAdministrator(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, user: IntraId }, @PnJwtPayload() payload: PnPayloadDto) {
+  handleGrantAdministrator(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, user: IntraId }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
     const channel = this.chatService.getChannel(payloadEmit.channelId);
     const grantedUserId = payloadEmit.user;
     if (!channel) return;
     // owner만 임명 가능
-    if (channel.owner !== payload.intraId) {
+    if (channel.owner !== pnPayload.intraId) {
       client.emit('chat-catch-error-message', '관리자 임명 권한이 없습니다.');
       return ;
     }
@@ -135,12 +151,15 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('chat-delete-administrator')
-  handleDeleteAdministrator(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, user: IntraId }, @PnJwtPayload() payload: PnPayloadDto) {
+  handleDeleteAdministrator(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, user: IntraId }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
+
     const channel = this.chatService.getChannel(payloadEmit.channelId);
     const deletedUserId = payloadEmit.user;
     if (!channel) return;
     // owner만 삭제 가능
-    if (channel.owner !== payload.intraId) {
+    if (channel.owner !== pnPayload.intraId) {
       client.emit('chat-catch-error-message', '관리자 삭제 권한이 없습니다.');
       return ;
     }
@@ -155,12 +174,14 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('chat-change-password')
-  handleChangePassword(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, password: string }, @PnJwtPayload() payload: PnPayloadDto) {
-    console.log('chat-change-password, payloadEmit', payloadEmit);
+  handleChangePassword(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, password: string }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
+
     const channel = this.chatService.getChannel(payloadEmit.channelId);
     if (!channel) return;
     // owner만 변경 가능
-    if (channel.owner !== payload.intraId) {
+    if (channel.owner !== pnPayload.intraId) {
       client.emit('chat-catch-error-message', '비밀번호 변경 권한이 없습니다.');
       return ;
     }
@@ -174,11 +195,14 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('chat-remove-password')
-  handleRemovePassword(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }, @PnJwtPayload() payload: PnPayloadDto) {
+  handleRemovePassword(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
+
     const channel = this.chatService.getChannel(payloadEmit.channelId);
     if (!channel) return;
     // owner만 비번 제거 가능
-    if (channel.owner !== payload.intraId) {
+    if (channel.owner !== pnPayload.intraId) {
       client.emit('chat-catch-error-message', '비밀번호 제거 권한이 없습니다.');
       return ;
     }
@@ -193,7 +217,10 @@ export class ChatGateway {
 
   // 사용자를 강제로 나가게함
   @SubscribeMessage('chat-kick-user')
-  handleKickUser(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, user: IntraId }, @PnJwtPayload() payload: PnPayloadDto) {
+  handleKickUser(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, user: IntraId }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
+
     const channel = this.chatService.getChannel(payloadEmit.channelId);
     const kickedUserId = payloadEmit.user;
     if (!channel) return;
@@ -202,7 +229,7 @@ export class ChatGateway {
       client.emit('chat-catch-error-message', 'owner를 강퇴할 수 없습니다.');
       return ;
     }
-    if ((channel.owner !== payload.intraId) || (!channel.administrator.includes(payload.intraId))) {
+    if ((channel.owner !== pnPayload.intraId) || (!channel.administrator.includes(pnPayload.intraId))) {
       client.emit('chat-catch-error-message', '강퇴 권한이 없습니다.');
       return ;
     }
