@@ -3,9 +3,11 @@ import { SocketContext } from '@/context/socket';
 import { Channel } from '@/type/chatType';
 import { useRouter } from 'next/router';
 import { sha256 } from 'js-sha256';
+import useAuth from '@/context/useAuth';
 
 // onChannelSelect: (channel: Channel) => void  // list.tsx에 선택될 채널을 넘겨줘야함
 const ChannelList = () => {
+  useAuth();
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const { chatNamespace } = useContext(SocketContext);
   const router = useRouter();

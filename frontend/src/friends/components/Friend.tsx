@@ -2,8 +2,10 @@ import styles from '@/friends/styles/Friend.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FriendProps} from '@/type/friendType';
+import useAuth from '@/context/useAuth';
 
 const Friend = (friendInfo: FriendProps) => {
+  useAuth();
   const redirection = `/profile/${friendInfo.nickname}`;
   
   console.log(friendInfo.socketInfo);
