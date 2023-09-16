@@ -11,10 +11,6 @@ export class UserDto {
     @IsNotEmpty()
     @IsEmail()
     email: string;
-
-    @IsNotEmpty()
-    @IsBoolean()
-    google2faOption: boolean;
 }
 export class UserUpdateDto {
     @IsString()
