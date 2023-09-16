@@ -1,19 +1,12 @@
 import { chatNamespace } from '@/context/socket';
 import Router from 'next/router';
-import { Nickname, UserInfo } from '@/type/userType';
+import { Nickname } from '@/type/userType';
 import { Channel, Message, ChannelId } from '@/type/chatType';
 import { addMessageToLocalStorage } from '@/chat/utils/chatLocalStorage';
 import axios from 'axios';
 
 export const socketEmitChatCreateDmEvent = (nickname: Nickname) => {
   chatNamespace.emit('chat-create-dm', { nickname });
-};
-
-export const socketOnChatCreateDmEvent = () => { 
-  chatNamespace.on('chat-create-dm', ( {channel}: { channel: Channel }) => {
-    // setChannelList()
-    chatNamespace.emit('chat-join-dm', { channel });
-  });
 };
 
 export const socketOnChatJoinDmEvent = () => {
@@ -44,6 +37,3 @@ export const socketOnChatAddTab = () => {
   });
 };
 
-export const socketOffChatCreateDmEvent = () => {
-  chatNamespace.off('chat-create-dm');
-};

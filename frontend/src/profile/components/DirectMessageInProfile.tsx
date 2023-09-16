@@ -1,7 +1,4 @@
-import axios from 'axios';
-import { useContext, useEffect } from 'react';
-import { SocketContext } from '@/context/socket';
-import { socketEmitChatCreateDmEvent, socketOnChatCreateDmEvent, socketOffChatCreateDmEvent } from '@/context/socketChatEvent';
+import { socketEmitChatCreateDmEvent } from '@/context/socketChatEvent';
 
 /**
  * @description DM을 보내는 컴포넌트
@@ -22,13 +19,6 @@ const DirectMessageInProfile = ({ nickname }: { nickname: string }) => {
     } 
     socketEmitChatCreateDmEvent(nickname);
   };
-
-  useEffect(() => {
-    socketOnChatCreateDmEvent();
-    return () => {
-      socketOffChatCreateDmEvent();
-    }
-  }, []);
   
   return (
     <>
