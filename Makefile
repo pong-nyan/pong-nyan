@@ -3,6 +3,7 @@
 MAKE := make -i
 
 all:
+	mkdir -p ./database/data
 	${MAKE} build
 	${MAKE} up
 
