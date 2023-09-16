@@ -38,8 +38,8 @@ const ProfilePage = () => {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Profile Page</h1>
-      <Profile nickname={nickname as string} />
       <Matching nickname={nickname as string} />
+      <Profile nickname={nickname as string} />
       <RequestFriendInProfile nickname={nickname as string} />
       <DirectMessageInProfile nickname={nickname as string} />
       <NavButtonWrapper />

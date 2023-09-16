@@ -17,8 +17,14 @@ export type Channel = ChannelInfo & {
   id: string,
   owner: IntraId,
   administrator: IntraId[],
-  userList: IntraId[],
-  invitedUsers: IntraId[]
+  userList: ChanneUser[],
+  invitedUsers: IntraId[],
+}
+
+export type ChanneUser = {
+  intraId: IntraId,
+  nickname: string,
+  exp: number,
 }
 
 export type ChannelInfo = {

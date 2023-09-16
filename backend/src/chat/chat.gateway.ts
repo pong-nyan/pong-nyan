@@ -29,7 +29,7 @@ export class ChatGateway {
   handleMakeChannel(@ConnectedSocket() client: Socket, @MessageBody() channelInfo: ChannelInfo, @PnJwtPayload() pnPayload: PnPayloadDto) {
     const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
     if (!userInfo) return ;
-    const channelId = this.chatService.addChannel(channelInfo, client, pnPayload.intraId);
+    const channelId = this.chatService.addChannel(channelInfo, client, pnPayload.intraId, pnPayload.nickname);
     this.userService.setUserInfoChatRoomList(pnPayload.intraId, channelId);
     const updatedChannelList = Array.from(this.chatService.getChannelMap().values());
     this.server.emit('chat-update-channel-list', updatedChannelList);
@@ -48,7 +48,7 @@ export class ChatGateway {
       return ;
     }
 
-    if (channel.userList.includes(pnPayload.intraId)) {
+    if (channel.userList.some( item => item.intraId ===  pnPayload.intraId )) {
       return ;
     }
     console.log('chat-join-channel, channel', channel);
@@ -68,7 +68,7 @@ export class ChatGateway {
       }
     }
     client.join(payloadEmit.channelId);
-    this.chatService.joinChannel(payloadEmit.channelId, pnPayload.intraId);
+    this.chatService.joinChannel(payloadEmit.channelId, pnPayload.intraId, pnPayload.nickname);
     if (!this.syncAfterChannelChange(channel)) return ;
   }
 

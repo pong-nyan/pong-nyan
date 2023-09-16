@@ -177,16 +177,16 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
           <strong>Users:</strong>
           <ul>
             {channel?.userList.map(user => (
-              <li key={user}>
-                {user}
+              <li key={user.intraId}>
+                {user.nickname}
                 {(channel?.owner === JSON.parse(localStorage.getItem('user') || '{}').intraId || channel?.administrator.includes(JSON.parse(localStorage.getItem('user') || '{}').intraId)) && (
                   <>
-                    <button onClick={() => kickUser(user)}>Kick</button>
-                    <button onClick={() => banUser(user)}>Ban</button>
-                    <button onClick={() => muteUser(user)}>Mute</button>
+                    <button onClick={() => kickUser(user.intraId)}>Kick</button>
+                    <button onClick={() => banUser(user.intraId)}>Ban</button>
+                    <button onClick={() => muteUser(user.intraId)}>Mute</button>
                   </>
                 )}
-                <button onClick={() => makeAdministrator(user)}>Make Administrator</button>
+                <button onClick={() => makeAdministrator(user.intraId)}>Make Administrator</button>
               </li>
             ))}
           </ul>
