@@ -365,7 +365,7 @@ export class ChatGateway {
 
   // 소매 넣기
   @SubscribeMessage('chat-create-dm') // create = make + join
-  async handleJoinDm(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { nickname: Nickname }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+  async handleCreateDm(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { nickname: Nickname }, @PnJwtPayload() pnPayload: PnPayloadDto) {
     const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
     if (!userInfo) return ;
 
@@ -373,8 +373,9 @@ export class ChatGateway {
     const channel = this.chatService.findDm(pnPayload.nickname, payloadEmit.nickname);
 
     /* 이미 dm이 존재하는 경우 */
+    console.log('chat-create-dm, channel', channel);
     if (channel) {
-      this.server.to(channel.id).emit('chat-create-dm', { channel });
+      this.server.to(channel.id).emit('chat-join-dm', { channel });
       return ;
     }
 
@@ -395,5 +396,17 @@ export class ChatGateway {
     this.chatService.joinChannel(channelId, opponentUser.intraId, opponentUser.nickname);
     this.syncAfterChannelChange(newChannel);
     this.syncChannelList();
+    this.server.to(newChannel.id).emit('chat-join-dm', { channel: newChannel });
+  }
+
+  @SubscribeMessage('chat-join-dm')
+  handleJoinDm(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channel: Channel }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
+
+
+    if (!payloadEmit.channel.userList.some((user) => user.intraId === pnPayload.intraId)) return ;
+    console.log('chat-join-dm, channel', userInfo);
+    this.server.to(userInfo.client.chat.id).emit('chat-join-dm', { channel: payloadEmit.channel });
   }
 }

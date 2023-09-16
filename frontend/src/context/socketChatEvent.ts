@@ -9,10 +9,15 @@ export const socketEmitChatCreateDmEvent = (nickname: Nickname) => {
   chatNamespace.emit('chat-create-dm', { nickname });
 };
 
-export const socketOnChatJoinDmEvent = () => { 
+export const socketOnChatCreateDmEvent = () => { 
   chatNamespace.on('chat-create-dm', ( {channel}: { channel: Channel }) => {
     // setChannelList()
+    chatNamespace.emit('chat-join-dm', { channel });
+  });
+};
 
+export const socketOnChatJoinDmEvent = () => {
+  chatNamespace.on('chat-join-dm', ({ channel }: { channel: Channel }) => {
     Router.push(`/chat/${channel.id}`);
   });
 };
@@ -35,3 +40,7 @@ export const socketOnChatAddTab = () => {
     alert('새로운 탭이 열렸습니다. 하나의 탭만 남겨주세요.');
   });
 };
+
+export const socketOffChatCreateDmEvent = () => {
+  chatNamespace.off('chat-create-dm');
+}

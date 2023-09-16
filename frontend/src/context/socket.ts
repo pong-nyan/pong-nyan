@@ -1,7 +1,6 @@
 import { io as socketIOClient } from 'socket.io-client';
 import { createContext } from 'react';
-import { addMessageToLocalStorage } from '@/chat/utils/chatLocalStorage';
-import { socketOnChatNewMessage, socketOnChatAddTab } from '@/context/socketChatEvent';
+import { socketOnChatNewMessage, socketOnChatAddTab, socketOnChatJoinDmEvent } from '@/context/socketChatEvent';
 
 export const authNamespace = socketIOClient('/auth', { path: '/socket/'});
 export const gameNamespace = socketIOClient('/game', { path: '/socket/'});
@@ -26,6 +25,7 @@ authNamespace.on('auth-set-map-payload', () => {
 
 socketOnChatNewMessage();
 socketOnChatAddTab();
+socketOnChatJoinDmEvent();
 
 gameNamespace.on('add-tab', () => {
   location.replace('/');
