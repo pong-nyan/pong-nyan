@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FriendsService } from './friends.service';
 import { PnPayloadDto } from 'src/dto/pnPayload.dto';
@@ -65,6 +65,9 @@ export class FriendsController {
     @ApiResponse({ status: 200, description: '친구 요청 성공', type: Friend })
     async requestFriend(@PnJwtPayload() pnPayload: PnPayloadDto, @Body() { friendIntraId }: PostFriendDto) {
         const intraId = pnPayload.intraId;
+        if (intraId === friendIntraId) {
+            throw new HttpException('자기 자신에게 친구 요청을 보낼 수 없습니다.', HttpStatus.BAD_REQUEST);
+        }
         return await this.friendsService.addFriend(intraId, friendIntraId);
     }
 
@@ -74,6 +77,10 @@ export class FriendsController {
     @ApiResponse({ status: 200, description: '친구 요청 성공', type: Friend })
     async requestFriendByNickname(@PnJwtPayload() pnPayload: PnPayloadDto, @Body() { friendNickname }: PostFriendNicknameDto) {
         const intraId = pnPayload.intraId;
+        const accpedFriends = await this.friendsService.getAcceptedFriends(intraId);
+        if (accpedFriends.some(friend => friend.nickname === friendNickname)) {
+            throw new HttpException('이미 친구입니다.', HttpStatus.BAD_REQUEST);
+        }
         return await this.friendsService.addFriendByNickname(intraId, friendNickname);
     }
 
