@@ -10,12 +10,27 @@
 }
 
 .profile {
-  height: 50vh;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.link {
+  font-size: x-large;
+  margin-bottom: 16px;
+  color: rgba(98, 98, 180, 0.72);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .title {
@@ -48,6 +63,6 @@
   }
 
   .link {
-    font-size: 14px; 
+    font-size: 14px;
   }
 }
