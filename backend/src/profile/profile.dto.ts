@@ -16,3 +16,17 @@ export class UserDto {
     @IsBoolean()
     google2faOption: boolean;
 }
+export class UserUpdateDto {
+    @IsString()
+    nickname: string;
+
+    @IsString()
+    avatar: string;
+
+    @IsEmail()
+    email: string;
+
+    @IsNotEmpty()
+    @IsBoolean()
+    google2faOption: boolean;
+}

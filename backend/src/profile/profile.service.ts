@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/entity/User';
-import { UserDto } from './profile.dto';
+import { UserDto, UserUpdateDto } from './profile.dto';
 import { IntraId } from 'src/type/userType';
 
 @Injectable()
@@ -21,16 +21,16 @@ export class ProfileService {
     return profile;
   }
 
-  async updateInfo(userInfo: UserDto, intraId: IntraId): Promise<User | null> {
+  async updateInfo(userInfo: UserUpdateDto, intraId: IntraId): Promise<User | null> {
     const profile = await this.userRepository.findOne({
       where: { intraId },
     });
     if (!profile) return null;
-    profile.nickname = userInfo.nickname;
+    profile.nickname = userInfo.nickname || profile.nickname;
     if (userInfo.avatar) {
-      profile.avatar = userInfo.avatar;
+      profile.avatar = userInfo.avatar || profile.avatar;
     }
-    profile.email = userInfo.email;
+    profile.email = userInfo.email || profile.email;
     profile.google2faOption = userInfo.google2faOption;
     await this.userRepository.update({ intraId }, profile);
     return profile;
