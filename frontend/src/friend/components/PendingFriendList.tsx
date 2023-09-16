@@ -20,6 +20,7 @@ const PendingFriendList = () => {
         alert('로그인이 필요합니다.');
         localStorage.removeItem('user');
         location.replace('/auth');
+        return ;
       }
       console.log(err);
     });
