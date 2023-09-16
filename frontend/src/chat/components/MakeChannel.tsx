@@ -13,8 +13,8 @@ const MakeChannel = ({ isOpen, onClose }) => {
   const [maxUsers, setMaxUser] = useState('');
   const [channelType, setChannelType] = useState<ChannelType>('public');
   const { chatNamespace } = useContext(SocketContext);
-  
-  const handleCreateChannel = () => {
+
+  const handleCreateChannel = (onClose: () => void) => {
     let channelMaxUsers = 21;
 
     if (!maxUsers.trim() || !maxUsers || isNaN(Number(maxUsers))) {
@@ -47,19 +47,13 @@ const MakeChannel = ({ isOpen, onClose }) => {
     };
     console.log('handleCreateChannel', channelInfo);
     chatNamespace.emit('chat-channel-make', channelInfo);
+
+    onClose();
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div style={{backgroundColor: 'lightblue'}}>
-        <div className="make-channel" style={{ display: 'flex', alignItems: 'center' }}>
-          <button>
-          채널
-          </button>
-          <button>
-          DM
-          </button>
-        </div>
         <div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <p style={{ margin: 0, marginRight: '10px' }}>방 제목 : </p>
@@ -78,15 +72,6 @@ const MakeChannel = ({ isOpen, onClose }) => {
             name="channelType"
             checked={channelType === 'public'}
             onChange={() => setChannelType('public')}
-          />
-        </div>
-        <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ marginRight: '10px' }}>비공개방</span>
-          <input
-            type="radio"
-            name="channelType"
-            checked={channelType === 'private'}
-            onChange={() => setChannelType('private')}
           />
         </div>
         <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
@@ -121,7 +106,7 @@ const MakeChannel = ({ isOpen, onClose }) => {
           <input
             type="button"
             value="채널생성"
-            onClick={handleCreateChannel}
+            onClick={() => {handleCreateChannel(onClose);}}
           />
         </div>
       </div>

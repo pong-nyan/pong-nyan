@@ -4,7 +4,7 @@ import { sha256 } from 'js-sha256';
 import { useContext } from 'react';
 import { SocketContext } from '@/context/socket';
 
-const PublicChannelList = ({channelList }: {channelList: Channel[]}) => { 
+const PublicChannelList = ({channelList }: {channelList: Channel[]}) => {
   const router = useRouter();
   const { chatNamespace } = useContext(SocketContext);
 
@@ -14,8 +14,12 @@ const PublicChannelList = ({channelList }: {channelList: Channel[]}) => {
     const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
     const isUserInChannel = seletedChannel.userList.some((user) => user.intraId === loggedInUser.intraId);
     let hasedInputPassword;
-  
+
     if (!isUserInChannel) {
+      if (seletedChannel.maxUsers <= seletedChannel.userList.length) {
+        alert('채널이 가득 찼습니다.');
+        return ;
+      }
       if (seletedChannel.password) {
         const inputPassword = prompt('이 채널은 비밀번호로 보호되어 있습니다. 비밀번호를 입력하세요.');
         if (!inputPassword) return;
@@ -24,10 +28,6 @@ const PublicChannelList = ({channelList }: {channelList: Channel[]}) => {
           alert('비밀번호가 틀렸습니다.');
           return ;
         }
-      }
-      if (seletedChannel.maxUsers <= seletedChannel.userList.length) {
-        alert('채널이 가득 찼습니다.');
-        return ;
       }
       if (seletedChannel.bannedUsers.includes(loggedInUser.intraId)) {
         alert('차단된 사용자입니다.');
@@ -40,6 +40,7 @@ const PublicChannelList = ({channelList }: {channelList: Channel[]}) => {
 
   return (
     <div>
+      <h3>Public Channel</h3>
       <ul>
         {channelList.map(channel => (
           (channel.channelType === 'public' || channel.channelType === 'protected') &&
@@ -47,7 +48,7 @@ const PublicChannelList = ({channelList }: {channelList: Channel[]}) => {
           <span onClick={() => handlePublicChannelSelect(channel)}>{channel.title}</span>
         </li>
         ))}
-      </ul> 
+      </ul>
     </div>);
 };
 
