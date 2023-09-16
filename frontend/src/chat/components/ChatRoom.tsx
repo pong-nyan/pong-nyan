@@ -24,7 +24,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
         content: inputMessage,
         nickname: loggedInUser.nickname
       };
-      chatNamespace.emit('chat-message-in-channel', { channelId, message: newMessage });
+      chatNamespace.emit('chat-message-in-channel', { channelId, message: newMessage, sender: loggedInUser.intraId });
       setInputMessage('');
     }
   };

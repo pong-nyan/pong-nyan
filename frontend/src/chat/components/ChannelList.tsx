@@ -17,7 +17,7 @@ const ChannelList = () => {
     const seletedChannel = channelList.find(ch => ch.id === channel.id);
     if (!seletedChannel) return;
     const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
-    const isUserInChannel = seletedChannel.userList.includes(loggedInUser.intraId);
+    const isUserInChannel = seletedChannel.userList.some((user) => user.intraId === loggedInUser.intraId);
     let hasedInputPassword;
 
     if (!isUserInChannel) {
