@@ -1,6 +1,16 @@
 import axios from 'axios';
+import { useContext } from 'react';
+import { SocketContext } from '@/context/socket';
+import { socketEmitChatCreateDmEvent } from '@/context/socketChatEvent'
 
+/**
+ * @description DM을 보내는 컴포넌트
+ * @param {string} nickname - DM을 보낼 상대방의 닉네임
+ * @returns {JSX.Element} DM을 보내는 버튼
+ */
 const DirectMessageInProfile = ({ nickname }: { nickname: string }) => {
+
+  const { chatNamespace } = useContext(SocketContext);
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (!nickname) {
@@ -10,17 +20,8 @@ const DirectMessageInProfile = ({ nickname }: { nickname: string }) => {
     if (nickname === JSON.parse(localStorage.getItem('user') || '{}').nickname) {
       alert('자기 자신에게 DM을 보낼 수 없습니다.');
       return;
-    }
-    axios.post(`${process.env.NEXT_PUBLIC_API_URL}/friends/request`,
-      {
-        friendNickname: nickname
-      }).then(() => {
-      alert(`${nickname}에게 친구요청을 성공했습니다.`);
-    }).
-      catch((error) => {
-        alert(`${error.response.data.message} 를 이유로 DM에 실패했습니다.`);
-      }
-      );
+    } 
+    socketEmitChatCreateDmEvent(nickname);
   };
 
   return (
