@@ -16,6 +16,11 @@ const PendingFriendList = () => {
       setFriendIdList(tempFriendIdIlist);
       setPendingFriends(requestUser);
     }).catch((err) => {
+      if (err.response.status === 401) {
+        alert('로그인이 필요합니다.');
+        localStorage.removeItem('user');
+        location.replace('/auth');
+      }
       console.log(err);
     });
   }, []);

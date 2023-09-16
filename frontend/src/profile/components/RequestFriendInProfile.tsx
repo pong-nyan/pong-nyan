@@ -20,6 +20,12 @@ const RequestFriendInProfile = ({ nickname }: { nickname: string }) => {
       setInfo('친구요청을 성공했습니다.');
     }).
       catch((error) => {
+        if (error?.response?.status === 401) {
+          alert('로그인이 필요합니다.');
+          localStorage.removeItem('user');
+          location.replace('/auth');
+          return ;
+        }
         setInfo(`친구요청을 실패했습니다. ${error.response.data.message}`);
       }
       );
