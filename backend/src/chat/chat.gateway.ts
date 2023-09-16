@@ -240,7 +240,7 @@ export class ChatGateway {
       this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', 'owner를 강퇴할 수 없습니다.');
       return ;
     }
-    if ((channel.owner !== pnPayload.intraId) || (!channel.administrator.includes(pnPayload.intraId))) {
+    if (!channel.administrator.includes(pnPayload.intraId)) {
       this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', '강퇴 권한이 없습니다.');
       return ;
     }
@@ -263,7 +263,7 @@ export class ChatGateway {
       this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', 'owner를 차단할 수 없습니다.');
       return ;
     }
-    if ((channel.owner !== pnPayload.intraId) || (!channel.administrator.includes(pnPayload.intraId))) {
+    if ((!channel.administrator.includes(pnPayload.intraId))) {
       this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', '차단 권한이 없습니다.');
       return ;
     }
@@ -287,22 +287,17 @@ export class ChatGateway {
       this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', 'owner를 음소거 할 수 없습니다.');
       return ;
     }
-    if ((channel.owner !== pnPayload.intraId) || (!channel.administrator.includes(pnPayload.intraId))) {
+    if ((!channel.administrator.includes(pnPayload.intraId))) {
       this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', '음소거 권한이 없습니다.');
       return ;
     }
+
     const mutedUserInfo = this.userService.getUserInfo(payloadEmit.user);
     const userMute = channel.userList.find(user => user.intraId === mutedUserId);
-
-    // 음소거 시키기
-    if (userMute)
-    {
-      userMute.exp = Date.now() + 20000;
-      console.log('[ChatGateway] chat-mute-user userMute', userMute);
-    }
+    if (userMute) userMute.exp = Date.now() + 20000;
 
     mutedUserInfo.client.chat.emit('chat-muted-from-channel', payloadEmit.channelId);
-    this.server.to(userInfo.client.chat.id).emit('chat-finish-message', '음소거에 성공했습니다.');
+    this.server.to(userInfo.client.chat.id).emit('chat-finish-message', '해당 유저를 20초 음소거하였습니다.');
     if (!this.syncAfterChannelChange(channel)) return ;
     this.syncChannelList();
   }
@@ -366,3 +361,4 @@ export class ChatGateway {
     return true;
   }
 }
+
