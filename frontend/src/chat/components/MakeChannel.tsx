@@ -14,7 +14,7 @@ const MakeChannel = ({ isOpen, onClose }) => {
   const [channelType, setChannelType] = useState<ChannelType>('public');
   const { chatNamespace } = useContext(SocketContext);
   
-  const handleCreateChannel = () => {
+  const handleCreateChannel = (onClose: () => void) => {
     let channelMaxUsers = 21;
 
     if (!maxUsers.trim() || !maxUsers || isNaN(Number(maxUsers))) {
@@ -47,6 +47,8 @@ const MakeChannel = ({ isOpen, onClose }) => {
     };
     console.log('handleCreateChannel', channelInfo);
     chatNamespace.emit('chat-channel-make', channelInfo);
+
+    onClose();
   };
 
   return (
@@ -121,7 +123,7 @@ const MakeChannel = ({ isOpen, onClose }) => {
           <input
             type="button"
             value="채널생성"
-            onClick={handleCreateChannel}
+            onClick={() => {handleCreateChannel(onClose);}}
           />
         </div>
       </div>
