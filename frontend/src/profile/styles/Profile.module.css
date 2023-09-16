@@ -40,7 +40,7 @@
 }
 
 .container {
-  height: 92vh;
+  max-height: 92vh;
   display: flex;
   flex-direction: column;
   align-items: center;
