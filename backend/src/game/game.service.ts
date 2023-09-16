@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { Repository } from 'typeorm';
 import { Socket, RoomName, SocketId } from 'src/type/socketType';
-import { BallInfo, GameInfo, QueueInfo, PlayerNumber, GameStatus, MatchingQueue } from 'src/type/gameType';
+import { BallInfo, GameInfo, PlayerNumber, GameStatus, MatchingQueue, FriendQueueInfo } from 'src/type/gameType';
 import { IntraId, UserInfo, Nickname } from 'src/type/userType';
 import { User } from 'src/entity/User';
 import { UserService } from 'src/user.service';
@@ -62,9 +62,9 @@ export class GameService {
 
   public friendMatch(client: Socket, gameStatus: number, intraId: IntraId, nickname: string, friendNickname: string) {
     const friendIndex = this.findNicknameMatchingQueue(friendNickname);
-    this.friendMatchingQueue.push({client, nickname, intraId});
-    // 이미 친구가 매칭큐에 있다면 매칭시켜줌
-    if (friendIndex !== -1) {
+    this.friendMatchingQueue.push({client, nickname, intraId, friendNickname});
+    // 이미 친구가 매칭큐에 있고 그 친구가 신청한게 본인이면 매칭시켜줌
+    if (friendIndex !== -1 && this.friendMatchingQueue[friendIndex].nickname === friendNickname) {
       const meIndex = this.findNicknameMatchingQueue(nickname);
       const player1 = this.friendMatchingQueue[friendIndex];
       const player2 = this.friendMatchingQueue[meIndex];
@@ -222,7 +222,7 @@ export class GameService {
 
   // private matchingQueue: QueueInfo[] = [];
   private matchingQueueList: MatchingQueue[] = [[], [], [], []];
-  private friendMatchingQueue: QueueInfo[] = [];
+  private friendMatchingQueue: FriendQueueInfo[] = [];
   // TODO: 적절하게  recentBallInfo 메모리 관리해야함.
   // IDEA: 게임이 끝나면 삭제하는 방법
   private recentBallInfoMap = new Map<RoomName, BallInfo>();

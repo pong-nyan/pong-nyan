@@ -22,6 +22,10 @@ export type QueueInfo = {
   intraId: number
 }
 
+export type FriendQueueInfo = QueueInfo & {
+  friendNickname: string
+}
+
 export type MatchingQueue = QueueInfo[];
 
 /*
