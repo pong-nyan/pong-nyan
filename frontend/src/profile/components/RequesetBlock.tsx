@@ -14,7 +14,6 @@ const RequestBlockInProfile = ({ nickname }: { nickname: string }) => {
       setInfo('자기자신을 차단할 수 없습니다.');
       return;
     }
-    // TODO: Block API 연동
     axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/block`, { nickname }
     ).then(() => {
       setInfo('차단을 성공했습니다.');

@@ -146,7 +146,6 @@ export class GameService {
     if (!ballInfo || ballPosition?.x < minWidth || ballPosition?.x > maxWidth || ballPosition?.y < minHeight || ballPosition?.y > maxHeight) {
       return { position: { x: 150, y: 250 }, velocity: { x: 10, y: 10 }};
     }
-    // TODO: 적절한 acceptableDiff를 찾아야 함
     const accepableDiff = 0.1;
     if (!recentBallInfo) {
       this.recentBallInfoMap.set(roomName, ballInfo);
@@ -228,11 +227,8 @@ export class GameService {
     return this.friendMatchingQueue.findIndex(item => item.nickname === friendNickname);
   }
 
-  // private matchingQueue: QueueInfo[] = [];
   private matchingQueueList: MatchingQueue[] = [[], [], [], []];
   private friendMatchingQueue: FriendQueueInfo[] = [];
-  // TODO: 적절하게  recentBallInfo 메모리 관리해야함.
-  // IDEA: 게임이 끝나면 삭제하는 방법
   private recentBallInfoMap = new Map<RoomName, BallInfo>();
   private gameMap = new Map<RoomName, GameInfo>();
 }

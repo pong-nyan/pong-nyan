@@ -9,8 +9,6 @@ import RunWrapper from '@/game/components/RunWrapper';
 
 const Game = () => {
   useAuth();
-  // TODO: start game button
-  // FIXME: game status
   const [gameStatus, setGameStatus] =  useState(0);
   const [playerNumber, setPlayerNumber] = useState<PlayerNumber>('');
   const [opponentId, setOpponentId] = useState<SocketId>('');

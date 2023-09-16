@@ -16,7 +16,6 @@ export class Google2faController {
   ) {}
 
   @Get('qr')
-  //  TODO: Add AuthGuard
   async register(@Res() response: Response, @CookieValue() accessToken: string) {
     //  cookie 로 부터 user 정보를 가져옴
     console.log('accessToken', accessToken);

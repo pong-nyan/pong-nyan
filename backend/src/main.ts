@@ -9,7 +9,6 @@ import { urlencoded, json } from 'body-parser';
 async function bootstrap() {
   const server = express();
   const app = await NestFactory.create(AppModule);
-  //  TODO : port should be in config
   app.enableCors(
     {
       'origin': ['http://localhost:3000', 'https://localhost'],

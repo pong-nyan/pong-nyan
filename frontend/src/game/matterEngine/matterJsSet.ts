@@ -45,7 +45,6 @@ export const setStartBall = (world: World, loser: PlayerNumber) => {
 };
 
 export function initPlayer(playerNumber:PlayerNumber, cw: number, ch: number, nonCollisionGroupRef: number, hingeGroupRef: number) : Player {
-  //TODO: Run 수정해야함
   const yScale = playerNumber === 'player1' ? 0.9 : 0.1;
   const offsetX = 70;
   const middleX = cw / 2;
@@ -57,7 +56,6 @@ export function initPlayer(playerNumber:PlayerNumber, cw: number, ch: number, no
 }
 
 export function initOriginPongPlayer(playerNumber:PlayerNumber, cw: number, ch: number, nonCollisionGroupRef: number, hingeGroupRef: number) : OriginPongPlayer {
-  //TODO: Run 수정해야함
   const yScale = playerNumber === 'player1' ? 0.9 : 0.1;
   const offsetX = 70;
   const middleX = cw / 2;
@@ -80,7 +78,7 @@ export const sensorList = (cw: number, ch: number) => {
   const offset = 10;
   const sensorY1 = ch - thickness / 2;
   const sensorY2 = thickness / 2;
-  return [ 
+  return [
     sensor('player1', cw / 2, sensorY1 - offset, cw, thickness),
     sensor('player2', cw / 2, sensorY2 + offset, cw, thickness)
   ];
@@ -92,7 +90,7 @@ export const initEngine = (engine: Matter.Engine) => {
   engine.gravity.y = 0;
 
   engine.timing.timeScale = 1;
-  
+
   // 완전 탄성 충돌, zero friction
   engine.world.bodies.forEach(body => {
     body.friction = 0;

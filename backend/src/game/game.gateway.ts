@@ -137,7 +137,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
 
-  // TODO: sensor에 닿을 시 score 변경
   @SubscribeMessage('game-score')
   handleScore(@ConnectedSocket() client: Socket,
               @MessageBody() payload: { playerNumber: PlayerNumber, score: { p1: number, p2: number }},
