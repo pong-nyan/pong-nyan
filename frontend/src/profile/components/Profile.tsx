@@ -14,7 +14,7 @@ const Profile = ({ nickname }: ProfileProps) => {
     }).catch((err) => {
       console.log(err);
     });
-  }, []);
+  }, [nickname]);
 
   return (
     <div className={styles.profile}>
