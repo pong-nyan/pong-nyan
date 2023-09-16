@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Post, Body } from '@nestjs/common';
+import { Controller, Get, UseGuards, Post, Body, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserService } from './user.service';
 import { Nickname } from './type/userType';
@@ -24,5 +24,12 @@ export class AppController {
 
     userInfo.blockList.push(blockNickname);
     return userInfo.blockList;
+  }
+
+  @Get('user/:intraId')
+  getUserInfoByIntraId(@PnJwtPayload() pnPayload: PnPayloadDto, @Param('intraId') intraId: number) {
+    const userInfo = this.userService.getUserInfo(intraId);
+    const nickname = userInfo.nickname;
+    return { nickname };
   }
 }
