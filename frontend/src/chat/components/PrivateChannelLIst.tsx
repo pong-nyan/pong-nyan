@@ -1,6 +1,5 @@
 import { Channel } from '@/type/chatType';
 import { useRouter } from 'next/router';
-import { sha256 } from 'js-sha256';
 import { useContext } from 'react';
 import { SocketContext } from '@/context/socket';
 
@@ -21,6 +20,7 @@ const PrivateChannelList = ({channelList }: {channelList: Channel[]}) => {
     chatNamespace.emit('chat-join-channel', { channelId: seletedChannel.id });
     router.push(`/chat/${seletedChannel.id}`);
   };
+
   return (
     <div>
       <ul>

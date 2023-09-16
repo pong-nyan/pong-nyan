@@ -37,6 +37,7 @@ const PublicChannelList = ({channelList }: {channelList: Channel[]}) => {
     chatNamespace.emit('chat-join-channel', { channelId: seletedChannel.id, password: hasedInputPassword });
     router.push(`/chat/${seletedChannel.id}`);
   };
+
   return (
     <div>
       <ul>

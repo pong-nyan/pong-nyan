@@ -12,7 +12,9 @@ export class AppController {
               private readonly userService: UserService) {}
 
   @Get('/user/me')
-  getUserInfo(@PnJwtPayload() pnPayload: PnPayloadDto): UserInfo {
-    return this.userService.getUserInfo(pnPayload.intraId);
+  getUserInfo(@PnJwtPayload() pnPayload: PnPayloadDto) {
+   const userInfo = this.userService.getUserInfo(pnPayload.intraId);
+   const userBlockList = userInfo.blockList;
+   return userBlockList;
   }
 }

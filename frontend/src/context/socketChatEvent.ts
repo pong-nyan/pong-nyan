@@ -24,13 +24,16 @@ export const socketOnChatJoinDmEvent = () => {
 
 // 메시지를 받아서 로컬 스토리지에 저장
 export const socketOnChatNewMessage = () => { 
-  chatNamespace.on('chat-new-message', async ({ message, receivedChannelId }: { message: Message, receivedChannelId: ChannelId }) => {
+  chatNamespace.on('chat-new-message', async ({ message, channelId }: { message: Message, channelId: ChannelId }) => {
     // 메시지를 받은 채널 ID
-    const userInfo: UserInfo = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/me`);
-    if (userInfo.blockList.includes(message.nickname)) return;
+    const { userBlockList }: { userBlockList: Nickname[] } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/me`);
 
-    addMessageToLocalStorage(receivedChannelId, message);
-    chatNamespace.emit('chat-watch-new-message', { channelId: receivedChannelId });
+    if (userBlockList && userBlockList.includes(message.nickname)) return;
+
+    console.log('userBlockList', userBlockList);
+    console.log('recievedChannelId', channelId);
+    addMessageToLocalStorage(channelId, message);
+    chatNamespace.emit('chat-watch-new-message', { channelId });
   });
 };
 
@@ -43,4 +46,4 @@ export const socketOnChatAddTab = () => {
 
 export const socketOffChatCreateDmEvent = () => {
   chatNamespace.off('chat-create-dm');
-}
+};
