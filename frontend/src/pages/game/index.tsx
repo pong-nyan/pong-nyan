@@ -7,7 +7,6 @@ import { useState } from 'react';
 import useAuth from '@/context/useAuth';
 import RunWrapper from '@/game/components/RunWrapper';
 
-
 const Game = () => {
   useAuth();
   // TODO: start game button
@@ -34,6 +33,6 @@ const Game = () => {
   default:
     return (<h1>ERROR!</h1>);
   }
-}
+};
 
 export default Game;
