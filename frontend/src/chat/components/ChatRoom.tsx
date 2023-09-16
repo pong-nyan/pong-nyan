@@ -151,10 +151,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
     });
 
     chatNamespace.on('chat-muted-from-channel', () => {
-      // chatNamespace.emit('chat-leave-channel', receivedChannelId);
-      // onLeaveChannel();
-
-      alert('음소거 당했습니다.');
+      alert('20초 음소거 당했습니다.');
     });
 
     //채널이 사라졌을 때 나머지 유저 내보내기
