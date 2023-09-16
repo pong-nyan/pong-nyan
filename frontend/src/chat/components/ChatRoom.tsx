@@ -62,17 +62,14 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   };
 
   const kickUser = (targetUser: IntraId) => {
-    // kick 로직 구현
     chatNamespace.emit('chat-kick-user', { channelId, user: targetUser });
   };
 
   const banUser = (targetUser: IntraId) => {
-    // ban 로직 구현
     chatNamespace.emit('chat-ban-user', { channelId, user: targetUser });
   };
 
   const muteUser = (targetUser: IntraId) => {
-    // mute 로직 구현
     chatNamespace.emit('chat-mute-user', { channelId, user: targetUser });
   };
 
