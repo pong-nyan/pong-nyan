@@ -7,7 +7,7 @@ import { Gateway2faGuard } from 'src/guard/gateway2fa.guard';
 import { PnJwtPayload, PnPayloadDto } from 'src/dto/pnPayload.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user.service';
-import { IntraId } from 'src/type/userType';
+import { IntraId, Nickname } from 'src/type/userType';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -304,5 +304,38 @@ export class ChatGateway {
     if (!channel) return false;
     this.server.to(channel.id).emit('chat-response-channel-info', { channel });
     return true;
+  }
+
+  // 소매 넣기
+  @SubscribeMessage('chat-create-dm') // create = make + join
+  async handleJoinDm(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { nickname: Nickname }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+    const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
+    if (!userInfo) return ;
+
+    const title = pnPayload.nickname + ':' + payloadEmit.nickname;
+    const channel = this.chatService.findDm(pnPayload.nickname, payloadEmit.nickname);
+
+    /* 이미 dm이 존재하는 경우 */
+    if (channel) {
+      this.server.to(channel.id).emit('chat-create-dm', { channel });
+      return ;
+    }
+
+    /* dm이 존재하지 않는 경우 */
+    const channelId = this.chatService.addChannel(
+      { title, channelType: 'private', maxUsers: 2 },
+      client,
+      pnPayload.intraId,
+      pnPayload.nickname,
+    );
+    const newChannel = this.chatService.getChannel(channelId);
+    const opponentUser = await this.userService.getUserInfoByNickname(payloadEmit.nickname);
+    const opponentUserInfo = this.userService.getUserInfo(opponentUser.intraId);
+
+    client.join(newChannel.id);
+    opponentUserInfo.client.chat.join(newChannel.id);
+    this.chatService.joinChannel(channelId, pnPayload.intraId, pnPayload.nickname);
+    this.chatService.joinChannel(channelId, opponentUser.intraId, opponentUser.nickname);
+    if (!this.syncAfterChannelChange(newChannel)) return ;
   }
 }
