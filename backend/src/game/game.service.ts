@@ -138,6 +138,14 @@ export class GameService {
 
   public reconcilateBallInfo(roomName: RoomName, ballInfo: BallInfo) : BallInfo | undefined {
     const recentBallInfo = this.recentBallInfoMap.get(roomName);
+    const maxWidth = 300;
+    const maxHeight = 500;
+    const minWidth = 0;
+    const minHeight = 0;
+    const ballPosition = ballInfo?.position;
+    if (!ballInfo || ballPosition?.x < minWidth || ballPosition?.x > maxWidth || ballPosition?.y < minHeight || ballPosition?.y > maxHeight) {
+      return { position: { x: 150, y: 250 }, velocity: { x: 10, y: 10 }};
+    }
     // TODO: 적절한 acceptableDiff를 찾아야 함
     const accepableDiff = 0.1;
     if (!recentBallInfo) {
