@@ -398,6 +398,5 @@ export class ChatGateway {
     this.syncChannelList();
     this.server.to(userInfo.client.chat.id).emit('chat-join-dm', { channel: newChannel });
   }
-
 }
 
