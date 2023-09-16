@@ -13,7 +13,7 @@ const MakeChannel = ({ isOpen, onClose }) => {
   const [maxUsers, setMaxUser] = useState('');
   const [channelType, setChannelType] = useState<ChannelType>('public');
   const { chatNamespace } = useContext(SocketContext);
-  
+
   const handleCreateChannel = () => {
     let channelMaxUsers = 21;
 
@@ -56,9 +56,6 @@ const MakeChannel = ({ isOpen, onClose }) => {
           <button>
           채널
           </button>
-          <button>
-          DM
-          </button>
         </div>
         <div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -78,15 +75,6 @@ const MakeChannel = ({ isOpen, onClose }) => {
             name="channelType"
             checked={channelType === 'public'}
             onChange={() => setChannelType('public')}
-          />
-        </div>
-        <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ marginRight: '10px' }}>비공개방</span>
-          <input
-            type="radio"
-            name="channelType"
-            checked={channelType === 'private'}
-            onChange={() => setChannelType('private')}
           />
         </div>
         <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>

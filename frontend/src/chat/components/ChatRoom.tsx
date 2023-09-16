@@ -35,12 +35,10 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   };
 
   const makeAdministrator = (grantedUser: IntraId) => {
-    // 서버에 업데이트된 목록을 보내는 로직 추가
     chatNamespace.emit('chat-grant-administrator', { channelId, user: grantedUser });
   };
 
   const deleteAdministrator = (deletedUser: IntraId) => {
-    // 서버에 업데이트된 목록을 보내는 로직 추가
     chatNamespace.emit('chat-delete-administrator', { channelId, user: deletedUser });
   };
 
@@ -73,6 +71,17 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
 
   const muteUser = (targetUser: IntraId) => {
     chatNamespace.emit('chat-mute-user', { channelId, user: targetUser });
+  };
+
+  // const findNicknameById = (id: IntraId): string => {
+  //   const user = channel?.userList.find(user => user.intraId === id);
+  //   return user ? user.nickname : id;  // 만약 찾지 못하면 id를 반환
+  // };
+
+  const findNicknameById = (id: IntraId | undefined): string => {
+    if (!id) return ''; // id가 undefined나 null일 경우 빈 문자열 반환
+    const user = channel?.userList.find(user => user.intraId === id);
+    return user ? user.nickname : '';
   };
 
   useEffect(() => {
@@ -188,14 +197,25 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
           <h3>Channel Members</h3>
           <strong>Owner:</strong>
           <ul>
-            <li>{channel?.owner}</li>
+            <li>{findNicknameById(channel?.owner)}</li>
           </ul>
+          <strong>Invited Users:</strong>
+          <ul>
+            {channel?.invitedUsers.map(invitedUser => (
+              <li key={invitedUser}>
+                {findNicknameById(invitedUser)}
+              </li>
+            ))}
+          </ul>
+
           <strong>Administrators:</strong>
           <ul>
             {channel?.administrator.map(admin => (
               <li key={admin}>
-                {admin}
-                <button onClick={() => deleteAdministrator(admin)}>Delete Administrator</button>
+                {findNicknameById(admin)}
+                {channel?.owner === JSON.parse(localStorage.getItem('user') || '{}').intraId && (
+                  <button onClick={() => deleteAdministrator(admin)}>Delete Administrator</button>
+                )}
               </li>
             ))}
           </ul>
@@ -211,14 +231,18 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
                     <button onClick={() => muteUser(user.intraId)}>Mute</button>
                   </>
                 )}
-                <button onClick={() => makeAdministrator(user.intraId)}>Make Administrator</button>
+                {channel?.owner === JSON.parse(localStorage.getItem('user') || '{}').intraId && (
+                  <button onClick={() => makeAdministrator(user.intraId)}>Make Administrator</button>
+                )}
               </li>
             ))}
           </ul>
           <strong>Invited Users:</strong>
           <ul>
             {channel?.invitedUsers.map(invitedUser => (
-              <li key={invitedUser}>{invitedUser}</li>
+              <li key={invitedUser}>
+                {findNicknameById(invitedUser)}
+              </li>
             ))}
           </ul>
         </div>

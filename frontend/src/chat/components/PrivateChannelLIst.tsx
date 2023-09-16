@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { SocketContext } from '@/context/socket';
 
-const PrivateChannelList = ({channelList }: {channelList: Channel[]}) => { 
+const PrivateChannelList = ({channelList }: {channelList: Channel[]}) => {
   const router = useRouter();
   const { chatNamespace } = useContext(SocketContext);
 
@@ -12,7 +12,7 @@ const PrivateChannelList = ({channelList }: {channelList: Channel[]}) => {
     if (!seletedChannel) return;
     const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
     const isUserInChannel = seletedChannel.userList.some((user) => user.intraId === loggedInUser.intraId);
-  
+
     if (!isUserInChannel) {
       alert('없는채널 입니다.');
       return ;
@@ -23,6 +23,7 @@ const PrivateChannelList = ({channelList }: {channelList: Channel[]}) => {
 
   return (
     <div>
+      <h3>Private Channel</h3>
       <ul>
         {channelList.map((channel) => (
           channel.channelType === 'private' &&
