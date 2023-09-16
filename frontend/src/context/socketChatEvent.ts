@@ -19,12 +19,9 @@ export const socketOnChatJoinDmEvent = () => {
 export const socketOnChatNewMessage = () => { 
   chatNamespace.on('chat-new-message', async ({ message, channelId }: { message: Message, channelId: ChannelId }) => {
     // 메시지를 받은 채널 ID
-    const { userBlockList }: { userBlockList: Nickname[] } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/me`);
-
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/me`);
+    const userBlockList = res.data.userBlockList;
     if (userBlockList && userBlockList.includes(message.nickname)) return;
-
-    console.log('userBlockList', userBlockList);
-    console.log('recievedChannelId', channelId);
     addMessageToLocalStorage(channelId, message);
     chatNamespace.emit('chat-watch-new-message', { channelId });
   });

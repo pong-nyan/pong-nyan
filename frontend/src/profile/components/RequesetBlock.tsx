@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 const RequestBlockInProfile = ({ nickname }: { nickname: string }) => {
   const [info, setInfo] = useState<string>('');
+
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (!nickname) {
@@ -14,22 +15,19 @@ const RequestBlockInProfile = ({ nickname }: { nickname: string }) => {
       return;
     }
     // TODO: Block API 연동
-    // axios.post(`${process.env.NEXT_PUBLIC_API_URL}/profile/block`,
-    //   {
-    //     blockNickname: nickname
-    //   }).then(() => {
-    //   setInfo('차단을 성공했습니다.');
-    // }).
-    //   catch((error) => {
-    //     if (error?.response?.status === 401) {
-    //       alert('로그인이 필요합니다.');
-    //       localStorage.removeItem('user');
-    //       location.replace('/auth');
-    //       return ;
-    //     }
-    //     setInfo(`차단을 실패했습니다. ${error.response.data.message}`);
-    //   }
-    //   );
+    axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/block`, { nickname }
+    ).then(() => {
+      setInfo('차단을 성공했습니다.');
+    }).catch((error) => {
+      if (error?.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+        localStorage.removeItem('user');
+        location.replace('/auth');
+        return ;
+      }
+      setInfo(`차단을 실패했습니다. ${error.response.data.message}`);
+    }
+    );
   };
 
   return (
