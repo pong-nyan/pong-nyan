@@ -38,9 +38,9 @@ const Matching = ({ nickname }: { nickname: string }) => {
 
   if (friendGame === 0) {
     return (
-      <div>
+      <>
         <button type="button" onClick={startMatching}>매칭 시작</button>
-      </div>
+      </>
     );}
   else if (friendGame === 1) {
     return (
