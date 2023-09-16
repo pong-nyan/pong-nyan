@@ -11,20 +11,10 @@ const UpDateMyInfo = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!nickname) {
-      alert('Nickname is required');
-      setNickname('');
-      return;
-    }
-    if (!email) {
-      alert('Email is required');
-      setEmail('');
-      return;
-    }
     axios.post(`${process.env.NEXT_PUBLIC_API_URL}/profile/update`, {
       nickname,
       avatar,
-      email,
+      email: email || 'you_must_input_email@mail.com',
       google2faOption,
     }).then(() => {
       alert('수정 성공');
