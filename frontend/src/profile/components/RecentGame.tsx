@@ -1,9 +1,10 @@
 import { Game, GameModeEnum } from '@/type/profileType';
 import styles from '@/profile/styles/RecentGame.module.css';
 
-const RecentGame = ({ game }: { game: Game[] }) => {
+const RecentGame = ({ game, label }: { game: Game[], label: string }) => {
   return (
     <>
+      {game.length > 0 && <h3>{label}</h3>}
       {
         game?.map((g) => (
           <div key={g.id} className={styles.game}>
