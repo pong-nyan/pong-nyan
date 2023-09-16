@@ -93,6 +93,10 @@ export class ChatService {
     return this.channelMap;
   }
 
+  getPrivateChannels() {
+    return Array.from(this.channelMap.values()).filter(channel => channel.channelType === 'private');
+  }
+
   getPublicChannels() {
     return Array.from(this.channelMap.values()).filter(channel => channel.channelType === 'public' || channel.channelType === 'protected');
   }
@@ -101,10 +105,10 @@ export class ChatService {
     return this.channelMap.get(channelId);
   }
 
-  findDm(myNickname: Nickname, opponentNickname: Nickname) {
+  findDm(myIntraId: number, opponentIntraId: number) {
     for (const value of this.channelMap.values()) {
-      if ((value.userList.some(user => user.nickname === myNickname))
-          && (value.userList.some(user => user.nickname === opponentNickname))) {
+      if ((value.userList.some(user => user.intraId === myIntraId))
+          && (value.userList.some(user => user.intraId === opponentIntraId))) {
         return value;
       }
       return null;

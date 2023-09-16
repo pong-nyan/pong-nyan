@@ -369,8 +369,12 @@ export class ChatGateway {
     const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
     if (!userInfo) return ;
 
-    const title = pnPayload.nickname + ':' + payloadEmit.nickname;
-    const channel = this.chatService.findDm(pnPayload.nickname, payloadEmit.nickname);
+    const opponent = await this.userService.getUserInfoByNickname(payloadEmit.nickname);
+    if (!opponent) return ;
+    const opponentIntraId = opponent?.intraId;
+
+    const title = pnPayload.intraId + ':' + opponentIntraId;
+    const channel = this.chatService.findDm(pnPayload.intraId, opponentIntraId);
 
     /* 이미 dm이 존재하는 경우 */
     console.log('chat-create-dm, channel', channel);

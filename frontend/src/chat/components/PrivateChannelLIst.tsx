@@ -6,6 +6,7 @@ import { SocketContext } from '@/context/socket';
 const PrivateChannelList = ({channelList }: {channelList: Channel[]}) => {
   const router = useRouter();
   const { chatNamespace } = useContext(SocketContext);
+  const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
 
   const handlePrivateChannelSelect = (channel: Channel) => {
     const seletedChannel = channelList.find(ch => ch.id === channel.id);
@@ -25,12 +26,21 @@ const PrivateChannelList = ({channelList }: {channelList: Channel[]}) => {
     <div>
       <h3>Private Channel</h3>
       <ul>
-        {channelList.map((channel) => (
-          channel.channelType === 'private' &&
+        {
+          channelList.map((channel) => (
+            channel.channelType === 'private' && 
+            channel.userList.some(() => {
+              const tempUsers = channel.title.split(':');
+              if (tempUsers[0] === loggedInUser.intraId || tempUsers[1] === loggedInUser.intraId) {
+                return true;
+              }
+            })
+        &&
         <li key={channel.id} style={{ cursor: 'pointer' }}>
           <span onClick={() => handlePrivateChannelSelect(channel)}>{channel.title}</span>
         </li>
-        ))}
+          ))
+        }
       </ul>
     </div> );
 };
