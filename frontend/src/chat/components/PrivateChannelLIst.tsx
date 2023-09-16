@@ -1,12 +1,18 @@
 import { Channel } from '@/type/chatType';
 import { useRouter } from 'next/router';
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import { SocketContext } from '@/context/socket';
 
 const PrivateChannelList = ({channelList }: {channelList: Channel[]}) => {
   const router = useRouter();
   const { chatNamespace } = useContext(SocketContext);
-  const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const loggedInUserRef = useRef<any>();
+
+  if (typeof window !== 'undefined') {
+    const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+    loggedInUserRef.current = loggedInUser.intraId;
+  }
 
   const handlePrivateChannelSelect = (channel: Channel) => {
     const seletedChannel = channelList.find(ch => ch.id === channel.id);
@@ -31,7 +37,7 @@ const PrivateChannelList = ({channelList }: {channelList: Channel[]}) => {
             channel.channelType === 'private' && 
             channel.userList.some(() => {
               const tempUsers = channel.title.split(':');
-              if (tempUsers[0] === loggedInUser.intraId || tempUsers[1] === loggedInUser.intraId) {
+              if (tempUsers[0] === loggedInUserRef.current.intraId || tempUsers[1] === loggedInUserRef.current.intraId) {
                 return true;
               }
             })
