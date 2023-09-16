@@ -30,7 +30,7 @@
 }
 
 .rankUser:nth-child(1) {
-    background-color: #3b62ff;
+    background-color: #DBB6B4;
 }
 
 .rankUser>p {
@@ -51,7 +51,7 @@
 }
 
 .pagination button {
-    background-color: #007bff;
+    background-color: #DBB6B4;
     color: #fff;
     border: none;
     padding: 8px 12px;
@@ -61,6 +61,6 @@
   }
   
   .pagination button:hover {
-    background-color: #0056b3;
+    background-color: #F9D5CC;
   }
   
