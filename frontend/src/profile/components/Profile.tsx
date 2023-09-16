@@ -12,7 +12,13 @@ const Profile = ({ nickname }: ProfileProps) => {
     axios.get(`${process.env.NEXT_PUBLIC_API_URL}/profile/${nickname}`).then((res) => {
       setUser(res.data);
     }).catch((err) => {
-      console.log(err);
+      if (err?.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+        localStorage.removeItem('user');
+        location.replace('/auth');
+        return ;
+      }
+      console.error(err);
     });
   }, [nickname]);
 

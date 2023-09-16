@@ -13,7 +13,7 @@ const MakeChannel = ({ isOpen, onClose }) => {
   const [maxUsers, setMaxUser] = useState('');
   const [channelType, setChannelType] = useState<ChannelType>('public');
   const { chatNamespace } = useContext(SocketContext);
-
+  
   const handleCreateChannel = () => {
     let channelMaxUsers = 21;
 

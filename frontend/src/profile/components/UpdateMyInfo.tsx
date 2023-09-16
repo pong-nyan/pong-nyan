@@ -35,6 +35,12 @@ const UpDateMyInfo = () => {
       localStorage.removeItem('user');
       location.href = '/';
     }).catch((err) => {
+      if (err?.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+        localStorage.removeItem('user');
+        location.replace('/auth');
+        return;
+      }
       console.error(err);
       alert(err?.response?.data?.message || '서버와 통신에 실패했습니다.');
     });

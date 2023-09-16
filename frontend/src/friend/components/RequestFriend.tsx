@@ -22,6 +22,12 @@ const RequestFriend = () => {
       setNickname('');
     }).
       catch((error) => {
+        if (error?.response?.status === 401) {
+          alert('로그인이 필요합니다.');
+          localStorage.removeItem('user');
+          location.replace('/auth');
+          return ;
+        }
         alert(`${error.response.data.message} 를 이유로 친구요청을 실패했습니다.`);
       });
   };

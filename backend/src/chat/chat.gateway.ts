@@ -84,10 +84,15 @@ export class ChatGateway {
 
   // 메시지 보내기 버튼 누른 직후
   @SubscribeMessage('chat-message-in-channel')
-  handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, message: Message }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+  handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, message: Message, sender: string }, @PnJwtPayload() pnPayload: PnPayloadDto) {
     const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
     if (!userInfo) return ;
+
     console.log('chat-message-in-channel, payload', payloadEmit);
+    // 만약 sender가 exp가 0보다 크다면?
+    if ( === sender) {
+
+    }
 
     // 해당 채널에 모두에게 chat-new-message 전송
     this.server.to(payloadEmit.channelId).emit('chat-new-message', { channelId: payloadEmit.channelId, message: payloadEmit.message });

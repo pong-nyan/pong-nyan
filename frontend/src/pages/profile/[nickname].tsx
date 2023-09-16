@@ -7,6 +7,7 @@ import NavButtonWrapper from '@/_components/NavButtonWrapper';
 import useAuth from '@/context/useAuth';
 import Link from 'next/link';
 import styles from '@/profile/styles/Profile.module.css';
+import RequestBlockInProfile from '@/profile/components/RequesetBlock';
 
 const ProfilePage = () => {
   useAuth();
@@ -29,6 +30,9 @@ const ProfilePage = () => {
               <Link className={styles.link} href={'/friend/manage'}>
                 Manage Friend
               </Link>
+              <Link className={styles.link} href={'/profile/block'}>
+                Manage BlockList
+              </Link>
             </div>
             <Profile nickname={nickname as string} />
             <NavButtonWrapper />
@@ -43,6 +47,7 @@ const ProfilePage = () => {
         <h1 className={styles.title}>Profile Page</h1>
         <Matching nickname={nickname as string} />
         <RequestFriendInProfile nickname={nickname as string} />
+        <RequestBlockInProfile nickname={nickname as string} />
       </div>
       <Profile nickname={nickname as string} />
       <RequestFriendInProfile nickname={nickname as string} />
