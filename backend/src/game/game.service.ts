@@ -172,9 +172,9 @@ export class GameService {
     if (gameMode) {
       winnerUser.rankScore += rankScore;
       loserUser.rankScore -= rankScore;
+      await this.userRepository.update({ intraId: winnerId }, { rankScore: winnerUser.rankScore });
+      await this.userRepository.update({ intraId: loserId }, { rankScore: loserUser.rankScore });
     }
-    await this.userRepository.save(winnerUser);
-    await this.userRepository.save(loserUser);
     await this.gameRepository.save({ winner: winnerUser, loser: loserUser, gameMode, rankScore, gameInfo });
   }
 

@@ -125,12 +125,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                      @MessageBody() payload: any,
                      @PnJwtPayload() pnPayload: PnPayloadDto) {
     const userInfo = this.userService.checkGameClient(client.id, pnPayload.intraId);
-    console.log('---------------userInfo----------------', userInfo);
-    // gameRoom이 왜 없는지 모르겠음
     if (!userInfo || userInfo.gameRoom === '') return ;
 
     const roomName = this.gameService.getGameRoom(client);
-    console.log('---------------roomName----------------', this.gameService.getGameInfo(roomName));
     this.server.to(payload.opponentId).emit('game-keyEvent', {
       opponentNumber: payload.playerNumber,
       message: payload.message,
