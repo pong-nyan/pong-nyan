@@ -165,6 +165,12 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
       alert('채널이 삭제되었습니다.');
     });
 
+    return () => {
+      chatNamespace.off('chat-kicked-from-channel');
+      chatNamespace.off('chat-baned-from-channel');
+      chatNamespace.off('chat-muted-from-channel');
+      chatNamespace.off('chat-channel-deleted');
+    };
   }, [chatNamespace]);
 
   return (
