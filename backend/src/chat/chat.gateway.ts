@@ -71,6 +71,7 @@ export class ChatGateway {
     userInfo.client.chat.join(payloadEmit.channelId);
     this.chatService.joinChannel(payloadEmit.channelId, pnPayload.intraId, pnPayload.nickname);
     if (!this.syncAfterChannelChange(channel)) return ;
+    this.syncChannelList();
   }
 
   @SubscribeMessage('chat-request-channel-info')
