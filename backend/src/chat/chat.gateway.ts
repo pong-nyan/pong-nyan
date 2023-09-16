@@ -84,16 +84,22 @@ export class ChatGateway {
 
   // 메시지 보내기 버튼 누른 직후
   @SubscribeMessage('chat-message-in-channel')
-  handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, message: Message, sender: string }, @PnJwtPayload() pnPayload: PnPayloadDto) {
+  handleMessageInChannel(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, message: Message, sender: IntraId }, @PnJwtPayload() pnPayload: PnPayloadDto) {
     const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
     if (!userInfo) return ;
+    const channel = this.chatService.getChannel(payloadEmit.channelId);
+    if (!channel) return;
 
     console.log('chat-message-in-channel, payload', payloadEmit);
-    // 만약 sender가 exp가 0보다 크다면?
-    if ( === sender) {
 
+    const senderUser = channel.userList.find(user => user.intraId === payloadEmit.sender);
+
+    // sender의 exp 값이 현재 시간보다 크다면 메시지를 보낼 수 없음
+    if (senderUser && senderUser.exp > Date.now()) {
+      // 사용자가 음소거 상태이므로 메시지를 보낼 수 없습니다.
+      this.server.to(userInfo.client.chat.id).emit('chat-catch-error-message', '음소거 상태에서는 메시지를 보낼 수 없습니다.');
+      return;
     }
-
     // 해당 채널에 모두에게 chat-new-message 전송
     this.server.to(payloadEmit.channelId).emit('chat-new-message', { channelId: payloadEmit.channelId, message: payloadEmit.message });
   }
@@ -269,18 +275,6 @@ export class ChatGateway {
     this.syncChannelList();
   }
 
-  // try {
-  //   const payload: PnPayloadDto = this.jwtService.verify<PnPayloadDto>(pnJwtCookie);
-  //   if (payload.exp * 1000 < Date.now()) {
-  //     console.error('JWT expired');
-  //     return undefined;
-  //   }
-  //   return payload;
-  // } catch (err) {
-  //   console.error('JWT verification failed', err);
-  //   return undefined;
-  // }
-
   // 일정시간음소거
   @SubscribeMessage('chat-mute-user')
   handleMuteUser(@ConnectedSocket() client: Socket, @MessageBody() payloadEmit: { channelId: string, user: IntraId }, @PnJwtPayload() pnPayload: PnPayloadDto) {
@@ -298,9 +292,17 @@ export class ChatGateway {
       return ;
     }
     const mutedUserInfo = this.userService.getUserInfo(payloadEmit.user);
+    const userMute = channel.userList.find(user => user.intraId === mutedUserId);
+
+    // 음소거 시키기
+    if (userMute)
+    {
+      userMute.exp = Date.now() + 20000;
+      console.log('[ChatGateway] chat-mute-user userMute', userMute);
+    }
+
     mutedUserInfo.client.chat.emit('chat-muted-from-channel', payloadEmit.channelId);
     this.server.to(userInfo.client.chat.id).emit('chat-finish-message', '음소거에 성공했습니다.');
-    channel.bannedUsers.push(mutedUserId);
     if (!this.syncAfterChannelChange(channel)) return ;
     this.syncChannelList();
   }
