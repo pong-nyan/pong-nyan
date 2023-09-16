@@ -10,8 +10,7 @@ export const socketEmitChatCreateDmEvent = (nickname: Nickname) => {
 export const socketOnChatJoinDmEvent = () => { 
   chatNamespace.on('chat-create-dm', ( {channel}: { channel: Channel }) => {
     // setChannelList()
-    
+
     Router.push(`/chat/${channel.id}`);
   });
 };
-

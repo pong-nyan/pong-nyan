@@ -98,6 +98,7 @@ export class ChatGateway {
     const userInfo = this.userService.checkChatClient(client.id, pnPayload.intraId);
     if (!userInfo) return ;
     const channel = this.chatService.getChannel(channelId);
+    if (channel.channelType === 'private') return ;
     client.leave(channelId);
     this.chatService.leaveChannel(channelId, pnPayload.intraId);
     this.userService.deleteUserInfoChatRoomList(pnPayload.intraId, channelId);
@@ -389,6 +390,7 @@ export class ChatGateway {
     opponentUserInfo.client.chat.join(newChannel.id);
     this.chatService.joinChannel(channelId, pnPayload.intraId, pnPayload.nickname);
     this.chatService.joinChannel(channelId, opponentUser.intraId, opponentUser.nickname);
-    if (!this.syncAfterChannelChange(newChannel)) return ;
+    this.syncAfterChannelChange(newChannel);
+    this.syncChannelList();
   }
 }

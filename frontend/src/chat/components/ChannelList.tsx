@@ -17,9 +17,12 @@ const ChannelList = () => {
     const seletedChannel = channelList.find(ch => ch.id === channel.id);
     if (!seletedChannel) return;
     const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
-    const isUserInChannel = seletedChannel.userList.includes(loggedInUser.intraId);
+    const isUserInChannel = seletedChannel.userList.some((user) => user.intraId === loggedInUser.intraId);
     let hasedInputPassword;
 
+    console.log('[Chat] seletedChannel', seletedChannel);
+    console.log('[Chat] loggedInUser', loggedInUser);
+    console.log('[Chat] isUserInChannel', isUserInChannel);
     if (!isUserInChannel) {
       if (seletedChannel.password) {
         const inputPassword = prompt('이 채널은 비밀번호로 보호되어 있습니다. 비밀번호를 입력하세요.');

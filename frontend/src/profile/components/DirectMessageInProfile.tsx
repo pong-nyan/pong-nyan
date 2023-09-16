@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { SocketContext } from '@/context/socket';
-import { socketEmitChatCreateDmEvent } from '@/context/socketChatEvent'
+import { socketEmitChatCreateDmEvent, socketOnChatJoinDmEvent } from '@/context/socketChatEvent';
 
 /**
  * @description DM을 보내는 컴포넌트
@@ -10,7 +10,9 @@ import { socketEmitChatCreateDmEvent } from '@/context/socketChatEvent'
  */
 const DirectMessageInProfile = ({ nickname }: { nickname: string }) => {
 
-  const { chatNamespace } = useContext(SocketContext);
+  useEffect(() => {
+    socketOnChatJoinDmEvent();
+  }, []);
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (!nickname) {
@@ -23,7 +25,7 @@ const DirectMessageInProfile = ({ nickname }: { nickname: string }) => {
     } 
     socketEmitChatCreateDmEvent(nickname);
   };
-
+  
   return (
     <>
       <button onClick={handleSubmit}>DM</button>
