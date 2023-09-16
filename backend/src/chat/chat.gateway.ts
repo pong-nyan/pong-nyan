@@ -341,7 +341,6 @@ export class ChatGateway {
         if (!channel) continue;
         client.join(room);
         console.log('[ChatGateway] reconnected to room', room);
-        // TODO: 이거 제대로 반영될지 확인해보기
         channel = this.chatService.getChannel(room);
         if (!this.syncAfterChannelChange(channel)) return ;
     }

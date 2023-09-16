@@ -91,7 +91,6 @@ const MakeChannel = ({ isOpen, onClose }: { isOpen: boolean, onClose: ()=>void }
             onChange={e => setMaxUser(e.target.value)}
           />
         </div>
-        {/* TODO: 비밀번호는 공개방,비공개방을 눌렀을때 입력받기? 평소에는 hidden?? 그렇게 하는게 좋을까? */}
         {channelType === 'protected' && (
           <div className="make-channel__input" style={{ display: 'flex', alignItems: 'center' }}>
             <input
