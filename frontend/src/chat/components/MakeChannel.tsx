@@ -13,7 +13,7 @@ const MakeChannel = ({ isOpen, onClose }) => {
   const [maxUsers, setMaxUser] = useState('');
   const [channelType, setChannelType] = useState<ChannelType>('public');
   const { chatNamespace } = useContext(SocketContext);
-  
+
   const handleCreateChannel = (onClose: () => void) => {
     let channelMaxUsers = 21;
 
@@ -54,11 +54,6 @@ const MakeChannel = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div style={{backgroundColor: 'lightblue'}}>
-        <div className="make-channel" style={{ display: 'flex', alignItems: 'center' }}>
-          <button>
-          채널
-          </button>
-        </div>
         <div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <p style={{ margin: 0, marginRight: '10px' }}>방 제목 : </p>

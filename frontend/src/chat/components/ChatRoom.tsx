@@ -196,11 +196,11 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
           <h3>Channel Members</h3>
           <strong>Owner:</strong>
-          <ul>
+          <ul style={{ listStyleType: 'none' }}>
             <li>{findNicknameById(channel?.owner)}</li>
           </ul>
           <strong>Invited Users:</strong>
-          <ul>
+          <ul style={{ listStyleType: 'none' }}>
             {channel?.invitedUsers.map(invitedUser => (
               <li key={invitedUser}>
                 {findNicknameById(invitedUser)}
@@ -209,7 +209,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
           </ul>
 
           <strong>Administrators:</strong>
-          <ul>
+          <ul style={{ listStyleType: 'none' }}>
             {channel?.administrator.map(admin => (
               <li key={admin}>
                 {findNicknameById(admin)}
@@ -220,7 +220,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
             ))}
           </ul>
           <strong>Users:</strong>
-          <ul>
+          <ul style={{ listStyleType: 'none' }}>
             {channel?.userList.map(user => (
               <li key={user.intraId}>
                 {user.nickname}
@@ -238,7 +238,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
             ))}
           </ul>
           <strong>Invited Users:</strong>
-          <ul>
+          <ul style={{ listStyleType: 'none' }}>
             {channel?.invitedUsers.map(invitedUser => (
               <li key={invitedUser}>
                 {findNicknameById(invitedUser)}
