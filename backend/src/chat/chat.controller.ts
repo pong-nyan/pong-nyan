@@ -1,8 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ChatService } from './chat.service';
 import { Channel } from 'src/type/chatType';
 import { UseGuards } from '@nestjs/common';
+import { PnJwtPayload, PnPayloadDto } from 'src/dto/pnPayload.dto';
 
 // TODO: Add guard
 @Controller('chat')

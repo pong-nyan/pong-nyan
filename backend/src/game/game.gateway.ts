@@ -47,6 +47,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         chatRoomList: [],
         gameRoom: '',
         online: true,
+        blockList: [],
       });
       return ;
     } else {

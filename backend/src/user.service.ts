@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserInfo, IntraId} from 'src/type/userType';
+import { UserInfo, IntraId, Nickname} from 'src/type/userType';
 import { SocketId, Socket, RoomName } from 'src/type/socketType';
 import { GameInfo } from 'src/type/gameType';
 import { JwtService } from '@nestjs/jwt';
@@ -8,6 +8,7 @@ import * as cookie from 'cookie';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/User';
 import { In, Repository } from 'typeorm';
+
 
 
 @Injectable()
@@ -166,5 +167,10 @@ export class UserService {
         userNicknameList.push((this.userMap.get(intraId)).nickname);
       }
       return userNicknameList;
+    }
+
+    public getUserInfoByNickname(nickname: Nickname) {
+      if (!nickname) return null;
+      return this.userRepository.findOne({ where: { nickname } });
     }
 }

@@ -86,7 +86,7 @@ export class AuthController {
         const jwt = await this.authService.createJwt(intraId, user.intraNickname, user.nickname);
         const decodedJwt = JSON.parse(JSON.stringify(this.jwtService.decode(jwt)));
         response.cookie('pn-jwt', jwt, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
-        this.userService.setUserMap(intraId, { client: { game: undefined, chat: undefined}, nickname: user.nickname, chatRoomList: [], gameRoom: '', online: false});
+        this.userService.setUserMap(intraId, { client: { game: undefined, chat: undefined}, nickname: user.nickname, chatRoomList: [], gameRoom: '', online: false, blockList: []});
         return response.status(HttpStatus.ACCEPTED).send({ exp: decodedJwt.exp, nickname: decodedJwt.nickname, intraId: decodedJwt.intraId });
     }
 

@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Channel, ChannelInfo, ChannelId } from 'src/type/chatType';
 import { UserService } from 'src/user.service';
 import { ChanneUser } from 'src/type/chatType';
+import { Nickname } from 'src/type/userType';
 
 @Injectable()
 export class ChatService {
@@ -100,4 +101,13 @@ export class ChatService {
     return this.channelMap.get(channelId);
   }
 
+  findDm(myNickname: Nickname, opponentNickname: Nickname) {
+    for (const value of this.channelMap.values()) {
+      if ((value.userList.some(user => user.nickname === myNickname))
+          && (value.userList.some(user => user.nickname === opponentNickname))) {
+        return value;
+      }
+      return null;
+    }
+  }
 }

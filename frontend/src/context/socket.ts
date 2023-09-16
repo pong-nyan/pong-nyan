@@ -1,6 +1,6 @@
 import { io as socketIOClient } from 'socket.io-client';
 import { createContext } from 'react';
-import { addMessageToLocalStorage } from '@/chat/utils/chatLocalStorage';
+import { socketOnChatNewMessage, socketOnChatAddTab, socketOnChatJoinDmEvent } from '@/context/socketChatEvent';
 
 export const authNamespace = socketIOClient('/auth', { path: '/socket/'});
 export const gameNamespace = socketIOClient('/game', { path: '/socket/'});
@@ -23,20 +23,10 @@ authNamespace.on('auth-set-map-payload', () => {
   authNamespace.emit('auth-set-map', { intraId: item.intraId });
 });
 
-// 메시지를 받아서 로컬 스토리지에 저장
-chatNamespace.on('chat-new-message', (data) => {
-  console.log('[Chat] chat-new-message', data);
-  // 메시지를 받은 채널 ID
-  const { message, channelId: receivedChannelId } = data;
+socketOnChatNewMessage();
+socketOnChatAddTab();
+socketOnChatJoinDmEvent();
 
-  addMessageToLocalStorage(receivedChannelId, message);
-  chatNamespace.emit('chat-watch-new-message', { channelId: receivedChannelId });
-});
-
-chatNamespace.on('add-tab', () => {
-  location.replace('/');
-  alert('새로운 탭이 열렸습니다. 하나의 탭만 남겨주세요.');
-});
 gameNamespace.on('add-tab', () => {
   location.replace('/');
   alert('새로운 탭이 열렸습니다. 하나의 탭만 남겨주세요.');
