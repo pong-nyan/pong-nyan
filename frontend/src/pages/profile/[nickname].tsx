@@ -1,6 +1,7 @@
 import Profile from '@/profile/components/Profile';
 import Matching from '@/profile/components/Matching';
 import RequestFriendInProfile from '@/profile/components/RequestFriendInProfile';
+import DirectMessageInProfile from '@/profile/components/DirectMessageInProfile';
 import { useRouter } from 'next/router';
 import NavButtonWrapper from '@/_components/NavButtonWrapper';
 import useAuth from '@/context/useAuth';
@@ -40,6 +41,7 @@ const ProfilePage = () => {
       <Profile nickname={nickname as string} />
       <Matching nickname={nickname as string} />
       <RequestFriendInProfile nickname={nickname as string} />
+      <DirectMessageInProfile nickname={nickname as string} />
       <NavButtonWrapper />
     </div>
   );
