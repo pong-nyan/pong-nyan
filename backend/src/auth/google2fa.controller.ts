@@ -34,15 +34,10 @@ export class Google2faController {
     const isCodeValid = await this.google2faService.isTwoFactorAuthenticationCodeValid(body.code, user);
 
     if (isCodeValid) {
-      // TODO : 2번째인자 3번째인자확인
       const jwt = await this.authService.createJwt(intraId, user.intraNickname, user.nickname);
       const decodedJwt = JSON.parse(JSON.stringify(this.jwtService.decode(jwt)));
       await this.authService.enableTwoFactorAuthentication(user);
       response.cookie('pn-jwt', jwt, {domain: 'localhost', path: '/', secure: true, httpOnly: true, sameSite: 'none'});
-
-      // TODO: 돌아간 후 authNamespace 지우면서 밑에 코드도 지워야함
-      this.userService.setUserMap(intraId, { client: { game: undefined, chat: undefined}, nickname: user.nickname, chatRoomList: [], gameRoom: '', online: false});
-
       return response.status(HttpStatus.ACCEPTED).send({ exp: decodedJwt.exp, nickname: decodedJwt.nickname, intraId: decodedJwt.intraId });
     }
     return response.status(HttpStatus.UNAUTHORIZED).send('failed');
