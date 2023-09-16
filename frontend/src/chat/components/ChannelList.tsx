@@ -3,9 +3,11 @@ import { SocketContext } from '@/context/socket';
 import { Channel } from '@/type/chatType';
 import { useRouter } from 'next/router';
 import { sha256 } from 'js-sha256';
+import useAuth from '@/context/useAuth';
 
 // onChannelSelect: (channel: Channel) => void  // list.tsx에 선택될 채널을 넘겨줘야함
 const ChannelList = () => {
+  useAuth();
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const { chatNamespace } = useContext(SocketContext);
   const router = useRouter();
@@ -32,6 +34,10 @@ const ChannelList = () => {
         alert('채널이 가득 찼습니다.');
         return ;
       }
+      if (seletedChannel.bannedUsers.includes(loggedInUser.intraId)) {
+        alert('차단된 사용자입니다.');
+        return ;
+      }
     }
     chatNamespace.emit('chat-join-channel', { channelId: seletedChannel.id, password: hasedInputPassword });
     router.push(`/chat/${seletedChannel.id}`);
@@ -54,6 +60,13 @@ const ChannelList = () => {
       chatNamespace.off('chat-update-channel-list');
     };
   }, [chatNamespace]);
+
+  useEffect(() => {
+    // 채널 방영하기
+
+    return () => {
+    };
+  }, []);
 
   return (
     <div className="chat-room-list" style={{ flex: 1, overflowY: 'auto', borderRight: '1px solid gray' }}>

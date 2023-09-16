@@ -14,7 +14,7 @@ const Profile = ({ nickname }: ProfileProps) => {
     }).catch((err) => {
       console.log(err);
     });
-  }, []);
+  }, [nickname]);
 
   return (
     <div className={styles.profile}>
@@ -22,9 +22,9 @@ const Profile = ({ nickname }: ProfileProps) => {
         <Image src={user?.avatar ?? '/pongNyan.png'} alt={user?.nickname ?? 'Pong nyan'} width={100} height={100} />
         <h2>{user?.nickname ?? 'no data'}</h2>
         <h3>래더 스코어 : {user?.rankScore ?? 'no data'}</h3>
-        <RecentGame game={user?.winnerGames ?? []} />
+        <RecentGame game={user?.winnerGames ?? []} label='winning game' />
         <br />
-        <RecentGame game={user?.loserGames ?? []} />
+        <RecentGame game={user?.loserGames ?? []} label='losing game' />
       </span>
     </div>
   );

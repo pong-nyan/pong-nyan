@@ -21,14 +21,16 @@ const ProfilePage = () => {
       if (userNickname === nickname) {
         return (
           <div className={styles.container}>
-            <h1 className={styles.title}>Profile Page</h1>
+            <div className={styles.wrapper}>
+              <h1 className={styles.title}>Profile Page</h1>
+              <Link className={styles.link} href={'/profile/update'}>
+                Update Profile
+              </Link>
+              <Link className={styles.link} href={'/friend/manage'}>
+                Manage Friend
+              </Link>
+            </div>
             <Profile nickname={nickname as string} />
-            <Link href={'/profile/update'}>
-              Update Profile
-            </Link>
-            <Link href={'/friend/manage'}>
-              Manage Friend
-            </Link>
             <NavButtonWrapper />
           </div>
         );
@@ -37,8 +39,11 @@ const ProfilePage = () => {
   }
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Profile Page</h1>
-      <Matching nickname={nickname as string} />
+      <div className={styles.wrapper}>
+        <h1 className={styles.title}>Profile Page</h1>
+        <Matching nickname={nickname as string} />
+        <RequestFriendInProfile nickname={nickname as string} />
+      </div>
       <Profile nickname={nickname as string} />
       <RequestFriendInProfile nickname={nickname as string} />
       <DirectMessageInProfile nickname={nickname as string} />

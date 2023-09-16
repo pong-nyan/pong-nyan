@@ -38,6 +38,7 @@ const Run = ({setGameStatus, playerNumber, opponentId, score, setScore, setNickn
     if (!playerNumber || !opponentId) return ;
     const step = 24;
     const velocity = 0.2;
+    e.preventDefault();
 
     switch (e.key) {
     case 'ArrowLeft':

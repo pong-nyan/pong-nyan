@@ -1,31 +1,34 @@
 import axios from 'axios';
+import { useState } from 'react';
 
 const RequestFriendInProfile = ({ nickname }: { nickname: string }) => {
+  const [info, setInfo] = useState<string>('');
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (!nickname) {
-      alert('nickname이 정상적이지 않습니다.');
+      setInfo('친구요청을 실패했습니다. 친구닉네임을 입력해주세요.');
       return;
     }
     if (nickname === JSON.parse(localStorage.getItem('user') || '{}').nickname) {
-      alert('자기 자신에게 친구요청을 할 수 없습니다.');
+      setInfo('자기자신에게는 친구요청을 할 수 없습니다.');
       return;
     }
     axios.post(`${process.env.NEXT_PUBLIC_API_URL}/friends/request`,
       {
         friendNickname: nickname
       }).then(() => {
-      alert(`${nickname}에게 친구요청을 성공했습니다.`);
+      setInfo('친구요청을 성공했습니다.');
     }).
       catch((error) => {
-        alert(`${error.response.data.message} 를 이유로 친구요청을 실패했습니다.`);
+        setInfo(`친구요청을 실패했습니다. ${error.response.data.message}`);
       }
       );
   };
 
   return (
     <>
-      <button onClick={handleSubmit}>친구요청</button>
+      {info}
+      {!info && <button onClick={handleSubmit}>친구요청</button>}
     </>
   );
 };
