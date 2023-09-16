@@ -90,9 +90,6 @@ export class ChatGateway {
 
     console.log('chat-message-in-channel, payload', payloadEmit);
     // 만약 sender가 exp가 0보다 크다면?
-    if ( === sender) {
-
-    }
 
     // 해당 채널에 모두에게 chat-new-message 전송
     this.server.to(payloadEmit.channelId).emit('chat-new-message', { channelId: payloadEmit.channelId, message: payloadEmit.message });
