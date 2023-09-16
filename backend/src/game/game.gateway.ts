@@ -98,7 +98,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const userInfo = this.userService.checkGameClient(client.id, pnPayload.intraId);
     if (!userInfo) return ;
 
-    const [ roomName, player1Id, player2Id ] = this.gameService.friendMatch(client, payload.gameStatus - 1, pnPayload.intraId, pnPayload.nickname, payload.friendNickname);
+    const [ roomName, player1Id, player2Id ] = this.gameService.friendMatch(client, payload.gameStatus, pnPayload.intraId, pnPayload.nickname, payload.friendNickname);
     if (!roomName) this.server.to(client.id).emit('game-loading');
     if (!player1Id || !player2Id) return;
     this.server.to(roomName).emit('game-start', { roomName, player1Id, player2Id, gameStatus: GameStatus.NormalPnRun });
@@ -125,10 +125,12 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                      @MessageBody() payload: any,
                      @PnJwtPayload() pnPayload: PnPayloadDto) {
     const userInfo = this.userService.checkGameClient(client.id, pnPayload.intraId);
+    console.log('---------------userInfo----------------', userInfo);
+    // gameRoom이 왜 없는지 모르겠음
     if (!userInfo || userInfo.gameRoom === '') return ;
 
     const roomName = this.gameService.getGameRoom(client);
-    console.log('roomName', this.gameService.getGameInfo(roomName));
+    console.log('---------------roomName----------------', this.gameService.getGameInfo(roomName));
     this.server.to(payload.opponentId).emit('game-keyEvent', {
       opponentNumber: payload.playerNumber,
       message: payload.message,

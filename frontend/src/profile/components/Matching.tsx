@@ -7,7 +7,7 @@ import RunWrapper from '@/game/components/RunWrapper';
 
 const Matching = ({ nickname }: { nickname: string }) => {
   const { gameNamespace } = useContext(SocketContext);
-  const [friendGame, setFriendGame] =  useState(0);
+  const [friendGame, setGameStatus] =  useState(0);
   const [playerNumber, setPlayerNumber] = useState<PlayerNumber>('');
   const [opponentId, setOpponentId] = useState('');
   const [score, setScore] = useState<{ p1: number, p2: number }>({p1: 0, p2: 0});
@@ -25,16 +25,16 @@ const Matching = ({ nickname }: { nickname: string }) => {
       return;
     }
     alert(`${nickname} 에게 게임신청, 상대도 매칭시작을 눌러야 게임을시작합니다.`);
-    setFriendGame(1);
+    setGameStatus(1);
     // in game-friendStart, gameStatus is NormalPnRun is possible, other would be ignored
     gameNamespace.emit('game-friendStart', { gameStatue: GameStatus.NormalPnRun, friendNickname: nickname });    
   };
   useEffect(() => {
-    socketOnGameStartEvent(setFriendGame, setPlayerNumber, setOpponentId);
+    socketOnGameStartEvent(setGameStatus, setPlayerNumber, setOpponentId);
     return () => {
       socketOffGameStartEvent();
     };
-  }, [setFriendGame, setPlayerNumber, setOpponentId]);
+  }, [setGameStatus, setPlayerNumber, setOpponentId]);
 
   if (friendGame === 0) {
     return (
@@ -50,11 +50,11 @@ const Matching = ({ nickname }: { nickname: string }) => {
     );
   } else if (friendGame === 2) {
     return (
-      <RunWrapper gameStatus={GameStatus.NormalPnRun} setGameStatus={setFriendGame} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} setNickname={setGameNickname} />
+      <RunWrapper gameStatus={GameStatus.NormalPnRun} setGameStatus={setGameStatus} playerNumber={playerNumber} opponentId={opponentId} score={score} setScore={setScore} setNickname={setGameNickname} />
     );  
   } else if (friendGame === GameStatus.End) {
     return (
-      <End setGameStatus={setFriendGame} score={score} setScore={setScore} nickname={gameNickname} />
+      <End setGameStatus={setGameStatus} score={score} setScore={setScore} nickname={gameNickname} />
     );
   }
 };

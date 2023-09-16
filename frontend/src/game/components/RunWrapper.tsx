@@ -16,7 +16,7 @@ const RunWrapper = ({ gameStatus, setGameStatus, playerNumber, opponentId, score
     setScore: Dispatch<SetStateAction<{p1: Score, p2: Score }>>, 
     setNickname: Dispatch<SetStateAction<{ p1: Nickname, p2: Nickname }>>
   }) => {
-
+  
   useEffect(() => {
     socketOnGameEnd(setScore, setNickname, setGameStatus);
   }, [setScore, setGameStatus, setNickname]);

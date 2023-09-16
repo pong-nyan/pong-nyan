@@ -60,7 +60,7 @@ export class GameService {
     return [ undefined, undefined, undefined, undefined ];
   }
 
-  public friendMatch(client: Socket, gameStatusIndex: number, intraId: IntraId, nickname: string, friendNickname: string) {
+  public friendMatch(client: Socket, gameStatus: number, intraId: IntraId, nickname: string, friendNickname: string) {
     const friendIndex = this.findNicknameMatchingQueue(friendNickname);
     this.friendMatchingQueue.push({client, nickname, intraId});
     // 이미 친구가 매칭큐에 있다면 매칭시켜줌
@@ -71,13 +71,9 @@ export class GameService {
       // 매칭큐에서 두 유저 삭제
       this.friendMatchingQueue = this.friendMatchingQueue.filter(item => item.nickname !== nickname);
       this.friendMatchingQueue = this.friendMatchingQueue.filter(item => item.nickname !== friendNickname);
-      const roomName = 'game-' + player1.nickname + ':' + player2.nickname;
-      player1.client.join(roomName);
-      player2.client.join(roomName);
-      const player1Id = player1.client.id;
-      const player2Id = player2.client.id;
-      this.gameMap.set(roomName, {
-        gameStatus: GameStatus.NormalPnRun,
+      const roomName = uuidv4();
+      const gameInfo = {
+        gameStatus,
         clientId: { p1: player1.client.id, p2: player2.client.id },
         intraId: { p1: player1.intraId, p2: player2.intraId },
         score: { p1: 0, p2: 0 },
@@ -87,7 +83,11 @@ export class GameService {
           position: { x: 0, y: 0 },
           velocity: { x: 0, y: 0 },
         },
-      });
+      };
+      const player1Id = player1.client.id;
+      const player2Id = player2.client.id;
+      this.gameMap.set(roomName, gameInfo);
+      this.userService.setUserInfoGameRoom(roomName, gameInfo);
       return [ roomName, player1Id, player2Id ];
     }
     return [ undefined, undefined, undefined ];
