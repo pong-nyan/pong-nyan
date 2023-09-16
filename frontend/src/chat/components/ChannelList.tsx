@@ -33,7 +33,6 @@ const ChannelList = () => {
         return ;
       }
     }
-
     chatNamespace.emit('chat-join-channel', { channelId: seletedChannel.id, password: hasedInputPassword });
     router.push(`/chat/${seletedChannel.id}`);
   };

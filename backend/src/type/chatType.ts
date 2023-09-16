@@ -13,14 +13,6 @@ declare module 'socket.io' {
 
 export type ChannelType = 'public' | 'private' | 'protected';
 
-export type Channel = ChannelInfo & {
-  id: string,
-  owner: IntraId,
-  administrator: IntraId[],
-  userList: ChanneUser[],
-  invitedUsers: IntraId[],
-}
-
 export type ChanneUser = {
   intraId: IntraId,
   nickname: string,
@@ -32,6 +24,15 @@ export type ChannelInfo = {
   password?: string,
   channelType: ChannelType,
   maxUsers: number,
+}
+
+
+export type Channel = ChannelInfo & {
+  id: string,
+  owner: IntraId,
+  administrator: IntraId[],
+  userList: ChanneUser[],
+  invitedUsers: IntraId[],
 }
 
 export type ChannelId = string;
