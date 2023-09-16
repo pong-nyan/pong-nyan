@@ -17,13 +17,4 @@ export class ChatController {
   getPublicChannels(): Channel[] {
     return this.chatService.getPublicChannels();
   }
-
-  @Post('/request')
-  @ApiTags('chat')
-  @ApiOperation({ summary: 'request dm', description: 'DM 요청을 보낸다.' })
-  @ApiResponse({ status: 200, description: 'DM 요청 성공' })
-  async requestFriendByNickname(@PnJwtPayload() pnPayload: PnPayloadDto) {
-    pnPayload.intraId;
-  }
-
 }
