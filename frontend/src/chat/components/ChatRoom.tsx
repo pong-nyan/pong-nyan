@@ -139,10 +139,32 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
 
   useEffect(() => {
     chatNamespace.on('chat-kicked-from-channel', (receivedChannelId) => {
-      alert('강퇴당했습니다.');
       chatNamespace.emit('chat-leave-channel', receivedChannelId);
       onLeaveChannel();
+      alert('강퇴 당했습니다.');
     });
+
+    // 밴은 banList에 추가되는 것만 다름
+    chatNamespace.on('chat-baned-from-channel', (receivedChannelId) => {
+      chatNamespace.emit('chat-leave-channel', receivedChannelId);
+      onLeaveChannel();
+      alert('밴 당했습니다.');
+    });
+
+    chatNamespace.on('chat-muted-from-channel', () => {
+      // chatNamespace.emit('chat-leave-channel', receivedChannelId);
+      // onLeaveChannel();
+
+      alert('음소거 당했습니다.');
+    });
+
+    //채널이 사라졌을 때 나머지 유저 내보내기
+    chatNamespace.on('chat-channel-deleted', (receivedChannelId) => {
+      chatNamespace.emit('chat-leave-channel', receivedChannelId);
+      onLeaveChannel();
+      alert('채널이 삭제되었습니다.');
+    });
+
   }, [chatNamespace]);
 
   return (

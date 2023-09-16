@@ -32,6 +32,10 @@ const ChannelList = () => {
         alert('채널이 가득 찼습니다.');
         return ;
       }
+      if (seletedChannel.bannedUsers.includes(loggedInUser.intraId)) {
+        alert('차단된 사용자입니다.');
+        return ;
+      }
     }
 
     chatNamespace.emit('chat-join-channel', { channelId: seletedChannel.id, password: hasedInputPassword });
@@ -55,6 +59,13 @@ const ChannelList = () => {
       chatNamespace.off('chat-update-channel-list');
     };
   }, [chatNamespace]);
+
+  useEffect(() => {
+    // 채널 방영하기
+
+    return () => {
+    };
+  }, []);
 
   return (
     <div className="chat-room-list" style={{ flex: 1, overflowY: 'auto', borderRight: '1px solid gray' }}>

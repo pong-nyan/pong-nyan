@@ -19,6 +19,7 @@ export type Channel = ChannelInfo & {
   administrator: IntraId[],
   userList: ChanneUser[],
   invitedUsers: IntraId[],
+  bannedUsers: IntraId[],
 }
 
 export type ChanneUser = {
