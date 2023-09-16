@@ -48,7 +48,7 @@ export class FriendsService {
         return refineFriends;
     }
 
-    async getAcceptedFriends(intraId: number): Promise<Friend[]> {
+    async getAcceptedFriends(intraId: number): Promise<any[]> {
         const user = await this.userRepository.findOne({ where: { intraId } });
         const friends = await this.friendRepository
         .createQueryBuilder('friend')
@@ -127,6 +127,8 @@ export class FriendsService {
     async addFriend(intraId: number, friendIntraId: number): Promise<Friend> {
         const user = await this.userRepository.findOne({ where: { intraId } });
         const friend = await this.userRepository.findOne({ where: { intraId: friendIntraId } });
+        if (!friend) throw new HttpException('No friend found', HttpStatus.NOT_FOUND);
+        if (!user) throw new HttpException('No user found', HttpStatus.NOT_FOUND);
         const newFriend = await this.friendRepository.create({ requestUser: user, addressUser: friend });
         await this.friendRepository.save(newFriend);
         const newFriendStatus = this.friendStatusRepository.create({ friend: newFriend, specificUser: user });
