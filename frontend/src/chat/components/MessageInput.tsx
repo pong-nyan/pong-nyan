@@ -7,10 +7,10 @@ function MessageInput({ value, onChange, onSubmit } : { value: string, onChange:
         onSubmit();
       }}}>
       <input
+        style={{ width: '100%', minWidth: '350px', height: '100%', padding: '0.5rem', fontSize: '1.2rem' }}
         type="text"
         value={value}
         onChange={onChange}
-        style={{ flexGrow: 1 }}
         placeholder="메시지를 입력하세요..."
       />
     </div>

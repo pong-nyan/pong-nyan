@@ -247,7 +247,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
           </ul>
         </div>
         <MessageList messages={messages} />
-        <div style={{ display: 'flex', marginTop: 'auto' }}>
+        <div style={{ display: 'flex', marginTop: 'auto', justifyContent: 'space-between' }}>
           <MessageInput value={inputMessage} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)} onSubmit={handleSendMessage}/>
           <SendMessageButton onClick={handleSendMessage} />
         </div>
