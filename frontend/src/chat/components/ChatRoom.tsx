@@ -172,7 +172,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', height: '100%', maxWidth: '700px', minWidth: '370px', backgroundColor: 'ivory' }}>
-        <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
+        <div style={{ display: 'flex', padding: '10px', borderBottom: '1px solid gray', justifyContent: 'space-between'}}>
           <strong>Current Channel:</strong> {channel?.title ? channel.title : 'No Channel Selected'}
           <button onClick={handleLeaveChannel}>Leave Channel</button>
           {/* 비밀번호 변경/제거 버튼 추가 - owner만 볼 수 있도록 */}
@@ -182,6 +182,7 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
               <button onClick={handleRemovePassword}>비밀번호 제거</button>
             </>
           )}
+          <button onClick={() => {history.back();}}>뒤로가기</button>
         </div>
         <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
           <h3>Channel Members</h3>
