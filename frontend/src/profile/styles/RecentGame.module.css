@@ -1,0 +1,22 @@
+.game {
+  border: 1px solid black;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+}
+
+.gameMode {
+  font-weight: bold;
+}
+
+.createdAt {
+  color: gray;
+}
+
+.nickname {
+  margin-left: 10px;
+}
+
+.score {
+  margin-left: 10px;
+}

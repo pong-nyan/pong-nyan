@@ -1,7 +1,8 @@
 export type Game = {
     id: number;
+    createdAt: string;
     gameMode: number;
-    gameInfo: JSON;
+    gameInfo: any;
 };
 
 export enum GameModeEnum {
