@@ -2,6 +2,7 @@ export type Game = {
     id: number;
     createdAt: string;
     gameMode: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     gameInfo: any;
 };
 

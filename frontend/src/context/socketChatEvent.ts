@@ -25,6 +25,7 @@ export const socketOnChatNewMessage = () => {
       if (userBlockList && userBlockList.includes(message.nickname)) return;
       addMessageToLocalStorage(channelId, message);
       chatNamespace.emit('chat-watch-new-message', { channelId });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       if (err?.response?.status === 401) {
         alert('로그인이 필요합니다.');

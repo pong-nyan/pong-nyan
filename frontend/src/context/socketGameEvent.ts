@@ -66,8 +66,8 @@ export const socketOnGameKeyEvent = (engine: Engine | undefined) => {
 };
 
 export const socketOnGameOriginalPongKeyEvent = (engine: Engine | undefined) => {
-  gameNamespace.on('game-keyEvent', ({opponentNumber, message, step, velocity}
-    : {opponentNumber: PlayerNumber, message: KeyEventMessage, step: number, velocity: number}) => {
+  gameNamespace.on('game-keyEvent', ({opponentNumber, message, step}
+    : {opponentNumber: PlayerNumber, message: KeyEventMessage, step: number}) => {
     if (!engine) return ;
     switch (message) {
     case 'leftDown':

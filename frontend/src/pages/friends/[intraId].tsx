@@ -1,7 +1,7 @@
-import Friends from "@/friends/components/Friends";
-import NavButtonWrapper from "@/_components/NavButtonWrapper";
-import { useRouter } from "next/router";
-import PlusButton from "@/_components/PlusButton";
+import Friends from '@/friends/components/Friends';
+import NavButtonWrapper from '@/_components/NavButtonWrapper';
+import { useRouter } from 'next/router';
+import PlusButton from '@/_components/PlusButton';
 
 const FriendsPage = () => {
   const router = useRouter();

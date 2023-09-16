@@ -30,9 +30,6 @@ const ProfilePage = () => {
               <Link className={styles.link} href={'/friend/manage'}>
                 Manage Friend
               </Link>
-              <Link className={styles.link} href={'/profile/block'}>
-                Manage BlockList
-              </Link>
             </div>
             <Profile nickname={nickname as string} />
             <NavButtonWrapper />

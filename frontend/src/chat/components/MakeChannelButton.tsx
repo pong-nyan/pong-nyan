@@ -1,6 +1,6 @@
 import styles from '@/chat/styles/MakeChannel.module.css';
 
-const MakeChannelButton = ({ onMakeChannel }) => {
+const MakeChannelButton = ({ onMakeChannel }: { onMakeChannel: ()=>void}) => {
 
   return (
     <div className={styles.makeChannelButtonLayout} >

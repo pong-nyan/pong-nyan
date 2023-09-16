@@ -14,7 +14,6 @@ const Google2FA = () => {
       .then((res) => {
         if (res.status === 202) {
           localStorage.setItem('user', JSON.stringify(res.data));
-          console.log('Emitting auth-set-map');
           authNamespace.emit('auth-set-map');
           location.replace('/');
         }

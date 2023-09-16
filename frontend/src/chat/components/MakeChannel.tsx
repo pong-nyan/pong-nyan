@@ -6,7 +6,7 @@ import { sha256 } from 'js-sha256';
 import useAuth from '@/context/useAuth';
 
 // 채널 생성 컴포넌트
-const MakeChannel = ({ isOpen, onClose }) => {
+const MakeChannel = ({ isOpen, onClose }: { isOpen: boolean, onClose: ()=>void }) => {
   useAuth();
   const [channelTitle, setChannelTitle] = useState('');
   const [channelPassword, setChannelPassword] = useState('');

@@ -19,7 +19,6 @@ const PublicChannelListPage = () => {
           location.replace('/auth');
           return ;
         }
-        console.error('Error fetching public channels:', error);
       });
   };
 

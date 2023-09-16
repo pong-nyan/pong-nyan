@@ -11,4 +11,4 @@ RUN npm install
 
 EXPOSE 4242
 
-ENTRYPOINT [ "npm", "run", "dev"]
+ENTRYPOINT [ "npm", "run", "eval"]

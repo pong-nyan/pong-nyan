@@ -1,7 +1,7 @@
 import { Constraint, Body, Engine } from 'matter-js';
 import { stopper, hinge, paddle, bar, findTargetAll } from './matterJsUnit';
 import { CollisionEvent, KeyDownEvent, KeyUpEvent, PlayerNumber } from '@/type/gameType';
-import { socket } from '@/context/socket';
+import { gameNamespace } from '@/context/socket';
 
 export const makeHinge = (middleX: number, offsetX: number, baseY: number, hingeGroupRef:number) => {
   const radius = 5;
@@ -20,7 +20,7 @@ export const makePaddle = (middleX: number, offsetX: number, baseY:number, hinge
   Body.setCentre(paddleLeft, { x: -paddleWidth / 2, y: 0}, true);
   Body.setCentre(paddleRight, { x: paddleWidth / 2, y: 0}, true);
   return [ paddleLeft, paddleRight ];
-}
+};
 
 export const makeBar= (middleX: number, offsetX: number, baseY:number, hingeGroupRef:number, playerNumber: PlayerNumber) => {
   // const paddleWidth = 0.15 * cw;
@@ -112,14 +112,14 @@ export const movePaddleKeyRotate = (body: Body, direction: number) => {
 };
 
 export const notifyKeyDown= (keyDownEvent:KeyDownEvent) => {
-  socket.emit('gameEvent', keyDownEvent);
+  gameNamespace.emit('gameEvent', keyDownEvent);
 };
 
 export const notifyKeyUp= (keyUpEvent:KeyUpEvent) => {
-  socket.emit('gameEvent', keyUpEvent);
+  gameNamespace.emit('gameEvent', keyUpEvent);
 };
 
 export const notifyColision= (collisionEvent: CollisionEvent) => {
-  socket.emit('gameEvent', collisionEvent);
+  gameNamespace.emit('gameEvent', collisionEvent);
 };
 

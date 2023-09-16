@@ -1,8 +1,6 @@
 import styles from '@/chat/styles/NavButtonWrapper.module.css';
-import useAuth from '@/context/useAuth';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 const HomeButton = () => {
