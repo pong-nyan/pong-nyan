@@ -9,12 +9,24 @@ import { SocketContext } from '@/context/socket';
 const ChannelList = () => {
   useAuth();
   const [channelList, setChannelList] = useState<Channel[]>([]);
+  const [myPrivateChannelList, setMyPrivateChannelList] = useState<Channel[]>([]);
   const { chatNamespace } = useContext(SocketContext);
   useEffect(() => {
     chatNamespace.emit('chat-request-channel-list');
 
     chatNamespace.on('chat-update-channel-list', (updatedList) => {
       setChannelList(updatedList);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const privateChannels = updatedList.filter((channel: any) => channel.channelType === 'private');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const myPrivateChannels = privateChannels.filter((channel: any) => {
+        const tempUsers = channel.title.split(':');
+        const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}');
+        if (tempUsers[0] == loggedInUser.intraId || tempUsers[1] == loggedInUser.intraId) {
+          return true;
+        }
+      });
+      setMyPrivateChannelList(myPrivateChannels);
     });
 
     chatNamespace.on('chat-join-error', (errorMessage) => {
@@ -31,7 +43,7 @@ const ChannelList = () => {
       <h2>Channel list</h2>
       <PublicChannelList channelList={channelList} />
       <hr />
-      <PrivateChannelList channelList={channelList} />
+      <PrivateChannelList channelList={myPrivateChannelList} />
     </div>
   );
 };

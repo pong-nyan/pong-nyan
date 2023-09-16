@@ -34,17 +34,9 @@ const PrivateChannelList = ({channelList }: {channelList: Channel[]}) => {
       <ul>
         {
           channelList.map((channel) => (
-            channel.channelType === 'private' && 
-            channel.userList.some(() => {
-              const tempUsers = channel.title.split(':');
-              if (tempUsers[0] === loggedInUserRef.current.intraId || tempUsers[1] === loggedInUserRef.current.intraId) {
-                return true;
-              }
-            })
-        &&
-        <li key={channel.id} style={{ cursor: 'pointer' }}>
-          <span onClick={() => handlePrivateChannelSelect(channel)}>{channel.title}</span>
-        </li>
+            <li key={channel.id} style={{ cursor: 'pointer' }}>
+              <span onClick={() => handlePrivateChannelSelect(channel)}>{channel.title}</span>
+            </li>
           ))
         }
       </ul>
