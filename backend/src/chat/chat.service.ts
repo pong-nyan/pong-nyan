@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { Channel, ChannelInfo, ChannelId } from 'src/type/chatType';
-import { IntraId } from 'src/type/userType';
 import { UserService } from 'src/user.service';
 import { ChanneUser } from 'src/type/chatType';
 
@@ -22,6 +21,7 @@ export class ChatService {
       administrator: [intraId],
       userList: [{ intraId, nickname, exp : -1 }],
       invitedUsers: [intraId],
+      bannedUsers: [],
       ...channelInfo };
     client.join(channelId);
     this.channelMap.set(channelId, newChannel);

@@ -64,17 +64,14 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
   };
 
   const kickUser = (targetUser: IntraId) => {
-    // kick 로직 구현
     chatNamespace.emit('chat-kick-user', { channelId, user: targetUser });
   };
 
   const banUser = (targetUser: IntraId) => {
-    // ban 로직 구현
     chatNamespace.emit('chat-ban-user', { channelId, user: targetUser });
   };
 
   const muteUser = (targetUser: IntraId) => {
-    // mute 로직 구현
     chatNamespace.emit('chat-mute-user', { channelId, user: targetUser });
   };
 
@@ -141,10 +138,38 @@ function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveCh
 
   useEffect(() => {
     chatNamespace.on('chat-kicked-from-channel', (receivedChannelId) => {
-      alert('강퇴당했습니다.');
       chatNamespace.emit('chat-leave-channel', receivedChannelId);
       onLeaveChannel();
+      alert('강퇴 당했습니다.');
     });
+
+    // 밴은 banList에 추가되는 것만 다름
+    chatNamespace.on('chat-baned-from-channel', (receivedChannelId) => {
+      chatNamespace.emit('chat-leave-channel', receivedChannelId);
+      onLeaveChannel();
+      alert('밴 당했습니다.');
+    });
+
+    chatNamespace.on('chat-muted-from-channel', () => {
+      // chatNamespace.emit('chat-leave-channel', receivedChannelId);
+      // onLeaveChannel();
+
+      alert('음소거 당했습니다.');
+    });
+
+    //채널이 사라졌을 때 나머지 유저 내보내기
+    chatNamespace.on('chat-channel-deleted', (receivedChannelId) => {
+      chatNamespace.emit('chat-leave-channel', receivedChannelId);
+      onLeaveChannel();
+      alert('채널이 삭제되었습니다.');
+    });
+
+    return () => {
+      chatNamespace.off('chat-kicked-from-channel');
+      chatNamespace.off('chat-baned-from-channel');
+      chatNamespace.off('chat-muted-from-channel');
+      chatNamespace.off('chat-channel-deleted');
+    };
   }, [chatNamespace]);
 
   return (
