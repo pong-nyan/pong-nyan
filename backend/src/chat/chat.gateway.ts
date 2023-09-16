@@ -316,6 +316,7 @@ export class ChatGateway {
         chatRoomList: [],
         gameRoom: '',
         online: true,
+        blockList: [],
       });
       return ;
     } else {
