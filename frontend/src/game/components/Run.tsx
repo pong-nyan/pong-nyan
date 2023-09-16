@@ -131,6 +131,10 @@ const Run = ({setGameStatus, playerNumber, opponentId, score, setScore, setNickn
   useEffect(() => {
     if (!playerNumber) return;
     socketEmitGameScoreEvent(playerNumber, score);
+    if (score.p1 > 5 || score.p2 > 5) {
+      alert('게임 비정상 종료!');
+      location.reload();
+    }
   }, [playerNumber, score]);
 
   return (
