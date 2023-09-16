@@ -8,8 +8,10 @@ import { Message } from '@/type/chatType';
 import { Channel } from '@/type/chatType';
 import { IntraId } from '@/type/userType';
 import { sha256 } from 'js-sha256';
+import useAuth from '@/context/useAuth';
 
 function ChatRoom({ channelId, onLeaveChannel } : { channelId: string, onLeaveChannel: () => void }) {
+  useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [channel, setChannel] = useState<Channel | null>(null);

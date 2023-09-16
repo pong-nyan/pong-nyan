@@ -3,8 +3,10 @@ import { useState } from 'react';
 import Friend from './Friend';
 import { FriendProps } from '@/type/friendType';
 import { useGetFriendsData } from '../hooks/useGetFriendsData';
+import useAuth from '@/context/useAuth';
 
 const Friends = () => {
+  useAuth();
   const [friends, setFriends] = useState<FriendProps[]>();
   useGetFriendsData(setFriends);
   //중복데이터 제거

@@ -3,6 +3,7 @@ import { SocketContext } from '@/context/socket';
 import { ChannelType } from '@/type/chatType';
 import Modal from '@/chat/components/Modal';
 import { sha256 } from 'js-sha256';
+import useAuth from '@/context/useAuth';
 
 // 채널 생성 컴포넌트
 const MakeChannel = ({ isOpen, onClose }) => {
@@ -13,6 +14,7 @@ const MakeChannel = ({ isOpen, onClose }) => {
   const { chatNamespace } = useContext(SocketContext);
 
   const handleCreateChannel = () => {
+    useAuth();
     let channelMaxUsers = 21;
 
     if (!maxUsers.trim() || !maxUsers || isNaN(Number(maxUsers))) {
