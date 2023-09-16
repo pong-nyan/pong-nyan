@@ -48,10 +48,9 @@ const ProfilePage = () => {
         <Matching nickname={nickname as string} />
         <RequestFriendInProfile nickname={nickname as string} />
         <RequestBlockInProfile nickname={nickname as string} />
+        <DirectMessageInProfile nickname={nickname as string} />
       </div>
       <Profile nickname={nickname as string} />
-      <RequestFriendInProfile nickname={nickname as string} />
-      <DirectMessageInProfile nickname={nickname as string} />
       <NavButtonWrapper />
     </div>
   );
