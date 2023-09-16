@@ -14,7 +14,7 @@ function MessageInput({ value, onChange, onSubmit } : { value: string, onChange:
       value={value}
       onChange={onChange}
       onKeyUp={handleKeyUp}
-      style={{ flex: 1, padding: '10px', border: '1px solid gray' }}
+      style={{ width: '100%', minWidth: '350px', height: '100%', padding: '0.5rem', fontSize: '1.2rem' }}
       placeholder="메시지를 입력하세요..."
     />
   );
