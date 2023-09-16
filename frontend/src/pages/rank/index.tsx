@@ -28,6 +28,12 @@ const RankPage = () => {
         setLastPage(response.data.meta.lastPage);
       })
       .catch(error => {
+        if (error?.response?.status === 401) {
+          alert('로그인이 필요합니다.');
+          localStorage.removeItem('user');
+          location.replace('/auth');
+          return ;
+        }
         console.log(error);
       });
   }, [currentPage]);

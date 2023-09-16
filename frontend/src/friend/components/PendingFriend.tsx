@@ -11,6 +11,12 @@ const PendingFriend = ({ pendingFriend, friendId }: PendingFriendProps) => {
       alert('수락되었습니다.');
       console.log(res);
     }).catch((err) => {
+      if (err?.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+        localStorage.removeItem('user');
+        location.replace('/auth');
+        return ;
+      }
       console.error(err);
     });
   };
@@ -23,6 +29,12 @@ const PendingFriend = ({ pendingFriend, friendId }: PendingFriendProps) => {
       alert('거절되었습니다.');
       console.log(res);
     }).catch((err) => {
+      if (err?.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+        localStorage.removeItem('user');
+        location.replace('/auth');
+        return ;
+      }
       console.error(err);
     });
   };

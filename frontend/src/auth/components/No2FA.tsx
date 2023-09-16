@@ -19,6 +19,11 @@ const No2FA = () => {
         }
       }
     ).catch((err) => {
+      if (err?.response?.status === 401) {
+        alert('로그인이 필요합니다.');
+        localStorage.removeItem('user');
+        location.replace('/auth');
+      }
       console.error(err);
     });
   };
