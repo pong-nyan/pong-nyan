@@ -7,6 +7,7 @@ import useAuth from '@/context/useAuth';
 
 // 채널 생성 컴포넌트
 const MakeChannel = ({ isOpen, onClose }) => {
+  useAuth();
   const [channelTitle, setChannelTitle] = useState('');
   const [channelPassword, setChannelPassword] = useState('');
   const [maxUsers, setMaxUser] = useState('');
@@ -14,7 +15,6 @@ const MakeChannel = ({ isOpen, onClose }) => {
   const { chatNamespace } = useContext(SocketContext);
 
   const handleCreateChannel = () => {
-    useAuth();
     let channelMaxUsers = 21;
 
     if (!maxUsers.trim() || !maxUsers || isNaN(Number(maxUsers))) {
